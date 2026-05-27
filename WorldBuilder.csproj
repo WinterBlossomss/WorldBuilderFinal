@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-WorldBuilder-8510d997-2e69-41d3-a03f-81b202c65b9e</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.14" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.12" />
+  </ItemGroup>
+	<ItemGroup>
+		<UpToDateCheckBuilt Include="wwwroot/css/input.css"  Set="css"/>
+	</ItemGroup>
+	<Target Name="Tailwind" BeforeTargets="Build;PrepareForPublish" >
+
+		<Exec Command="npx tailwindcss -i wwwroot/css/input.css -o wwwroot/css/output.css --minify" />
+		<ItemGroup>
+			<Content Include="wwwroot/css/output.css" CopyToPublishDirectory="Always">
+			</Content>
+		</ItemGroup>
+	</Target>
+
+</Project>
