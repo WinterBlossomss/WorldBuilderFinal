@@ -1,5 +1,4 @@
 wwwroot\css\input.css
-wwwroot\css\output.css
 wwwroot\css\site.css
 wwwroot\favicon.ico
 wwwroot\js\site.js
@@ -63,6 +62,7 @@ wwwroot\lib\jquery\dist\jquery.slim.js
 wwwroot\lib\jquery\dist\jquery.slim.min.js
 wwwroot\lib\jquery\dist\jquery.slim.min.map
 wwwroot\lib\jquery\LICENSE.txt
+wwwroot\css\output.css
 C:\Users\princ\source\repos\WorldBuilder\WorldBuilder\wwwroot\css\input.css
 C:\Users\princ\source\repos\WorldBuilder\WorldBuilder\wwwroot\css\site.css
 C:\Users\princ\source\repos\WorldBuilder\WorldBuilder\wwwroot\favicon.ico

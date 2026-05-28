@@ -444,4 +444,4 @@ c:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\swae.buil
 C:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\WorldBuilder.sourcelink.json
 C:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
 C:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compressed\tkw8ha1c06-{0}-cifl3pt7ss-cifl3pt7ss.gz
-C:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compressed\0u30tf8h0m-{0}-3wolbrzkjb-3wolbrzkjb.gz
+C:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compressed\0u30tf8h0m-{0}-kqe9yoe1r3-kqe9yoe1r3.gz
