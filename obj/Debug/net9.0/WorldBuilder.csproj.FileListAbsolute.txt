@@ -376,8 +376,6 @@ c:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compresse
 c:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compressed\nezrqnk58p-{0}-muycvpuwrr-muycvpuwrr.gz
 c:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compressed\v0zgfp0y55-{0}-87fc7y1x7t-87fc7y1x7t.gz
 c:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compressed\yfc7ypekbg-{0}-mlv21k5csn-mlv21k5csn.gz
-c:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compressed\tkw8ha1c06-{0}-sx1p942dk6-sx1p942dk6.gz
-c:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compressed\0u30tf8h0m-{0}-19n4at0tzw-19n4at0tzw.gz
 c:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compressed\cb91cdc0hi-{0}-b9sayid5wm-b9sayid5wm.gz
 c:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compressed\ld2u7p33hl-{0}-61n19gt1b8-61n19gt1b8.gz
 c:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compressed\v1lx2gwqwo-{0}-xtxxf3hu2r-xtxxf3hu2r.gz
@@ -443,3 +441,7 @@ c:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compresse
 c:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compressed\c0kjevsa47-{0}-s2nt7p7pev-s2nt7p7pev.gz
 c:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compressed\ugkth86x46-{0}-s2nt7p7pev-s2nt7p7pev.gz
 c:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\swae.build.ex.cache
+C:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\WorldBuilder.sourcelink.json
+C:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
+C:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compressed\tkw8ha1c06-{0}-cifl3pt7ss-cifl3pt7ss.gz
+C:\Users\princ\source\repos\WorldBuilder\WorldBuilder\obj\Debug\net9.0\compressed\0u30tf8h0m-{0}-3wolbrzkjb-3wolbrzkjb.gz

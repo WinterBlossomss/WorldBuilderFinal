@@ -1,0 +1,126 @@
+@model WorldBuilder.Models.Script
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Script</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="ScriptContent" class="control-label"></label>
+                <input asp-for="ScriptContent" class="form-control" />
+                <span asp-validation-for="ScriptContent" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ScriptTitle" class="control-label"></label>
+                <input asp-for="ScriptTitle" class="form-control" />
+                <span asp-validation-for="ScriptTitle" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ScriptCatFK" class="control-label"></label>
+                <input asp-for="ScriptCatFK" class="form-control" />
+                <span asp-validation-for="ScriptCatFK" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ScriptSubFK" class="control-label"></label>
+                <input asp-for="ScriptSubFK" class="form-control" />
+                <span asp-validation-for="ScriptSubFK" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ScriptUpdateAt" class="control-label"></label>
+                <input asp-for="ScriptUpdateAt" class="form-control" />
+                <span asp-validation-for="ScriptUpdateAt" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ScriptCreateAt" class="control-label"></label>
+                <input asp-for="ScriptCreateAt" class="form-control" />
+                <span asp-validation-for="ScriptCreateAt" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ScriptIsPublic" class="control-label"></label>
+                <input asp-for="ScriptIsPublic" class="form-check-input" />
+                <span asp-validation-for="ScriptIsPublic" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ScriptIsChar" class="control-label"></label>
+                <input asp-for="ScriptIsChar" class="form-check-input" />
+                <span asp-validation-for="ScriptIsChar" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ScriptBoardX" class="control-label"></label>
+                <input asp-for="ScriptBoardX" class="form-control" />
+                <span asp-validation-for="ScriptBoardX" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ScriptBoardY" class="control-label"></label>
+                <input asp-for="ScriptBoardY" class="form-control" />
+                <span asp-validation-for="ScriptBoardY" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ScriptBoardColor" class="control-label"></label>
+                <input asp-for="ScriptBoardColor" class="form-control" />
+                <span asp-validation-for="ScriptBoardColor" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DetailViews" class="control-label"></label>
+                <input asp-for="DetailViews" class="form-control" />
+                <span asp-validation-for="DetailViews" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ScriptLikes" class="control-label"></label>
+                <input asp-for="ScriptLikes" class="form-control" />
+                <span asp-validation-for="ScriptLikes" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ScriptScriptScriptScriptOneFKNavigations" class="control-label"></label>
+                <input asp-for="ScriptScriptScriptScriptOneFKNavigations" class="form-control" />
+                <span asp-validation-for="ScriptScriptScriptScriptOneFKNavigations" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ScriptScriptScriptScriptTwoFKNavigations" class="control-label"></label>
+                <input asp-for="ScriptScriptScriptScriptTwoFKNavigations" class="form-control" />
+                <span asp-validation-for="ScriptScriptScriptScriptTwoFKNavigations" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PicScriptPicFKs" class="control-label"></label>
+                <input asp-for="PicScriptPicFKs" class="form-control" />
+                <span asp-validation-for="PicScriptPicFKs" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ScriptTagTagFKs" class="control-label"></label>
+                <input asp-for="ScriptTagTagFKs" class="form-control" />
+                <span asp-validation-for="ScriptTagTagFKs" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

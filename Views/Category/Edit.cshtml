@@ -1,0 +1,64 @@
+@model WorldBuilder.Models.Category
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Category</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CatIDPK" />
+            <div class="form-group">
+                <label asp-for="CatName" class="control-label"></label>
+                <input asp-for="CatName" class="form-control" />
+                <span asp-validation-for="CatName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CatDescription" class="control-label"></label>
+                <input asp-for="CatDescription" class="form-control" />
+                <span asp-validation-for="CatDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CatWorldFK" class="control-label"></label>
+                <input asp-for="CatWorldFK" class="form-control" />
+                <span asp-validation-for="CatWorldFK" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CatColor" class="control-label"></label>
+                <input asp-for="CatColor" class="form-control" />
+                <span asp-validation-for="CatColor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CatWorldFKNavigation" class="control-label"></label>
+                <input asp-for="CatWorldFKNavigation" class="form-control" />
+                <span asp-validation-for="CatWorldFKNavigation" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Pictures" class="control-label"></label>
+                <input asp-for="Pictures" class="form-control" />
+                <span asp-validation-for="Pictures" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubCategories" class="control-label"></label>
+                <input asp-for="SubCategories" class="form-control" />
+                <span asp-validation-for="SubCategories" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

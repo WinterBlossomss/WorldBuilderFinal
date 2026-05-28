@@ -1,0 +1,44 @@
+@model WorldBuilder.Models.ConnectionTable
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>ConnectionTable</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ConnIDPK" />
+            <div class="form-group">
+                <label asp-for="ConnDescr" class="control-label"></label>
+                <input asp-for="ConnDescr" class="form-control" />
+                <span asp-validation-for="ConnDescr" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ConnUserFK" class="control-label"></label>
+                <input asp-for="ConnUserFK" class="form-control" />
+                <span asp-validation-for="ConnUserFK" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ScriptScripts" class="control-label"></label>
+                <input asp-for="ScriptScripts" class="form-control" />
+                <span asp-validation-for="ScriptScripts" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,84 @@
+@model WorldBuilder.Models.Picture
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Picture</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="PicCaption" class="control-label"></label>
+                <input asp-for="PicCaption" class="form-control" />
+                <span asp-validation-for="PicCaption" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PicPath" class="control-label"></label>
+                <input asp-for="PicPath" class="form-control" />
+                <span asp-validation-for="PicPath" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PicSubFK" class="control-label"></label>
+                <input asp-for="PicSubFK" class="form-control" />
+                <span asp-validation-for="PicSubFK" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PicCatFK" class="control-label"></label>
+                <input asp-for="PicCatFK" class="form-control" />
+                <span asp-validation-for="PicCatFK" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PicWorldFK" class="control-label"></label>
+                <input asp-for="PicWorldFK" class="form-control" />
+                <span asp-validation-for="PicWorldFK" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DetailViews" class="control-label"></label>
+                <input asp-for="DetailViews" class="form-control" />
+                <span asp-validation-for="DetailViews" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PicCatFKNavigation" class="control-label"></label>
+                <input asp-for="PicCatFKNavigation" class="form-control" />
+                <span asp-validation-for="PicCatFKNavigation" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PicSubFKNavigation" class="control-label"></label>
+                <input asp-for="PicSubFKNavigation" class="form-control" />
+                <span asp-validation-for="PicSubFKNavigation" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PicWorldFKNavigation" class="control-label"></label>
+                <input asp-for="PicWorldFKNavigation" class="form-control" />
+                <span asp-validation-for="PicWorldFKNavigation" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PicScriptScriptFKs" class="control-label"></label>
+                <input asp-for="PicScriptScriptFKs" class="form-control" />
+                <span asp-validation-for="PicScriptScriptFKs" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

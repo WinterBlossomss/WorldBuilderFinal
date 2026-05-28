@@ -1,0 +1,54 @@
+@model WorldBuilder.Models.SubCategory
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>SubCategory</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="SubIDPK" />
+            <div class="form-group">
+                <label asp-for="SubName" class="control-label"></label>
+                <input asp-for="SubName" class="form-control" />
+                <span asp-validation-for="SubName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubDescription" class="control-label"></label>
+                <input asp-for="SubDescription" class="form-control" />
+                <span asp-validation-for="SubDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubCatFK" class="control-label"></label>
+                <input asp-for="SubCatFK" class="form-control" />
+                <span asp-validation-for="SubCatFK" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Pictures" class="control-label"></label>
+                <input asp-for="Pictures" class="form-control" />
+                <span asp-validation-for="Pictures" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubCatFKNavigation" class="control-label"></label>
+                <input asp-for="SubCatFKNavigation" class="form-control" />
+                <span asp-validation-for="SubCatFKNavigation" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

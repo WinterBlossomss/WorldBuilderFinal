@@ -1,0 +1,77 @@
+@model IEnumerable<WorldBuilder.Models.Tag>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TagName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TagDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TagColor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TagWorldFK)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TagUserFK)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TagUserFKNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TagWorldFKNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptTagScriptFKs)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.TagName)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.TagDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.TagColor)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.TagWorldFK)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.TagUserFK)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.TagUserFKNavigation)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.TagWorldFKNavigation)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptTagScriptFKs)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.TagIDPK">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.TagIDPK">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.TagIDPK">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

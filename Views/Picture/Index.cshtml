@@ -1,0 +1,89 @@
+@model IEnumerable<WorldBuilder.Models.Picture>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PicCaption)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PicPath)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PicSubFK)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PicCatFK)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PicWorldFK)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DetailViews)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PicCatFKNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PicSubFKNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PicWorldFKNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PicScriptScriptFKs)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.PicCaption)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.PicPath)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.PicSubFK)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.PicCatFK)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.PicWorldFK)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.DetailViews)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.PicCatFKNavigation)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.PicSubFKNavigation)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.PicWorldFKNavigation)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.PicScriptScriptFKs)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.PicIDPK">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.PicIDPK">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.PicIDPK">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

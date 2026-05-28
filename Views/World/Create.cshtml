@@ -1,0 +1,108 @@
+@model WorldBuilder.Models.World
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>World</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="WorldName" class="control-label"></label>
+                <input asp-for="WorldName" class="form-control" />
+                <span asp-validation-for="WorldName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="WorldDesc" class="control-label"></label>
+                <input asp-for="WorldDesc" class="form-control" />
+                <span asp-validation-for="WorldDesc" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="WorldGenFK" class="control-label"></label>
+                <input asp-for="WorldGenFK" class="form-control" />
+                <span asp-validation-for="WorldGenFK" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="WorldIsPublic" class="control-label"></label>
+                <input asp-for="WorldIsPublic" class="form-check-input" />
+                <span asp-validation-for="WorldIsPublic" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="WorldUserFK" class="control-label"></label>
+                <input asp-for="WorldUserFK" class="form-control" />
+                <span asp-validation-for="WorldUserFK" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="WorldCreatedAt" class="control-label"></label>
+                <input asp-for="WorldCreatedAt" class="form-control" />
+                <span asp-validation-for="WorldCreatedAt" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="WorldUpdatedAt" class="control-label"></label>
+                <input asp-for="WorldUpdatedAt" class="form-control" />
+                <span asp-validation-for="WorldUpdatedAt" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="WorldLikes" class="control-label"></label>
+                <input asp-for="WorldLikes" class="form-control" />
+                <span asp-validation-for="WorldLikes" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Categories" class="control-label"></label>
+                <input asp-for="Categories" class="form-control" />
+                <span asp-validation-for="Categories" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Pictures" class="control-label"></label>
+                <input asp-for="Pictures" class="form-control" />
+                <span asp-validation-for="Pictures" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Tags" class="control-label"></label>
+                <input asp-for="Tags" class="form-control" />
+                <span asp-validation-for="Tags" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="WorldGenFKNavigation" class="control-label"></label>
+                <input asp-for="WorldGenFKNavigation" class="form-control" />
+                <span asp-validation-for="WorldGenFKNavigation" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="WorldUserFKNavigation" class="control-label"></label>
+                <input asp-for="WorldUserFKNavigation" class="form-control" />
+                <span asp-validation-for="WorldUserFKNavigation" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="WorldLikUserFKs" class="control-label"></label>
+                <input asp-for="WorldLikUserFKs" class="form-control" />
+                <span asp-validation-for="WorldLikUserFKs" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

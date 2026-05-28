@@ -13,13 +13,19 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.14" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.14">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.12" />
   </ItemGroup>
 	<ItemGroup>
-		<UpToDateCheckBuilt Include="wwwroot/css/input.css"  Set="css"/>
+		<UpToDateCheckBuilt Include="wwwroot/css/input.css" Set="css" />
 	</ItemGroup>
-	<Target Name="Tailwind" BeforeTargets="Build;PrepareForPublish" >
+	<ItemGroup>
+	  <Folder Include="Views\Admin\" />
+	</ItemGroup>
+	<Target Name="Tailwind" BeforeTargets="Build;PrepareForPublish">
 
 		<Exec Command="npx tailwindcss -i wwwroot/css/input.css -o wwwroot/css/output.css --minify" />
 		<ItemGroup>

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\princ\\source\\repos\\WorldBuilder\\WorldBuilder\\WorldBuilder.csproj": {}
+    "C:\\Users\\princ\\source\\repos\\WorldBuilder\\WorldBuilder\\WorldBuilder.csproj": {}
   },
   "projects": {
-    "c:\\Users\\princ\\source\\repos\\WorldBuilder\\WorldBuilder\\WorldBuilder.csproj": {
+    "C:\\Users\\princ\\source\\repos\\WorldBuilder\\WorldBuilder\\WorldBuilder.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\princ\\source\\repos\\WorldBuilder\\WorldBuilder\\WorldBuilder.csproj",
+        "projectUniqueName": "C:\\Users\\princ\\source\\repos\\WorldBuilder\\WorldBuilder\\WorldBuilder.csproj",
         "projectName": "WorldBuilder",
-        "projectPath": "c:\\Users\\princ\\source\\repos\\WorldBuilder\\WorldBuilder\\WorldBuilder.csproj",
+        "projectPath": "C:\\Users\\princ\\source\\repos\\WorldBuilder\\WorldBuilder\\WorldBuilder.csproj",
         "packagesPath": "C:\\Users\\princ\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\princ\\source\\repos\\WorldBuilder\\WorldBuilder\\obj\\",
+        "outputPath": "C:\\Users\\princ\\source\\repos\\WorldBuilder\\WorldBuilder\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
@@ -76,6 +76,8 @@
               "version": "[9.0.12, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
               "target": "Package",
               "version": "[9.0.14, )"
             },

@@ -1,0 +1,136 @@
+@model WorldBuilder.Models.Script
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Script</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScriptContent)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScriptContent)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScriptTitle)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScriptTitle)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScriptCatFK)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScriptCatFK)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScriptSubFK)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScriptSubFK)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScriptUpdateAt)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScriptUpdateAt)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScriptCreateAt)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScriptCreateAt)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScriptIsPublic)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScriptIsPublic)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScriptIsChar)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScriptIsChar)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScriptBoardX)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScriptBoardX)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScriptBoardY)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScriptBoardY)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScriptBoardColor)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScriptBoardColor)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DetailViews)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DetailViews)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScriptLikes)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScriptLikes)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScriptScriptScriptScriptOneFKNavigations)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScriptScriptScriptScriptOneFKNavigations)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScriptScriptScriptScriptTwoFKNavigations)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScriptScriptScriptScriptTwoFKNavigations)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PicScriptPicFKs)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PicScriptPicFKs)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScriptTagTagFKs)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScriptTagTagFKs)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.ScriptIDPK">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

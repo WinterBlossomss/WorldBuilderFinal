@@ -1,0 +1,87 @@
+@model WorldBuilder.Models.Picture
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Picture</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PicCaption)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PicCaption)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PicPath)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PicPath)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PicSubFK)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PicSubFK)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PicCatFK)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PicCatFK)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PicWorldFK)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PicWorldFK)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DetailViews)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DetailViews)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PicCatFKNavigation)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PicCatFKNavigation)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PicSubFKNavigation)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PicSubFKNavigation)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PicWorldFKNavigation)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PicWorldFKNavigation)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PicScriptScriptFKs)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PicScriptScriptFKs)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.PicIDPK">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

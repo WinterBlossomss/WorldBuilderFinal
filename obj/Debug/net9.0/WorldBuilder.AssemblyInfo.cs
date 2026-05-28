@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WorldBuilder")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dff0df53bdcfe7f2be7fd03ee5300d86af44abab")]
 [assembly: System.Reflection.AssemblyProductAttribute("WorldBuilder")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WorldBuilder")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

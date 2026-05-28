@@ -1,0 +1,131 @@
+@model IEnumerable<WorldBuilder.Models.Script>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptContent)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptCatFK)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptSubFK)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptUpdateAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptCreateAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptIsPublic)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptIsChar)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptBoardX)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptBoardY)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptBoardColor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DetailViews)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptLikes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptScriptScriptScriptOneFKNavigations)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptScriptScriptScriptTwoFKNavigations)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PicScriptPicFKs)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptTagTagFKs)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.ScriptContent)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptCatFK)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptSubFK)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptUpdateAt)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptCreateAt)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptIsPublic)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptIsChar)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptBoardX)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptBoardY)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptBoardColor)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.DetailViews)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptLikes)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptScriptScriptScriptOneFKNavigations)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptScriptScriptScriptTwoFKNavigations)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.PicScriptPicFKs)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptTagTagFKs)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ScriptIDPK">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ScriptIDPK">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ScriptIDPK">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

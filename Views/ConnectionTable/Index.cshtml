@@ -1,0 +1,47 @@
+@model IEnumerable<WorldBuilder.Models.ConnectionTable>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ConnDescr)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ConnUserFK)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScriptScripts)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.ConnDescr)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ConnUserFK)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ScriptScripts)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ConnIDPK">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ConnIDPK">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ConnIDPK">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
