@@ -23,8 +23,7 @@
 
             <!-- Hidden system fields -->
             <input type="hidden" asp-for="WorldUserFK" />
-            <input type="hidden" asp-for="WorldCreatedAt" />
-            <input type="hidden" asp-for="WorldUpdatedAt" />
+            <input type="hidden" asp-for="WorldCreatedAt" value="@DateTime.UtcNow.ToString("o")" />
 
             <!-- World name -->
             <div class="flex flex-col mb-5">
@@ -57,17 +56,18 @@
 
             <!-- Genre -->
             <div class="flex flex-col mb-5">
-                <div class="flex items-baseline justify-between mb-2">
-                    <label asp-for="WorldGenFK" class="flex items-center gap-1 text-sm font-semibold text-gray-800">
-                        Genre <span class="text-red-600 text-xs">*</span>
+                <div class="flex flex-row mb-2">
+                    <label asp-for="WorldGenFK" class="font-semibold text-sm text-gray-800">
+                        Genre <span class="text-red-500 text-xs">*</span>
                     </label>
+                    <div class="grow"></div>
                     <span class="text-xs text-gray-400">single select · drives discovery</span>
                 </div>
                 <!-- Hidden select keeps model binding and server-side validation -->
                 <select asp-for="WorldGenFK" asp-items="ViewBag.WorldGenFK" id="WorldGenFK" class="hidden"></select>
                 <!-- Visual chip list, driven by JS from the select options -->
                 <div id="genreWrap" class="flex flex-wrap gap-2 rounded-lg transition-all"></div>
-                <div id="genreError" class="hidden mt-1 items-center gap-1 text-xs text-red-600">
+                <div id="genreError" class="hidden mt-1 items-center gap-1 text-xs text-red-500">
                     <svg width="13" height="13" viewBox="0 0 13 13" fill="none" class="shrink-0">
                         <circle cx="6.5" cy="6.5" r="5.5" stroke="#dc2626" stroke-width="1.3" />
                         <line x1="6.5" y1="3.5" x2="6.5" y2="7.5" stroke="#dc2626" stroke-width="1.5" stroke-linecap="round" />
@@ -75,7 +75,7 @@
                     </svg>
                     Pick a genre to continue
                 </div>
-                <span asp-validation-for="WorldGenFK" class="mt-1 flex items-center gap-1 text-xs text-red-600"></span>
+                <span asp-validation-for="WorldGenFK" class="mt-1 flex items-center gap-1 text-xs text-red-500"></span>
             </div>
 
             <!-- Thumbnail -->
@@ -196,8 +196,8 @@
 
         // Genre chips: built from the server-rendered hidden <select>,
         // so ViewBag.WorldGenFK drives everything automatically.
-        const CHIP_OFF = 'px-4 py-1 rounded-full border border-gray-300 text-sm text-gray-500 bg-white cursor-pointer hover:border-gray-900 hover:text-gray-900 transition-colors';
-        const CHIP_ON  = 'px-4 py-1 rounded-full border border-gray-900 text-sm text-white bg-gray-900 font-medium cursor-pointer transition-colors';
+        const CHIP_OFF = 'px-4 py-1 rounded border border-sky-500 text-sm text-sky bg-white cursor-pointer hover:border-sky-500 hover:text-sky-500 transition-colors';
+        const CHIP_ON  = 'px-4 py-1 rounded border border-sky-500 text-sm text-black bg-sky-500 font-medium cursor-pointer transition-colors';
 
         [...genreSelect.options].forEach(opt => {
             if (!opt.value) return;

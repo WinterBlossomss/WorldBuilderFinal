@@ -1,4 +1,6 @@
 
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -7,10 +9,13 @@ using WorldBuilder.Models;
 public class WorldController : Controller
 {
     private readonly WorldBuilderDBContext _context;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public WorldController(WorldBuilderDBContext context)
+
+    public WorldController(UserManager<IdentityUser> userManager, WorldBuilderDBContext context)
     {
         _context = context;
+        _userManager = userManager;
     }
 
     // GET: WORLDS
@@ -52,7 +57,7 @@ public class WorldController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("WorldIDPK,WorldName,WorldDesc,WorldGenFK,WorldIsPublic,WorldUserFK,WorldCreatedAt,WorldUpdatedAt,WorldLikes,Categories,Pictures,Tags,WorldGenFKNavigation,WorldUserFKNavigation,WorldLikUserFKs")] World world)
+    public async Task<IActionResult> Create([Bind("WorldName,WorldDesc,WorldGenFK,WorldIsPublic,WorldUserFK,WorldCreatedAt,WorldGenFKNavigation")] World world)
     {
         if (ModelState.IsValid)
         {
