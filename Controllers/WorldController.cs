@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WorldBuilder.Models;
 
@@ -15,7 +16,10 @@ public class WorldController : Controller
     // GET: WORLDS
     public async Task<IActionResult> Index()    
     {
-        return View(await _context.Worlds.ToListAsync());
+        var worlds = await _context.Worlds
+            .Include(w => w.WorldGenFKNavigation)
+            .ToListAsync();
+        return View(worlds);
     }
 
     // GET: WORLDS/Details/5
@@ -39,6 +43,7 @@ public class WorldController : Controller
     // GET: WORLDS/Create
     public IActionResult Create()
     {
+        ViewData["WorldGenFK"] = new SelectList(_context.Genres, "GenreName", "GenreName");
         return View();
     }
 
