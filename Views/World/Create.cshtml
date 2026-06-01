@@ -140,7 +140,7 @@
                 </div>
                 <div class="p-4">
                     <div id="pvName" class="text-base font-bold mb-1 tracking-tight text-gray-300">Your world title</div>
-                    <div id="pvDesc" class="text-xs leading-relaxed mb-3 line-clamp-2 text-gray-300">Your description will appear here as you type.</div>
+                    <div id="pvDesc" class="text-xs text-wrap leading-relaxed mb-3 line-clamp-2 text-gray-300">Your description will appear here as you type.</div>
                     <div class="flex items-center justify-between">
                         <span id="pvGenre" class="px-2 py-0.5 rounded-full text-xs border border-gray-200 text-gray-400 bg-gray-100">No genre</span>
                         <div class="flex gap-3 text-xs text-gray-400"><span>♡ 0</span><span>0 scripts</span></div>
@@ -201,8 +201,8 @@
 
         // Genre chips: built from the server-rendered hidden <select>,
         // so ViewBag.WorldGenFK drives everything automatically.
-        const CHIP_OFF = 'px-4 py-1 rounded-full border border-sky-500 text-sm text-black bg-white cursor-pointer hover:border-sky-500 hover:text-red-500 transition-colors';
-        const CHIP_ON  = 'px-4 py-1 rounded-full border border-red-500 text-sm text-black bg-sky-500 font-medium cursor-pointer transition-colors';
+        const CHIP_OFF = 'px-4 py-1 rounded-full border border-sky-500 text-sm text-black bg-white cursor-pointer hover:text-sky-500 transition-colors';
+        const CHIP_ON  = 'px-4 py-1 rounded-full border border-sky-900 text-sm text-black bg-sky-500 font-medium cursor-pointer transition-colors';
 
         [...genreSelect.options].forEach(opt => {
             if (!opt.value) return;
@@ -359,8 +359,8 @@
 
             $('pvDesc').textContent = d || 'Your description will appear here as you type.';
             $('pvDesc').className = d
-                ? 'text-xs leading-relaxed mb-3 line-clamp-2 text-gray-500'
-                : 'text-xs leading-relaxed mb-3 line-clamp-2 text-gray-300';
+                ? 'text-xs text-wrap leading-relaxed mb-3 line-clamp-2 text-gray-500'
+                : 'text-xs text-wrap leading-relaxed mb-3 line-clamp-2 text-gray-300';
 
             const pvg = $('pvGenre');
             pvg.textContent = selText || 'No genre';
