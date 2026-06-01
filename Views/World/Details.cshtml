@@ -1,115 +1,182 @@
 @model WorldBuilder.Models.World
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Model?.WorldName ?? "World";
+    var cover = Model?.Pictures?.FirstOrDefault();
 }
 
-<h1>Details</h1>
+<div class="bg-wb-bg text-wb-text rounded-2xl border border-white/[0.07] overflow-hidden">
 
-<div>
-    <h4>World</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.WorldName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.WorldName)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.WorldDesc)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.WorldDesc)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.WorldGenFK)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.WorldGenFK)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.WorldIsPublic)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.WorldIsPublic)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.WorldUserFK)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.WorldUserFK)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.WorldCreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.WorldCreatedAt)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.WorldUpdatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.WorldUpdatedAt)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.WorldLikes)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.WorldLikes)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Categories)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Categories)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Pictures)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Pictures)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Tags)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Tags)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.WorldGenFKNavigation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.WorldGenFKNavigation)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.WorldUserFKNavigation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.WorldUserFKNavigation)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.WorldLikUserFKs)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.WorldLikUserFKs)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.WorldIDPK">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <!-- ── Cover / hero ── -->
+    <div class="relative">
+        <div class="aspect-[3/1] bg-wb-surf3 overflow-hidden flex items-center justify-center">
+            @if (cover != null && !string.IsNullOrEmpty(cover.PicPath))
+            {
+                <img src="@cover.PicPath" alt="@cover.PicCaption" class="w-full h-full object-cover" />
+            }
+            else
+            {
+                <svg width="60" height="60" viewBox="0 0 38 38" fill="none" class="opacity-20"><path d="M4 30L13 18l8 9 6-7 8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="27" cy="11" r="3.5" stroke="currentColor" stroke-width="1.5" /></svg>
+            }
+        </div>
+        <!-- gradient scrim -->
+        <div class="absolute inset-0 bg-gradient-to-t from-wb-bg via-wb-bg/40 to-transparent"></div>
+
+        <!-- breadcrumb floats over cover -->
+        <div class="absolute top-5 left-7 flex items-center gap-1.5 text-[12.5px]">
+            <a asp-action="Index" class="text-wb-subtle no-underline hover:text-wb-text transition-colors">Public Worlds</a>
+            <span class="text-wb-muted">›</span>
+            <span class="text-wb-text">@Model?.WorldName</span>
+        </div>
+
+        <!-- header content sits on bottom of cover -->
+        <div class="absolute bottom-0 left-0 right-0 px-7 pb-6">
+            <div class="flex items-end justify-between gap-6 flex-wrap">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2.5 mb-2.5">
+                        <span class="px-2.5 py-0.5 rounded-full text-[11.5px] font-semibold bg-wb-accent/[0.16] text-wb-accent border border-wb-accent/[0.25]">@Model?.WorldGenFK</span>
+                        @if (Model != null && Model.WorldIsPublic)
+                        {
+                            <span class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11.5px] font-medium bg-wb-surf2 text-wb-subtle border border-white/[0.10]">
+                                <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3" /><path d="M1.5 7h11M7 1.5Q10.5 7 7 12.5M7 1.5Q3.5 7 7 12.5" stroke="currentColor" stroke-width=".9" /></svg>
+                                Public
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11.5px] font-medium bg-wb-surf2 text-wb-subtle border border-white/[0.10]">
+                                <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><rect x="2" y="6" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3" /><path d="M4 6V4.5a3 3 0 016 0V6" stroke="currentColor" stroke-width="1.3" /></svg>
+                                Private
+                            </span>
+                        }
+                    </div>
+                    <h1 class="text-[40px] leading-[1.05] font-extrabold tracking-tight mb-2">@Model?.WorldName</h1>
+                    <div class="flex items-center gap-4 text-[12.5px] text-wb-subtle">
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-5 h-5 rounded-full bg-gradient-to-br from-wb-accent to-purple-500 flex items-center justify-center text-[10px] font-bold text-white">@(Model?.WorldUserFKNavigation?.UserInfoProN?.Substring(0,1) ?? "?")</span>
+                            @(Model?.WorldUserFKNavigation?.UserInfoProN ?? "Unknown")
+                        </span>
+                        <span class="text-wb-muted">·</span>
+                        <span>Created @Model?.WorldCreatedAt.ToString("MMM d, yyyy")</span>
+                        @if (Model?.WorldUpdatedAt != null)
+                        {
+                            <span class="text-wb-muted">·</span>
+                            <span>Updated @Model.WorldUpdatedAt.Value.ToString("MMM d, yyyy")</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2.5 shrink-0">
+                    <span class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-wb-surf border border-white/[0.10] text-[13px] text-wb-subtle">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 13.5S2 9.8 2 5.9A3.2 3.2 0 018 4a3.2 3.2 0 016 1.9C14 9.8 8 13.5 8 13.5Z" stroke="#e05c3a" stroke-width="1.4" stroke-linejoin="round" /></svg>
+                        <span class="font-semibold text-wb-text">@(Model?.WorldLikes ?? 0)</span>
+                    </span>
+                    <a asp-action="Edit" asp-route-id="@Model?.WorldIDPK" class="inline-flex items-center px-4 py-2 rounded-lg border border-white/[0.13] bg-wb-surf text-wb-text text-[13px] font-medium no-underline cursor-pointer hover:border-wb-accent transition-colors">Edit world</a>
+                    <a href="#" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-wb-accent text-white text-[13px] font-bold no-underline cursor-pointer hover:bg-wb-accentH transition-colors">Open workspace →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Body ── -->
+    <div class="px-7 pt-7 pb-10">
+
+        <!-- Description -->
+        @if (!string.IsNullOrEmpty(Model?.WorldDesc))
+        {
+            <p class="text-[15px] leading-relaxed text-wb-subtle max-w-3xl mb-8">@Model.WorldDesc</p>
+        }
+
+        <!-- Stat strip -->
+        <div class="grid grid-cols-4 gap-3 mb-10">
+            <div class="rounded-xl bg-wb-surf border border-white/[0.08] px-4 py-3.5">
+                <div class="text-[26px] font-extrabold tracking-tight leading-none mb-1">@(Model?.Categories?.Count ?? 0)</div>
+                <div class="text-[12px] text-wb-muted">Categories</div>
+            </div>
+            <div class="rounded-xl bg-wb-surf border border-white/[0.08] px-4 py-3.5">
+                <div class="text-[26px] font-extrabold tracking-tight leading-none mb-1">@(Model?.Tags?.Count ?? 0)</div>
+                <div class="text-[12px] text-wb-muted">Tags</div>
+            </div>
+            <div class="rounded-xl bg-wb-surf border border-white/[0.08] px-4 py-3.5">
+                <div class="text-[26px] font-extrabold tracking-tight leading-none mb-1">@(Model?.Pictures?.Count ?? 0)</div>
+                <div class="text-[12px] text-wb-muted">Pictures</div>
+            </div>
+            <div class="rounded-xl bg-wb-surf border border-white/[0.08] px-4 py-3.5">
+                <div class="text-[26px] font-extrabold tracking-tight leading-none mb-1">@(Model?.WorldLikes ?? 0)</div>
+                <div class="text-[12px] text-wb-muted">Likes</div>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-[18px] font-bold tracking-tight">Categories</h2>
+            <a href="#" class="text-[13px] text-wb-accent no-underline hover:text-wb-accentH transition-colors">+ Add category</a>
+        </div>
+        @if (Model?.Categories != null && Model.Categories.Any())
+        {
+            <div class="grid grid-cols-3 gap-3 mb-10">
+                @foreach (var cat in Model.Categories)
+                {
+                    <div class="group relative rounded-xl bg-wb-surf border border-white/[0.08] p-4 hover:border-white/[0.18] transition-colors cursor-pointer overflow-hidden">
+                        <span class="absolute top-0 left-0 bottom-0 w-1" style="background-color:@cat.CatColor"></span>
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color:@cat.CatColor"></span>
+                            <span class="text-[14px] font-semibold text-wb-text truncate">@cat.CatName</span>
+                        </div>
+                        <p class="text-[12.5px] text-wb-muted leading-snug line-clamp-2 mb-2.5">@(string.IsNullOrEmpty(cat.CatDescription) ? "No description yet." : cat.CatDescription)</p>
+                        <div class="text-[11.5px] text-wb-subtle">@(cat.SubCategories?.Count ?? 0) subcategories · @(cat.Pictures?.Count ?? 0) pictures</div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="rounded-xl border border-dashed border-white/[0.12] bg-wb-surf/50 px-6 py-10 text-center mb-10">
+                <p class="text-[13.5px] text-wb-muted mb-3">No categories yet. Categories organize your scripts, characters and lore.</p>
+                <a href="#" class="inline-flex items-center px-4 py-2 rounded-lg bg-wb-accent text-white text-[13px] font-bold no-underline hover:bg-wb-accentH transition-colors">Create first category</a>
+            </div>
+        }
+
+        <!-- Tags -->
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-[18px] font-bold tracking-tight">Tags</h2>
+        </div>
+        @if (Model?.Tags != null && Model.Tags.Any())
+        {
+            <div class="flex flex-wrap gap-2 mb-10">
+                @foreach (var tag in Model.Tags)
+                {
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12.5px] font-medium border" style="color:@tag.TagColor;border-color:@(tag.TagColor)55;background-color:@(tag.TagColor)1a">
+                        <span class="w-2 h-2 rounded-full" style="background-color:@tag.TagColor"></span>
+                        @tag.TagName
+                    </span>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-[13px] text-wb-muted mb-10">No tags yet.</p>
+        }
+
+        <!-- Picture gallery -->
+        @if (Model?.Pictures != null && Model.Pictures.Count > 1)
+        {
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-[18px] font-bold tracking-tight">Gallery</h2>
+            </div>
+            <div class="grid grid-cols-4 gap-3">
+                @foreach (var pic in Model.Pictures)
+                {
+                    <div class="relative rounded-xl overflow-hidden border border-white/[0.08] aspect-square bg-wb-surf3 group">
+                        <img src="@pic.PicPath" alt="@pic.PicCaption" class="w-full h-full object-cover" />
+                        @if (!string.IsNullOrEmpty(pic.PicCaption))
+                        {
+                            <div class="absolute bottom-0 left-0 right-0 px-2.5 py-1.5 text-[11px] text-wb-text bg-gradient-to-t from-wb-bg/90 to-transparent">@pic.PicCaption</div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
 </div>
