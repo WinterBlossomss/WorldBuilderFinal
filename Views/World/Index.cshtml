@@ -1,113 +1,16 @@
 @model IEnumerable<WorldBuilder.Models.World>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Browse Worlds";
+
+    var worlds = (Model ?? Enumerable.Empty<WorldBuilder.Models.World>()).ToList();
+    var total = worlds.Count;
+    var newest = worlds.OrderByDescending(w => w.WorldCreatedAt).Take(8).ToList();
+    var loved = worlds.OrderByDescending(w => w.WorldLikes ?? 0).Take(8).ToList();
+    var byGenre = worlds.Where(w => !string.IsNullOrEmpty(w.WorldGenFK))
+                        .GroupBy(w => w.WorldGenFK)
+                        .OrderByDescending(g => g.Count());
+
+    var chips = (ViewData["Genres"] as IEnumerable<string> ?? Enumerable.Empty<string>()).ToList();
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.WorldName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.WorldDesc)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.WorldGenFK)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.WorldIsPublic)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.WorldUserFK)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.WorldCreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.WorldUpdatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.WorldLikes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Categories)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Pictures)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Tags)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.WorldGenFKNavigation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.WorldUserFKNavigation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.WorldLikUserFKs)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.WorldName)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.WorldDesc)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.WorldGenFK)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.WorldIsPublic)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.WorldUserFK)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.WorldCreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.WorldUpdatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.WorldLikes)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Categories)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Pictures)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Tags)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.WorldGenFKNavigation)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.WorldUserFKNavigation)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.WorldLikUserFKs)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.WorldIDPK">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.WorldIDPK">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.WorldIDPK">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>

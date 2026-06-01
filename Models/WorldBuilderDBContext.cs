@@ -8,9 +8,9 @@ namespace WorldBuilder.Models;
 
 public partial class WorldBuilderDBContext : DbContext
 {
-    public WorldBuilderDBContext()
-    {
-    }
+    //public WorldBuilderDBContext()
+    //{
+    //}
 
     public WorldBuilderDBContext(DbContextOptions<WorldBuilderDBContext> options)
         : base(options)

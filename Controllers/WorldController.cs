@@ -24,6 +24,7 @@ public class WorldController : Controller
         var worlds = await _context.Worlds
             .Include(w => w.WorldGenFKNavigation)
             .ToListAsync();
+        ViewData["Genres"] = new SelectList(_context.Genres, "GenreName", "GenreName");
         return View(worlds);
     }
 
@@ -46,6 +47,7 @@ public class WorldController : Controller
     }
 
     // GET: WORLDS/Create
+    [Authorize]
     public IActionResult Create()
     {
         ViewData["WorldGenFK"] = new SelectList(_context.Genres, "GenreName", "GenreName");

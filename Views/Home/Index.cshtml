@@ -1,17 +1,119 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
-}
 
-<section class="text-center px-5 py-12 space-y-5">
-    <h1 class="text-black font-bold text-5xl">
-        Build your own world
-    </h1>
-    <p>
-        Create, explore and share immersive worlds and character across every genre - fantasy, sci-fi, modern, and beyond.
-    </p>
-    <div class="flex flex-row flex-wrap justify-center">
-        <a asp-controller="World" asp-action="Create" class="bg-sky-700 hover:bg-blue-500 rounded p-4 text-white">+ Start building</a>
-        <a asp-controller="World" asp-action="Index" class="bg-sky-700 hover:bg-blue-500 rounded p-4 ms-4 text-white">Explore worlds</a>
+    var genres = (ViewData["Genres"] as SelectList)?.Select(i => i.Text).ToList()
+             ?? new List<string>();
+}
+<div class="flex flex-col gap-5"> 
+    <section class="text-center px-5 py-12 space-y-5">
+        <h1 class="text-black font-bold text-5xl">
+            Build your own world
+        </h1>
+        <p>
+            Create, explore and share immersive worlds and character across every genre - fantasy, sci-fi, modern, and beyond.
+        </p>
+        <div class="flex flex-row flex-wrap justify-center">
+            <a asp-controller="World" asp-action="Create" class="bg-sky-700 hover:bg-blue-500 rounded p-4 text-white">+ Start building</a>
+            <a asp-controller="World" asp-action="Index" class="bg-sky-700 hover:bg-blue-500 rounded p-4 ms-4 text-white">Explore worlds</a>
+        </div>
+
+    </section>
+
+    <div class="grid grid-cols-4 border-y-2 mb-5 divide-x-2">
+        <div class="p-5 m-3 text-center">
+            <h1 class="text-4xl">12 480</h1>
+            <div class="font-normal pt-2 italic">Worlds created</div>
+        </div>
+        <div class="p-5 m-3 text-center">
+            <h1 class="text-4xl">84 300</h1>
+            <div class="font-normal italic">Characters</div>
+        </div>
+        <div class="p-5 m-3 text-center">
+            <h1 class="text-4xl">5,920</h1>
+            <div class="font-normal italic">Active builders</div>
+        </div>
+        <div class="p-5 m-3 text-center">
+            <h1 class="text-4xl">320</h1>
+            <div class="font-normal italic">Genres & Tags</div>
+        </div>
     </div>
 
-</section>
+    <div class="flex p-5 border-2 border-black divide-x-2 scrollbar-thin overflow-auto">
+        <div class="flex-1 p-5 font-semibold text-center flex items-center justify-center">
+            Popular Worlds
+        </div>
+        @foreach (var gen in genres)
+        {
+            <div class="flex-1 flex-col  text-center flex items-center justify-center">
+                <div class="font-light">
+                    @gen
+                </div>
+                <div>
+                    World
+                </div>
+                <div>
+                    World
+                </div>
+                <div>
+                    World
+                </div>
+            </div>
+        }
+    </div>
+
+    <div>
+        Meet the most popular characters
+    </div>
+    <div class="flex">
+        <!-- Hidden select for state management -->
+        <select id="genreSelect" class="hidden">
+            <option value="">All</option>
+            @foreach (var gen in genres)
+            {
+                <option value="@gen">@gen</option>
+            }
+        </select>
+
+        <!-- Chip container -->
+        <div id="genreChips" class="flex flex-row flex-wrap gap-2">
+            <button type="button" data-value="" class="px-4 py-1 rounded-full border text-sm cursor-pointer transition-colors">
+                All
+            </button>
+            @foreach (var gen in genres)
+            {
+                <button type="button" data-value="@gen" class="px-4 py-1 rounded-full border text-sm cursor-pointer transition-colors">
+                    @gen
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    const CHIP_OFF = 'px-4 py-1 rounded-full border border-sky-500 text-sm text-black bg-white cursor-pointer hover:text-red-500 transition-colors';
+    const CHIP_ON  = 'px-4 py-1 rounded-full border border-red-500 text-sm text-black bg-sky-500 font-medium cursor-pointer transition-colors';
+
+    const genreSelect = document.getElementById('genreSelect');
+    const genreChips  = document.getElementById('genreChips');
+
+    function renderChips() {
+        [...genreChips.querySelectorAll('button')].forEach(btn => {
+            btn.className = (btn.dataset.value === genreSelect.value) ? CHIP_ON : CHIP_OFF;
+        });
+    }
+
+    genreChips.addEventListener('click', e => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        genreSelect.value = btn.dataset.value;
+        renderChips();
+        filterWorlds(genreSelect.value);
+    });
+
+    function filterWorlds(genre) {
+        // TODO:Hook into worlds display logic here - fetch/filter the Popular Worlds section by genre
+        console.log('Filter by:', genre || 'All');
+    }
+
+    renderChips(); 
+</script>
