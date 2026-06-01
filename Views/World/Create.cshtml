@@ -196,8 +196,8 @@
 
         // Genre chips: built from the server-rendered hidden <select>,
         // so ViewBag.WorldGenFK drives everything automatically.
-        const CHIP_OFF = 'px-4 py-1 rounded border border-sky-500 text-sm text-sky bg-white cursor-pointer hover:border-sky-500 hover:text-sky-500 transition-colors';
-        const CHIP_ON  = 'px-4 py-1 rounded border border-sky-500 text-sm text-black bg-sky-500 font-medium cursor-pointer transition-colors';
+        const CHIP_OFF = 'px-4 py-1 rounded-full border border-sky-500 text-sm text-black bg-white cursor-pointer hover:border-sky-500 hover:text-red-500 transition-colors';
+        const CHIP_ON  = 'px-4 py-1 rounded-full border border-red-500 text-sm text-black bg-sky-500 font-medium cursor-pointer transition-colors';
 
         [...genreSelect.options].forEach(opt => {
             if (!opt.value) return;
