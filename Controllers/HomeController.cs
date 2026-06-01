@@ -20,7 +20,7 @@ namespace WorldBuilder.Controllers
         public IActionResult Index()
         {
             ViewData["Genres"] = _context.Genres
-                .Select(g => g.GenreName)   // ← use your actual property name
+                .Select(g => g.GenreName)   
                 .ToList();
             return View();
         }
