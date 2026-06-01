@@ -181,6 +181,11 @@
     }
     <script>
         const $ = id => document.getElementById(id);
+
+        ['dragover', 'drop'].forEach(evt =>
+            window.addEventListener(evt, e => e.preventDefault())
+        );
+
         const slugify = n => n.trim().toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').slice(0, 48) || null;
 
         const nameInput   = $('WorldName');
@@ -229,12 +234,13 @@
         }
 
         // Thumbnail drop zone
-        function buildDropZone(dragging) {
+        const DZ_IDLE   = 'aspect-video flex flex-col items-center justify-center gap-3 text-center py-8 px-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-200 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 transition-colors';
+        const DZ_ACTIVE = 'aspect-video flex flex-col items-center justify-center gap-3 text-center py-8 px-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-900 bg-gray-100 transition-colors';
+
+        function buildDropZone() {
             thumbZone.innerHTML = '';
             const dz = document.createElement('div');
-            dz.className = dragging
-                ? 'aspect-video flex flex-col items-center justify-center gap-3 text-center py-8 px-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-900 bg-gray-100 transition-colors p-5' 
-                : 'aspect-video flex flex-col items-center justify-center gap-3 text-center py-8 px-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-200 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 transition-colors';
+            dz.className = DZ_IDLE;
             dz.innerHTML = `
                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" class="opacity-30 mt-5">
                     <path d="M5 30L14 19l8 9 6-7 9 9" stroke="#111" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -243,13 +249,26 @@
                     <line x1="16" y1="9" x2="24" y2="9" stroke="#111" stroke-width="1.6" stroke-linecap="round"/>
                 </svg>
                 <div>
-                    <div class="text-sm font-medium text-gray-800 mb-1">${dragging ? 'Drop to upload' : 'Drag &amp; drop an image here'}</div>
+                    <div class="text-sm font-medium text-gray-800 mb-1">Drag &amp; drop an image here</div>
                     <div class="text-xs text-gray-400">or <span class="text-gray-900 underline cursor-pointer">browse files</span> · JPG / PNG · 16:9 · max 5 MB</div>
                 </div>`;
+
             dz.addEventListener('click', () => fileInput.click());
-            dz.addEventListener('dragover', e => { e.preventDefault(); buildDropZone(true); });
-            dz.addEventListener('dragleave', () => buildDropZone(false));
-            dz.addEventListener('drop', e => { e.preventDefault(); processFile(e.dataTransfer.files); });
+
+            // Don't rebuild — just toggle the active styling on the existing element.
+            dz.addEventListener('dragenter', e => { e.preventDefault(); e.stopPropagation(); dz.className = DZ_ACTIVE; });
+            dz.addEventListener('dragover',  e => { e.preventDefault(); e.stopPropagation(); dz.className = DZ_ACTIVE; });
+            dz.addEventListener('dragleave', e => {
+                e.preventDefault(); e.stopPropagation();
+                // Ignore leave events fired when moving onto a child element.
+                if (!dz.contains(e.relatedTarget)) dz.className = DZ_IDLE;
+            });
+            dz.addEventListener('drop', e => {
+                e.preventDefault(); e.stopPropagation();
+                dz.className = DZ_IDLE;
+                processFile(e.dataTransfer.files);
+            });
+
             thumbZone.appendChild(dz);
         }
 
@@ -267,7 +286,7 @@
             $('clearBtn').addEventListener('click', () => { revoke(); thumb = null; fileInput.value = ''; renderThumb(); renderPreview(); });
         }
 
-        function renderThumb() { thumb ? buildFilledZone() : buildDropZone(false); }
+        function renderThumb() { thumb ? buildFilledZone() : buildDropZone(); }
         function revoke() { if (thumb) URL.revokeObjectURL(thumb.url); }
         function processFile(files) {
             const f = files && files[0];

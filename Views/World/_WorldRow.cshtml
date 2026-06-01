@@ -1,0 +1,28 @@
+@model (string Title, string Count, List<WorldBuilder.Models.World> Items)
+
+@* A horizontally-scrolling "carousel" row of world cards.
+   Tailwind utility classes only. Used by World/Index.cshtml. *@
+
+<div class="mb-7">
+    <div class="flex items-baseline justify-between mb-2.5">
+        <div class="font-['Caveat'] text-[26px] font-bold flex items-baseline gap-2">
+            <span class="whitespace-nowrap">@Model.Title</span>
+            <span class="text-[14px] text-[#a89f8e] font-['Kalam'] whitespace-nowrap">@Model.Count</span>
+        </div>
+        <div class="flex items-center gap-2 text-[12px]">
+            <span class="text-[#a89f8e]">see all</span>
+            <div class="w-7 h-7 rounded-full border-[1.5px] border-[#1a1a1a] flex items-center justify-center bg-[#f7f3ea]">
+                <svg width="10" height="10" viewBox="0 0 10 10"><path d="M7 1 L 3 5 L 7 9" stroke="#1a1a1a" stroke-width="1.6" fill="none" /></svg>
+            </div>
+            <div class="w-7 h-7 rounded-full border-[1.5px] border-[#1a1a1a] flex items-center justify-center bg-[#f7f3ea]">
+                <svg width="10" height="10" viewBox="0 0 10 10"><path d="M3 1 L 7 5 L 3 9" stroke="#1a1a1a" stroke-width="1.6" fill="none" /></svg>
+            </div>
+        </div>
+    </div>
+    <div class="flex gap-4 overflow-x-auto pb-2">
+        @foreach (var w in Model.Items)
+        {
+            <partial name="_WorldCard" model="w" />
+        }
+    </div>
+</div>

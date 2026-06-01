@@ -25,6 +25,7 @@
 	<ItemGroup>
 	  <Folder Include="Views\Admin\" />
 	  <Folder Include="Views\Admin\" />
+	  <Folder Include="wwwroot\images\" />
 	</ItemGroup>
 	<Target Name="Tailwind" BeforeTargets="Build;PrepareForPublish">
 
