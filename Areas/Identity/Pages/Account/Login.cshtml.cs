@@ -2,18 +2,20 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
+using WorldBuilder.Models;
 
 namespace WorldBuilder.Areas.Identity.Pages.Account
 {
@@ -21,11 +23,13 @@ namespace WorldBuilder.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly WorldBuilderDBContext _context;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, WorldBuilderDBContext context)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _context = context;
         }
 
         /// <summary>
@@ -115,6 +119,23 @@ namespace WorldBuilder.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+
+
+                    var user = await _signInManager.UserManager.GetUserAsync(User);
+                    var userId = user?.Id;
+
+                    if (userId != null)
+                    {
+                        var exists = await _context.UserInfos
+                            .AnyAsync(u => u.UserInfoUserIDFK == userId);
+
+                        if (!exists)
+                        {
+                            _context.UserInfos.Add(new UserInfo { UserInfoUserIDFK = userId, UserInfoCreatedAt = DateTime.UtcNow });
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

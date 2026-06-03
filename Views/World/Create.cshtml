@@ -33,7 +33,7 @@
                         <span class="text-red-500">&nbsp;*</span>
                     </label>
                     <div class="grow"></div>
-                    <span id="nameCount" class="text-xs text-gray-400">0 / 100</span>
+                    <span id="nameCount" class="text-xs text-gray-400 ">0 / 100</span>
                 </div>
                 <input asp-for="WorldName" id="WorldName" maxlength="100"
                        class="block w-full border border-gray-300 rounded-lg px-3 py-2 text-xl font-semibold tracking-tight text-gray-900 placeholder-gray-300 outline-none focus:border-gray-900 transition-colors"
@@ -46,9 +46,9 @@
                 <div class="flex flex-row mb-2">
                     <label asp-for="WorldDesc" class="font-semibold text-sm text-gray-800">Short Description</label>
                     <div class="grow"></div>
-                    <span id="descCount" class="text-xs text-gray-400">0 / 500</span>
+                    <span id="descCount" class="text-xs text-gray-400">0 / 200</span>
                 </div>
-                <input asp-for="WorldDesc" id="WorldDesc" maxlength="500"
+                <input asp-for="WorldDesc" id="WorldDesc" maxlength="200"
                        class="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-300 outline-none focus:border-gray-900 transition-colors"
                        placeholder="Pitch your world in 1-2 sentences" />
                 <span asp-validation-for="WorldDesc" class="mt-1 flex items-center gap-1 text-xs text-red-600"></span>
@@ -85,7 +85,7 @@
                     <span class="text-xs text-gray-400">16:9 recommended · max 5 MB</span>
                 </div>
                 <div id="thumbZone" class="border border-gray-200 rounded-lg p-4 bg-gray-50"></div>
-                <input type="file" id="fileInput" name="pictures" accept="image/*" class="hidden" />
+                <input asp-for="UploadedPicture" type="file" id="fileInput" accept="image/*" class="hidden" />
             </div>
 
             <!-- Visibility -->
@@ -124,7 +124,7 @@
     </div>
     <div class="m-5"></div>
     <!-- Right: live preview -->
-    <div class="sticky top-16">
+    <div class="sticky shrink-0 w-96 top-16">
         <div class="border border-gray-200 rounded-xl p-5 bg-gray-50">
             <div class="flex items-center justify-between mb-4">
                 <span class="text-sm font-semibold">Live preview</span>
@@ -139,8 +139,8 @@
                     </svg>
                 </div>
                 <div class="p-4">
-                    <div id="pvName" class="text-base font-bold mb-1 tracking-tight text-gray-300">Your world title</div>
-                    <div id="pvDesc" class="text-xs text-wrap leading-relaxed mb-3 line-clamp-2 text-gray-300">Your description will appear here as you type.</div>
+                    <div id="pvName" class="text-base text-ellipsis font-bold mb-1 tracking-tight text-pretty text-gray-300">Your world title</div>
+                    <div id="pvDesc" class="text-xs text-wrap leading-relaxed mb-3 line-clamp-2 text-pretty text-gray-300 overflow-hidden text-truncate">Your description will appear here as you type.</div>
                     <div class="flex items-center justify-between">
                         <span id="pvGenre" class="px-2 py-0.5 rounded-full text-xs border border-gray-200 text-gray-400 bg-gray-100">No genre</span>
                         <div class="flex gap-3 text-xs text-gray-400"><span>♡ 0</span><span>0 scripts</span></div>
@@ -331,7 +331,7 @@
         });
         nameInput.addEventListener('blur', () => { touched.name = true; validate(); });
         descInput.addEventListener('input', () => {
-            $('descCount').textContent = descInput.value.length + ' / 500';
+            $('descCount').textContent = descInput.value.length + ' / 200';
             renderPreview();
         });
 
@@ -354,13 +354,13 @@
 
             $('pvName').textContent = n || 'Your world title';
             $('pvName').className = n
-                ? 'text-base font-bold mb-1 tracking-tight text-gray-900'
-                : 'text-base font-bold mb-1 tracking-tight text-gray-300';
+                ? 'text-base text-ellipsis font-bold mb-1 tracking-tight text-gray-900'
+                : 'text-base text-ellipsis font-bold mb-1 tracking-tight text-gray-300';
 
             $('pvDesc').textContent = d || 'Your description will appear here as you type.';
             $('pvDesc').className = d
-                ? 'text-xs text-wrap leading-relaxed mb-3 line-clamp-2 text-gray-500'
-                : 'text-xs text-wrap leading-relaxed mb-3 line-clamp-2 text-gray-300';
+                ? 'text-xs text-ellipsis text-wrap leading-relaxed mb-3 line-clamp-2 text-gray-500'
+                : 'text-xs text-ellipsis text-wrap leading-relaxed mb-3 line-clamp-2 text-gray-300';
 
             const pvg = $('pvGenre');
             pvg.textContent = selText || 'No genre';
@@ -394,7 +394,7 @@
 
         // Init: restore counts if the server round-tripped values after a validation failure
         $('nameCount').textContent = nameInput.value.length + ' / 100';
-        $('descCount').textContent = descInput.value.length + ' / 500';
+        $('descCount').textContent = descInput.value.length + ' / 200';
         renderGenres();
         renderThumb();
         renderVis();

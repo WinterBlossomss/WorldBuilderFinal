@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using WorldBuilder.Models;
 
 public class WorldController : Controller
@@ -61,10 +62,14 @@ public class WorldController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("WorldName,WorldDesc,WorldGenFK,WorldIsPublic,WorldUserFK,WorldCreatedAt,WorldGenFKNavigation")] World world)
+    public async Task<IActionResult> Create([Bind("WorldName,WorldDesc,WorldGenFK,WorldIsPublic,WorldCreatedAt,UploadedPicture")] World world)
     {
         if (ModelState.IsValid)
         {
+            string id = _userManager.GetUserId(User);
+            var user = await _context.UserInfos
+            .FirstOrDefaultAsync(m => m.UserInfoUserIDFK == id);
+            world.WorldUserFK = user.UserInfoIDPK;
             _context.Add(world);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
