@@ -1,99 +1,421 @@
 @model WorldBuilder.Models.World
+@using WorldBuilder.Models
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit World";
+    var cover = Model.Pictures?.FirstOrDefault(p => p.PicWorldFK == Model.WorldIDPK);
+    var coverUrl = (cover != null && !string.IsNullOrEmpty(cover.PicPath)) ? Url.Content("~/" + cover.PicPath) : null;
+    var coverName = coverUrl != null ? System.IO.Path.GetFileName(cover.PicPath) : null;
 }
 
-<h1>Edit</h1>
-
-<h4>World</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="WorldIDPK" />
-            <div class="form-group">
-                <label asp-for="WorldName" class="control-label"></label>
-                <input asp-for="WorldName" class="form-control" />
-                <span asp-validation-for="WorldName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WorldDesc" class="control-label"></label>
-                <input asp-for="WorldDesc" class="form-control" />
-                <span asp-validation-for="WorldDesc" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WorldGenFK" class="control-label"></label>
-                <input asp-for="WorldGenFK" class="form-control" />
-                <span asp-validation-for="WorldGenFK" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WorldIsPublic" class="control-label"></label>
-                <input asp-for="WorldIsPublic" class="form-check-input" />
-                <span asp-validation-for="WorldIsPublic" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WorldUserFK" class="control-label"></label>
-                <input asp-for="WorldUserFK" class="form-control" />
-                <span asp-validation-for="WorldUserFK" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WorldCreatedAt" class="control-label"></label>
-                <input asp-for="WorldCreatedAt" class="form-control" />
-                <span asp-validation-for="WorldCreatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WorldUpdatedAt" class="control-label"></label>
-                <input asp-for="WorldUpdatedAt" class="form-control" />
-                <span asp-validation-for="WorldUpdatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WorldLikes" class="control-label"></label>
-                <input asp-for="WorldLikes" class="form-control" />
-                <span asp-validation-for="WorldLikes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Categories" class="control-label"></label>
-                <input asp-for="Categories" class="form-control" />
-                <span asp-validation-for="Categories" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Pictures" class="control-label"></label>
-                <input asp-for="Pictures" class="form-control" />
-                <span asp-validation-for="Pictures" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tags" class="control-label"></label>
-                <input asp-for="Tags" class="form-control" />
-                <span asp-validation-for="Tags" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WorldGenFKNavigation" class="control-label"></label>
-                <input asp-for="WorldGenFKNavigation" class="form-control" />
-                <span asp-validation-for="WorldGenFKNavigation" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WorldUserFKNavigation" class="control-label"></label>
-                <input asp-for="WorldUserFKNavigation" class="form-control" />
-                <span asp-validation-for="WorldUserFKNavigation" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WorldLikUserFKs" class="control-label"></label>
-                <input asp-for="WorldLikUserFKs" class="form-control" />
-                <span asp-validation-for="WorldLikUserFKs" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+<!-- Breadcrumb -->
+<div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
+    <a asp-controller="World" asp-action="Index" class="text-gray-500 hover:text-gray-900 no-underline transition-colors">Public Worlds</a>
+    <span>›</span>
+    <a asp-controller="World" asp-action="Details" asp-route-id="@Model.WorldIDPK" class="text-gray-500 hover:text-gray-900 no-underline transition-colors">@Model.WorldName</a>
+    <span>›</span>
+    <span class="text-gray-700">Edit</span>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<h1 class="text-4xl font-bold">Edit World</h1>
+<p class="text-sm text-gray-500 mt-2 mb-2">Update the basics. Scripts, characters and lore live in the workspace.</p>
+
+<div class="flex flex-row">
+
+    <!-- Left: form -->
+    <div>
+        <form asp-action="Edit" asp-route-id="@Model.WorldIDPK" enctype="multipart/form-data" id="editForm" novalidate>
+            <div asp-validation-summary="ModelOnly" class="mb-4 p-3 rounded-lg border border-red-200 bg-red-50 text-sm text-red-600"></div>
+
+            <!-- Hidden system fields -->
+            <input type="hidden" asp-for="WorldIDPK" />
+            <!-- Cover-removal flag (set to true by the Clear button) -->
+            <input type="hidden" name="RemoveCover" id="removeCover" value="false" />
+
+            <!-- World name -->
+            <div class="flex flex-col mb-5">
+                <div class="flex flex-row mb-2">
+                    <label asp-for="WorldName" class="font-semibold flex flex-row text-sm text-gray-800">
+                        Name
+                        <span class="text-red-500">&nbsp;*</span>
+                    </label>
+                    <div class="grow"></div>
+                    <span id="nameCount" class="text-xs text-gray-400 ">0 / 100</span>
+                </div>
+                <input asp-for="WorldName" id="WorldName" maxlength="100"
+                       class="block w-full border border-gray-300 rounded-lg px-3 py-2 text-xl font-semibold tracking-tight text-gray-900 placeholder-gray-300 outline-none focus:border-gray-900 transition-colors"
+                       placeholder="e.g. Ashenmoor" autocomplete="off" autofocus />
+                <span asp-validation-for="WorldName" class="mt-1 flex items-center gap-1 text-xs text-red-600"></span>
+            </div>
+
+            <!-- Description -->
+            <div class="flex flex-col mb-5">
+                <div class="flex flex-row mb-2">
+                    <label asp-for="WorldDesc" class="font-semibold text-sm text-gray-800">Short Description</label>
+                    <div class="grow"></div>
+                    <span id="descCount" class="text-xs text-gray-400">0 / 200</span>
+                </div>
+                <input asp-for="WorldDesc" id="WorldDesc" maxlength="200"
+                       class="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-300 outline-none focus:border-gray-900 transition-colors"
+                       placeholder="Pitch your world in 1-2 sentences" />
+                <span asp-validation-for="WorldDesc" class="mt-1 flex items-center gap-1 text-xs text-red-600"></span>
+            </div>
+
+            <!-- Genre -->
+            <div class="flex flex-col mb-5">
+                <div class="flex flex-row mb-2">
+                    <label asp-for="WorldGenFK" class="font-semibold text-sm text-gray-800">
+                        Genre <span class="text-red-500 text-xs">*</span>
+                    </label>
+                    <div class="grow"></div>
+                    <span class="text-xs text-gray-400">single select · drives discovery</span>
+                </div>
+                <!-- Hidden select keeps model binding and server-side validation -->
+                <select asp-for="WorldGenFK" asp-items="ViewBag.WorldGenFK" id="WorldGenFK" class="hidden"></select>
+                <!-- Visual chip list, driven by JS from the select options -->
+                <div id="genreWrap" class="flex flex-wrap gap-2 rounded-lg transition-all"></div>
+                <div id="genreError" class="hidden mt-1 items-center gap-1 text-xs text-red-500">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" class="shrink-0">
+                        <circle cx="6.5" cy="6.5" r="5.5" stroke="#dc2626" stroke-width="1.3" />
+                        <line x1="6.5" y1="3.5" x2="6.5" y2="7.5" stroke="#dc2626" stroke-width="1.5" stroke-linecap="round" />
+                        <circle cx="6.5" cy="9.8" r=".8" fill="#dc2626" />
+                    </svg>
+                    Pick a genre to continue
+                </div>
+                <span asp-validation-for="WorldGenFK" class="mt-1 flex items-center gap-1 text-xs text-red-500"></span>
+            </div>
+
+            <!-- Thumbnail -->
+            <div class="mb-6">
+                <div class="flex items-baseline justify-between mb-2">
+                    <span class="text-sm font-semibold text-gray-800">Thumbnail</span>
+                    <span class="text-xs text-gray-400">16:9 recommended · max 5 MB</span>
+                </div>
+                <div id="thumbZone" class="border border-gray-200 rounded-lg p-4 bg-gray-50"></div>
+                <input asp-for="UploadedPicture" type="file" id="fileInput" accept="image/*" class="hidden" />
+            </div>
+
+            <!-- Visibility -->
+            <div class="mb-8">
+                <span class="block text-sm font-semibold text-gray-800 mb-2">Visibility</span>
+                <input type="hidden" name="WorldIsPublic" id="WorldIsPublic" value="@(Model.WorldIsPublic ? "true" : "false")" />
+                <div id="visToggle" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 bg-gray-50 cursor-pointer select-none hover:border-gray-400 transition-colors">
+                    <div id="visTrack" class="relative w-10 h-6 rounded-full shrink-0 border bg-gray-900 border-gray-900 transition-all duration-200">
+                        <div id="visThumb" class="absolute top-1 left-5 w-4 h-4 rounded-full bg-white transition-all duration-200"></div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 text-sm font-semibold text-gray-900 mb-0.5">
+                            <span id="visTitle">Public world</span>
+                            <span id="visIcon" class="text-gray-500"></span>
+                        </div>
+                        <div id="visDesc" class="text-xs text-gray-500 leading-snug">
+                            Anyone can find, read and like this world. Listed in the public worlds browser.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="flex items-center justify-between pt-5 border-t border-gray-200">
+                <span class="text-xs text-gray-400"><span class="text-red-600">*</span> Required fields</span>
+                <div class="flex gap-2">
+                    <a asp-action="Details" asp-route-id="@Model.WorldIDPK" class="inline-flex items-center px-4 py-2 rounded-lg border border-gray-200 bg-transparent text-gray-500 text-sm no-underline hover:border-gray-400 hover:text-gray-900 transition-colors">Cancel</a>
+                    <button type="submit" id="submitBtn"
+                            class="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-gray-900 text-white text-sm font-semibold hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                        Save changes →
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="m-5"></div>
+    <!-- Right: live preview -->
+    <div class="sticky shrink-0 w-96 top-16">
+        <div class="border border-gray-200 rounded-xl p-5 bg-gray-50">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-sm font-semibold">Live preview</span>
+                <span class="text-xs text-gray-400">how it shows in browse</span>
+            </div>
+
+            <div class="rounded-lg overflow-hidden border border-gray-200 bg-white">
+                <div id="pvThumb" class="aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                    <svg width="36" height="36" viewBox="0 0 38 38" fill="none" class="opacity-20">
+                        <path d="M4 30L13 18l8 9 6-7 8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <circle cx="27" cy="11" r="3.5" stroke="currentColor" stroke-width="1.5" />
+                    </svg>
+                </div>
+                <div class="p-4">
+                    <div id="pvName" class="text-base text-ellipsis font-bold mb-1 tracking-tight text-pretty text-gray-300">Your world title</div>
+                    <div id="pvDesc" class="text-xs text-wrap leading-relaxed mb-3 line-clamp-2 text-pretty text-gray-300 overflow-hidden text-truncate">Your description will appear here as you type.</div>
+                    <div class="flex items-center justify-between">
+                        <span id="pvGenre" class="px-2 py-0.5 rounded-full text-xs border border-gray-200 text-gray-400 bg-gray-100">No genre</span>
+                        <div class="flex gap-3 text-xs text-gray-400"><span>♡ @(Model.WorldLikes ?? 0)</span><span>0 scripts</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 pt-4 flex flex-col gap-2 border-t border-gray-200 text-xs">
+                <div class="flex items-center gap-2 text-gray-500">
+                    <span class="w-14 shrink-0">URL</span>
+                    <span id="pvUrl" class="text-gray-400">—</span>
+                </div>
+                <div class="flex items-center gap-2 text-gray-500">
+                    <span class="w-14 shrink-0">Genre</span>
+                    <span id="pvGenreMeta" class="text-gray-400">—</span>
+                </div>
+                <div class="flex items-center gap-2 text-gray-500">
+                    <span class="w-14 shrink-0">Visibility</span>
+                    <span class="flex items-center gap-1 font-medium text-gray-900">
+                        <span id="pvVisIcon" class="text-gray-500"></span>
+                        <span id="pvVis">Public</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="mt-4 rounded-lg p-4 text-xs text-gray-500 leading-relaxed bg-white border border-gray-200">
+                <span class="font-semibold text-gray-700 block mb-0.5">Heads up:</span>
+                Changes go live as soon as you save. Removing the thumbnail can't be undone.
+            </div>
+        </div>
+    </div>
+
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Existing cover, injected by the server (null when the world has no picture)
+        const EXISTING_THUMB = @Html.Raw(coverUrl != null
+                    ? "{ url: '" + coverUrl + "', name: '" + coverName + "', existing: true }"
+                    : "null");
+
+        const $ = id => document.getElementById(id);
+
+        ['dragover', 'drop'].forEach(evt =>
+            window.addEventListener(evt, e => e.preventDefault())
+        );
+
+        const slugify = n => n.trim().toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').slice(0, 48) || null;
+
+        const nameInput   = $('WorldName');
+        const descInput   = $('WorldDesc');
+        const genreSelect = $('WorldGenFK');
+        const publicInput = $('WorldIsPublic');
+        const genreWrap   = $('genreWrap');
+        const fileInput   = $('fileInput');
+        const thumbZone   = $('thumbZone');
+        const removeCover = $('removeCover');
+
+        // Start from the existing cover (if any) so it shows immediately.
+        let thumb = EXISTING_THUMB;
+        const touched = { name: false, genre: false };
+
+        const CHIP_OFF = 'px-4 py-1 rounded-full border border-sky-500 text-sm text-black bg-white cursor-pointer hover:text-sky-500 transition-colors';
+        const CHIP_ON  = 'px-4 py-1 rounded-full border border-sky-900 text-sm text-black bg-sky-500 font-medium cursor-pointer transition-colors';
+
+        [...genreSelect.options].forEach(opt => {
+            if (!opt.value) return;
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = opt.text;
+            btn.dataset.value = opt.value;
+            btn.className = opt.selected ? CHIP_ON : CHIP_OFF;
+            btn.addEventListener('click', () => {
+                genreSelect.value = genreSelect.value !== opt.value ? opt.value : '';
+                touched.genre = true;
+                renderGenres();
+                validate();
+                renderPreview();
+            });
+            genreWrap.appendChild(btn);
+        });
+
+        function renderGenres() {
+            [...genreWrap.children].forEach(b => {
+                b.className = (b.dataset.value === genreSelect.value && genreSelect.value) ? CHIP_ON : CHIP_OFF;
+            });
+            const err = touched.genre && !genreSelect.value;
+            genreWrap.className = err
+                ? 'flex flex-wrap gap-2 rounded-lg border border-dashed border-red-400 p-3 transition-all'
+                : 'flex flex-wrap gap-2 rounded-lg transition-all';
+            $('genreError').classList.toggle('hidden', !err);
+            $('genreError').classList.toggle('flex', err);
+        }
+
+        // Thumbnail drop zone
+        const DZ_IDLE   = 'aspect-video flex flex-col items-center justify-center gap-3 text-center py-8 px-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-200 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 transition-colors';
+        const DZ_ACTIVE = 'aspect-video flex flex-col items-center justify-center gap-3 text-center py-8 px-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-900 bg-gray-100 transition-colors';
+
+        function buildDropZone() {
+            thumbZone.innerHTML = '';
+            const dz = document.createElement('div');
+            dz.className = DZ_IDLE;
+            dz.innerHTML = `
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" class="opacity-30 mt-5">
+                    <path d="M5 30L14 19l8 9 6-7 9 9" stroke="#111" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="29" cy="12" r="3" stroke="#111" stroke-width="1.4"/>
+                    <line x1="20" y1="5" x2="20" y2="13" stroke="#111" stroke-width="1.6" stroke-linecap="round"/>
+                    <line x1="16" y1="9" x2="24" y2="9" stroke="#111" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+                <div>
+                    <div class="text-sm font-medium text-gray-800 mb-1">Drag &amp; drop an image here</div>
+                    <div class="text-xs text-gray-400">or <span class="text-gray-900 underline cursor-pointer">browse files</span> · JPG / PNG · 16:9 · max 5 MB</div>
+                </div>`;
+
+            dz.addEventListener('click', () => fileInput.click());
+            dz.addEventListener('dragenter', e => { e.preventDefault(); e.stopPropagation(); dz.className = DZ_ACTIVE; });
+            dz.addEventListener('dragover',  e => { e.preventDefault(); e.stopPropagation(); dz.className = DZ_ACTIVE; });
+            dz.addEventListener('dragleave', e => {
+                e.preventDefault(); e.stopPropagation();
+                if (!dz.contains(e.relatedTarget)) dz.className = DZ_IDLE;
+            });
+            dz.addEventListener('drop', e => {
+                e.preventDefault(); e.stopPropagation();
+                dz.className = DZ_IDLE;
+                processFile(e.dataTransfer.files);
+            });
+
+            thumbZone.appendChild(dz);
+        }
+
+        function buildFilledZone() {
+            thumbZone.innerHTML = `
+                <div class="relative rounded-lg overflow-hidden border border-gray-200 aspect-video">
+                    <img src="${thumb.url}" alt="Thumbnail" class="w-full h-full object-cover block" />
+                    <div class="absolute top-2 right-2 flex gap-1">
+                        <button type="button" id="replaceBtn" class="px-3 py-1 rounded text-xs font-medium cursor-pointer bg-white border border-gray-200 text-gray-800 hover:border-gray-900 transition-colors">Replace</button>
+                        <button type="button" id="clearBtn" class="px-2 py-1 rounded text-xs cursor-pointer bg-white border border-gray-200 text-gray-500 hover:border-gray-900 transition-colors">✕</button>
+                    </div>
+                    <div class="absolute bottom-2 left-2 rounded px-2 py-0.5 text-xs text-gray-600 bg-white border border-gray-200">${thumb.name}</div>
+                </div>`;
+            $('replaceBtn').addEventListener('click', () => fileInput.click());
+            $('clearBtn').addEventListener('click', () => {
+                revoke();
+                thumb = null;
+                fileInput.value = '';
+                removeCover.value = 'true';   // tell the server to drop the existing cover on save
+                renderThumb();
+                renderPreview();
+            });
+        }
+
+        function renderThumb() { thumb ? buildFilledZone() : buildDropZone(); }
+        function revoke() { if (thumb && typeof thumb.url === 'string' && thumb.url.startsWith('blob:')) URL.revokeObjectURL(thumb.url); }
+        function processFile(files) {
+            const f = files && files[0];
+            if (!f || !f.type.startsWith('image/')) { buildDropZone(); return; }
+            revoke();
+            thumb = { url: URL.createObjectURL(f), name: f.name };
+            removeCover.value = 'false';      // a new upload supersedes any removal
+            renderThumb();
+            renderPreview();
+        }
+        fileInput.addEventListener('change', e => processFile(e.target.files));
+
+        // Visibility toggle
+        const GLOBE = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 7h11M7 1.5Q10.5 7 7 12.5M7 1.5Q3.5 7 7 12.5" stroke="currentColor" stroke-width=".9"/></svg>`;
+        const LOCK  = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="2" y="6" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 6V4.5a3 3 0 016 0V6" stroke="currentColor" stroke-width="1.3"/></svg>`;
+
+        $('visToggle').addEventListener('click', () => {
+            publicInput.value = publicInput.value === 'true' ? 'false' : 'true';
+            renderVis();
+            renderPreview();
+        });
+
+        function renderVis() {
+            const pub = publicInput.value === 'true';
+            $('visTrack').className = pub
+                ? 'relative w-10 h-6 rounded-full shrink-0 border bg-gray-900 border-gray-900 transition-all duration-200'
+                : 'relative w-10 h-6 rounded-full shrink-0 border bg-gray-200 border-gray-300 transition-all duration-200';
+            $('visThumb').className = pub
+                ? 'absolute top-1 left-5 w-4 h-4 rounded-full bg-white transition-all duration-200'
+                : 'absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-all duration-200';
+            $('visTitle').textContent = pub ? 'Public world' : 'Private world';
+            $('visIcon').innerHTML = pub ? GLOBE : LOCK;
+            $('visDesc').textContent = pub
+                ? 'Anyone can find, read and like this world. Listed in the public worlds browser.'
+                : 'Only you and people you invite can see this world. Hidden from browse and search.';
+        }
+
+        // Character counters
+        nameInput.addEventListener('input', () => {
+            $('nameCount').textContent = nameInput.value.length + ' / 100';
+            validate();
+            renderPreview();
+        });
+        nameInput.addEventListener('blur', () => { touched.name = true; validate(); });
+        descInput.addEventListener('input', () => {
+            $('descCount').textContent = descInput.value.length + ' / 200';
+            renderPreview();
+        });
+
+        // Validation
+        function validate() {
+            const nameErr = touched.name && !nameInput.value.trim();
+            nameInput.className = nameErr
+                ? 'block w-full border border-red-500 rounded-lg px-3 py-2 text-xl font-semibold tracking-tight text-gray-900 placeholder-gray-300 outline-none transition-colors'
+                : 'block w-full border border-gray-300 rounded-lg px-3 py-2 text-xl font-semibold tracking-tight text-gray-900 placeholder-gray-300 outline-none focus:border-gray-900 transition-colors';
+            const can = nameInput.value.trim().length > 0 && !!genreSelect.value;
+            $('submitBtn').disabled = !can;
+            return can;
+        }
+
+        // Live preview
+        function renderPreview() {
+            const n = nameInput.value.trim();
+            const d = descInput.value.trim();
+            const selText = genreSelect.value ? genreSelect.options[genreSelect.selectedIndex].text : null;
+
+            $('pvName').textContent = n || 'Your world title';
+            $('pvName').className = n
+                ? 'text-base text-ellipsis font-bold mb-1 tracking-tight text-gray-900'
+                : 'text-base text-ellipsis font-bold mb-1 tracking-tight text-gray-300';
+
+            $('pvDesc').textContent = d || 'Your description will appear here as you type.';
+            $('pvDesc').className = d
+                ? 'text-xs text-ellipsis text-wrap leading-relaxed mb-3 line-clamp-2 text-gray-500'
+                : 'text-xs text-ellipsis text-wrap leading-relaxed mb-3 line-clamp-2 text-gray-300';
+
+            const pvg = $('pvGenre');
+            pvg.textContent = selText || 'No genre';
+            pvg.className = selText
+                ? 'px-2 py-0.5 rounded-full text-xs border border-gray-900 text-white bg-gray-900 font-medium'
+                : 'px-2 py-0.5 rounded-full text-xs border border-gray-200 text-gray-400 bg-gray-100';
+
+            $('pvThumb').innerHTML = thumb
+                ? `<img src="${thumb.url}" alt="" class="w-full h-full object-cover" />`
+                : `<svg width="36" height="36" viewBox="0 0 38 38" fill="none" class="opacity-20"><path d="M4 30L13 18l8 9 6-7 8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="27" cy="11" r="3.5" stroke="currentColor" stroke-width="1.5"/></svg>`;
+
+            const slug = slugify(nameInput.value);
+            $('pvUrl').textContent = slug ? '/worlds/' + slug : '—';
+            $('pvUrl').className = slug ? 'text-gray-900 font-medium' : 'text-gray-400';
+
+            $('pvGenreMeta').textContent = selText || '—';
+            $('pvGenreMeta').className = selText ? 'text-gray-900 font-medium' : 'text-gray-400';
+
+            const pub = publicInput.value === 'true';
+            $('pvVisIcon').innerHTML = pub ? GLOBE : LOCK;
+            $('pvVis').textContent = pub ? 'Public' : 'Private';
+        }
+
+        // Client-side submit guard (server validation still runs)
+        $('editForm').addEventListener('submit', e => {
+            touched.name = true;
+            touched.genre = true;
+            renderGenres();
+            if (!validate()) e.preventDefault();
+        });
+
+        // Init: pre-fill counts, chips, thumbnail and preview from the existing values
+        $('nameCount').textContent = nameInput.value.length + ' / 100';
+        $('descCount').textContent = descInput.value.length + ' / 200';
+        renderGenres();
+        renderThumb();
+        renderVis();
+        validate();
+        renderPreview();
+    </script>
 }

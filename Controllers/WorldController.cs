@@ -194,54 +194,112 @@ public class WorldController : Controller
     }
 
     // GET: WORLDS/Edit/5
-    public async Task<IActionResult> Edit(int? worldidpk)
+    public async Task<IActionResult> Edit(int? id)
     {
-        if (worldidpk == null)
+        if (id == null)
         {
             return NotFound();
         }
 
-        var world = await _context.Worlds.FindAsync(worldidpk);
+        var world = await _context.Worlds
+            .Include(w => w.Pictures)                  
+            .FirstOrDefaultAsync(w => w.WorldIDPK == id);
+
         if (world == null)
         {
             return NotFound();
         }
+
+        // Pre-select the world's current genre in the dropdown (4th arg = selected value)
+        ViewData["WorldGenFK"] = new SelectList(_context.Genres, "GenreName", "GenreName", world.WorldGenFK);
+
         return View(world);
     }
 
     // POST: WORLDS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? worldidpk, [Bind("WorldIDPK,WorldName,WorldDesc,WorldGenFK,WorldIsPublic,WorldUserFK,WorldCreatedAt,WorldUpdatedAt,WorldLikes,Categories,Pictures,Tags,WorldGenFKNavigation,WorldUserFKNavigation,WorldLikUserFKs")] World world)
+    public async Task<IActionResult> Edit(int id,
+        [Bind("WorldIDPK,WorldName,WorldDesc,WorldGenFK,WorldIsPublic,UploadedPicture")] World input,
+        bool RemoveCover)
     {
-        if (worldidpk != world.WorldIDPK)
+        if (id != input.WorldIDPK)
         {
             return NotFound();
         }
 
-        if (ModelState.IsValid)
+        // Load the tracked entity (with its pictures) and update only the editable fields.
+        // This avoids over-posting and keeps WorldUserFK / WorldCreatedAt / WorldLikes intact.
+        var world = await _context.Worlds
+            .Include(w => w.Pictures)
+            .FirstOrDefaultAsync(w => w.WorldIDPK == id);
+
+        if (world == null)
         {
-            try
+            return NotFound();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            // Re-show the form with what the user typed, but keep the real pictures for the thumbnail.
+            world.WorldName = input.WorldName;
+            world.WorldDesc = input.WorldDesc;
+            world.WorldGenFK = input.WorldGenFK;
+            world.WorldIsPublic = input.WorldIsPublic;
+            ViewData["WorldGenFK"] = new SelectList(_context.Genres, "GenreName", "GenreName", input.WorldGenFK);
+            return View(world);
+        }
+
+        world.WorldName = input.WorldName;
+        world.WorldDesc = input.WorldDesc;
+        world.WorldGenFK = input.WorldGenFK;
+        world.WorldIsPublic = input.WorldIsPublic;
+        world.WorldUpdatedAt = DateTime.Today;
+
+        var cover = world.Pictures.FirstOrDefault(p => p.PicWorldFK == world.WorldIDPK);
+
+        if (input.UploadedPicture != null)
+        {
+            string[] fileParts = input.UploadedPicture.FileName.Split('.');
+            if (fileParts.Length == 2)
             {
-                _context.Update(world);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!WorldExists(world.WorldIDPK))
+                string newName = Math.Abs(Guid.NewGuid().GetHashCode()).ToString() + "." + fileParts[1];
+                string wwwroot = Path.Combine(Path.GetFullPath("wwwroot"), "Images", newName);
+
+                using (var stream = new FileStream(wwwroot, FileMode.Create, FileAccess.Write))
                 {
-                    return NotFound();
+                    await input.UploadedPicture.CopyToAsync(stream);
+                }
+
+                if (cover != null)
+                {
+                    cover.PicPath = "Images/" + newName;     
                 }
                 else
                 {
-                    throw;
+                    world.Pictures.Add(new Picture { PicPath = "Images/" + newName, PicWorldFK = world.WorldIDPK });
                 }
             }
-            return RedirectToAction(nameof(Index));
         }
-        return View(world);
+        else if (RemoveCover && cover != null)
+        {
+            _context.Pictures.Remove(cover);                 
+        }
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!WorldExists(world.WorldIDPK))
+            {
+                return NotFound();
+            }
+            throw;
+        }
+
+        return RedirectToAction(nameof(Details), new { id = world.WorldIDPK });
     }
 
     // GET: WORLDS/Delete/5
