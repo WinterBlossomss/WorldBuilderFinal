@@ -20,29 +20,77 @@ public class WorldController : Controller
     }
 
     // GET: WORLDS
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index(string q, string genre, string sort)
     {
-        var worlds = await _context.Worlds
+        // Public worlds only — this is the public browser.
+        // (Remove the WorldIsPublic line if you also want private worlds listed here.)
+        var query = _context.Worlds
             .Include(w => w.WorldGenFKNavigation)
-            .ToListAsync();
-        ViewData["Genres"] = _context.Genres
-                .Select(g => g.GenreName)
-                .ToList();
-        ViewData["Pictures"] = _context.Pictures
-            .ToList();
+            .Include(w => w.WorldUserFKNavigation)
+            .Include(w => w.Categories)
+            .Where(w => w.WorldIsPublic)
+            .AsQueryable();
+
+        // Full unfiltered count, for the "X of Y match" subtitle.
+        var totalAll = await query.CountAsync();
+
+        // Genre filter
+        if (!string.IsNullOrWhiteSpace(genre))
+        {
+            query = query.Where(w => w.WorldGenFK == genre);
+        }
+
+        // Search across title, description, genre, and creator handle
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            var term = q.Trim();
+            query = query.Where(w =>
+                w.WorldName.Contains(term) ||
+                (w.WorldDesc != null && w.WorldDesc.Contains(term)) ||
+                w.WorldGenFK.Contains(term) ||
+                (w.WorldUserFKNavigation != null &&
+                 w.WorldUserFKNavigation.UserInfoProN != null &&
+                 w.WorldUserFKNavigation.UserInfoProN.Contains(term)));
+        }
+
+        // Sort
+        query = sort switch
+        {
+            "newest" => query.OrderByDescending(w => w.WorldCreatedAt),
+            "name" => query.OrderBy(w => w.WorldName),
+            _ => query.OrderByDescending(w => w.WorldLikes ?? 0), // "loved" (default)
+        };
+
+        var worlds = await query.ToListAsync();
+
+        ViewData["Genres"] = _context.Genres.Select(g => g.GenreName).ToList();
+        ViewData["Pictures"] = _context.Pictures.ToList();
+
+        // Echo the active filter state back to the view
+        ViewData["Query"] = q;
+        ViewData["Genre"] = genre;
+        ViewData["Sort"] = sort;
+        ViewData["TotalAll"] = totalAll;
+
         return View(worlds);
     }
 
     // GET: WORLDS/Details/5
-    public async Task<IActionResult> Details(int? worldidpk)
+    public async Task<IActionResult> Details(int? id)
     {
-        if (worldidpk == null)
+        if (id == null)
         {
             return NotFound();
         }
+        ViewData["Pictures"] = _context.Pictures.ToList();
 
         var world = await _context.Worlds
-            .FirstOrDefaultAsync(m => m.WorldIDPK == worldidpk);
+            .Include(w => w.WorldGenFKNavigation)
+            .Include(w => w.WorldUserFKNavigation)
+            .Include(w => w.Categories)
+            .Include(w => w.Pictures)
+            .FirstOrDefaultAsync(m => m.WorldIDPK == id);
+
         if (world == null)
         {
             return NotFound();

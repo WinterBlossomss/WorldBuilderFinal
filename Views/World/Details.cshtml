@@ -2,7 +2,8 @@
 
 @{
     ViewData["Title"] = Model?.WorldName ?? "World";
-    var cover = Model?.Pictures?.FirstOrDefault();
+    var allPictures = (ViewData["Pictures"] as List<Picture>)?.ToList();
+    var cover = allPictures?.Where(p => p.PicWorldFK == Model.WorldIDPK).FirstOrDefault();
 }
 
 <div class="bg-wb-bg text-wb-text rounded-2xl border border-white/[0.07] overflow-hidden">
