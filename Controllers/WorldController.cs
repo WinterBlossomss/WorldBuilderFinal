@@ -82,19 +82,57 @@ public class WorldController : Controller
         {
             return NotFound();
         }
-        ViewData["Pictures"] = _context.Pictures.ToList();
 
         var world = await _context.Worlds
             .Include(w => w.WorldGenFKNavigation)
             .Include(w => w.WorldUserFKNavigation)
-            .Include(w => w.Categories)
             .Include(w => w.Pictures)
+            .Include(w => w.Tags)
+            .Include(w => w.Categories).ThenInclude(c => c.SubCategories)
+            .Include(w => w.Categories).ThenInclude(c => c.Pictures)
             .FirstOrDefaultAsync(m => m.WorldIDPK == id);
 
         if (world == null)
         {
             return NotFound();
         }
+
+        // Is the current viewer the owner of this world?
+        bool isOwner = false;
+        if (User?.Identity?.IsAuthenticated == true)
+        {
+            var uid = _userManager.GetUserId(User);
+            var me = await _context.UserInfos
+                .FirstOrDefaultAsync(u => u.UserInfoUserIDFK == uid);
+            isOwner = me != null && me.UserInfoIDPK == world.WorldUserFK;
+        }
+        ViewData["IsOwner"] = isOwner;
+
+        // Other public worlds by the same creator (excluding this one)
+        ViewData["MoreByAuthor"] = await _context.Worlds
+            .Where(w => w.WorldUserFK == world.WorldUserFK
+                     && w.WorldIDPK != world.WorldIDPK
+                     && w.WorldIsPublic)
+            .OrderByDescending(w => w.WorldLikes ?? 0)
+            .Take(5)
+            .ToListAsync();
+
+        // More public worlds in the same genre (excluding this one) — bottom carousel
+        ViewData["MoreInGenre"] = await _context.Worlds
+            .Include(w => w.WorldUserFKNavigation)
+            .Include(w => w.Categories)
+            .Where(w => w.WorldGenFK == world.WorldGenFK
+                     && w.WorldIDPK != world.WorldIDPK
+                     && w.WorldIsPublic)
+            .OrderByDescending(w => w.WorldLikes ?? 0)
+            .Take(10)
+            .ToListAsync();
+
+        ViewData["GenreCount"] = await _context.Worlds
+            .CountAsync(w => w.WorldGenFK == world.WorldGenFK && w.WorldIsPublic);
+
+        // Needed by the _WorldCard partial used in the bottom carousel
+        ViewData["Pictures"] = await _context.Pictures.ToListAsync();
 
         return View(world);
     }

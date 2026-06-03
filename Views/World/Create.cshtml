@@ -22,7 +22,6 @@
             <div asp-validation-summary="ModelOnly" class="mb-4 p-3 rounded-lg border border-red-200 bg-red-50 text-sm text-red-600"></div>
 
             <!-- Hidden system fields -->
-            <input type="hidden" asp-for="WorldUserFK" />
             <input type="hidden" asp-for="WorldCreatedAt" value="@DateTime.UtcNow.ToString("o")" />
 
             <!-- World name -->
