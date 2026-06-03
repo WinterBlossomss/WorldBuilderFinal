@@ -28,6 +28,8 @@ public class WorldController : Controller
         ViewData["Genres"] = _context.Genres
                 .Select(g => g.GenreName)
                 .ToList();
+        ViewData["Pictures"] = _context.Pictures
+            .ToList();
         return View(worlds);
     }
 
@@ -70,6 +72,34 @@ public class WorldController : Controller
             var user = await _context.UserInfos
             .FirstOrDefaultAsync(m => m.UserInfoUserIDFK == id);
             world.WorldUserFK = user.UserInfoIDPK;
+
+
+            if(world.UploadedPicture != null)
+            {
+                string[] fileParts = world.UploadedPicture.FileName.Split('.');
+                if (fileParts.Length != 2)
+                {
+                    return View(world);
+                }
+
+                string newName = Math.Abs(Guid.NewGuid().GetHashCode()).ToString() + "." + fileParts[1];
+
+                var newPic = new Picture
+                {
+                    PicPath = "Images/" + newName,
+                };
+
+                string wwwroot = Path.Combine(Path.GetFullPath("wwwroot"), "Images", newName);
+
+                using (var stream = new FileStream(wwwroot, FileMode.Create, FileAccess.Write))
+                {
+                    await world.UploadedPicture.CopyToAsync(stream);
+                }
+
+                world.Pictures.Add(newPic);
+            }
+
+
             _context.Add(world);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

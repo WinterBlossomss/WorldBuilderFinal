@@ -1,9 +1,8 @@
 @model WorldBuilder.Models.World
 
-@* World card — hand-drawn "Default browse" aesthetic. Tailwind utility classes only.
-   Renders a single World as a striped-thumb card linking to its Details page. *@
 @{
-    var cover = Model.Pictures?.FirstOrDefault();
+    var allPictures = (ViewData["Pictures"] as List<Picture>)?.ToList(); 
+    var cover = allPictures?.Where(p => p.PicWorldFK == Model.WorldIDPK).FirstOrDefault();
     var author = Model.WorldUserFKNavigation?.UserInfoProN;
 }
 
