@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WorldBuilder.Models;
 
 namespace WorldBuilder.Controllers
@@ -18,9 +19,24 @@ namespace WorldBuilder.Controllers
             _userManager = userManager;
         }
         // GET: BuilderViewController
-        public ActionResult Index()
+        public async Task<ActionResult> Index(int id)
         {
-            return View();
+            BuilderView builderView = new BuilderView();
+
+            var world = await _context.Worlds
+            .Include(w => w.WorldGenFKNavigation)
+            .Include(w => w.WorldUserFKNavigation)
+            .Include(w => w.Pictures)
+            .Include(w => w.Tags)
+            .Include(w => w.Categories).ThenInclude(c => c.SubCategories).ThenInclude(sc => sc.Pictures)
+            .Include(w => w.Categories).ThenInclude(c => c.Pictures)
+            .FirstOrDefaultAsync(m => m.WorldIDPK == id);
+
+            builderView.SelectedWorld = world;
+
+
+
+            return View(builderView);
         }
 
         // GET: BuilderViewController/Details/5

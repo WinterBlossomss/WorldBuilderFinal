@@ -106,7 +106,7 @@
                 {
                     <a asp-action="Edit" asp-route-id="@Model?.WorldIDPK"
                        class="inline-flex items-center bg-[#1a1a1a] text-[#f7f3ea] px-5 py-2.5 rounded-md text-[14px] font-bold no-underline">Edit world</a>
-                    <a href="#"
+                    <a asp-controller="BuilderView" asp-action="Index" asp-route-id="@Model?.WorldIDPK"
                        class="inline-flex items-center border-[1.5px] border-[#1a1a1a] px-4 py-2.5 rounded-md text-[14px] font-bold no-underline hover:bg-[#1a1a1a] hover:text-[#f7f3ea] transition-colors">Open workspace →</a>
                 }
                 else
