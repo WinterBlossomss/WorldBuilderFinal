@@ -210,7 +210,6 @@ public class WorldController : Controller
             return NotFound();
         }
 
-        // Pre-select the world's current genre in the dropdown (4th arg = selected value)
         ViewData["WorldGenFK"] = new SelectList(_context.Genres, "GenreName", "GenreName", world.WorldGenFK);
 
         return View(world);
@@ -228,8 +227,7 @@ public class WorldController : Controller
             return NotFound();
         }
 
-        // Load the tracked entity (with its pictures) and update only the editable fields.
-        // This avoids over-posting and keeps WorldUserFK / WorldCreatedAt / WorldLikes intact.
+        
         var world = await _context.Worlds
             .Include(w => w.Pictures)
             .FirstOrDefaultAsync(w => w.WorldIDPK == id);
@@ -241,7 +239,6 @@ public class WorldController : Controller
 
         if (!ModelState.IsValid)
         {
-            // Re-show the form with what the user typed, but keep the real pictures for the thumbnail.
             world.WorldName = input.WorldName;
             world.WorldDesc = input.WorldDesc;
             world.WorldGenFK = input.WorldGenFK;

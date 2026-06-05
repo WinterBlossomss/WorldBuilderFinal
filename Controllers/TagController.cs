@@ -47,10 +47,12 @@ public class TagController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("TagIDPK,TagName,TagDescription,TagColor,TagWorldFK,TagUserFK,TagUserFKNavigation,TagWorldFKNavigation,ScriptTagScriptFKs")] Tag tag)
+    public async Task<IActionResult> Create([Bind("TagName,TagDescription,TagColor")] Tag tag)
     {
         if (ModelState.IsValid)
         {
+            //Need to put world fk and user fk manually
+
             _context.Add(tag);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
