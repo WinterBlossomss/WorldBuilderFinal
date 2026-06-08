@@ -24,17 +24,36 @@ namespace WorldBuilder.Controllers
             BuilderView builderView = new BuilderView();
 
             var world = await _context.Worlds
-            .Include(w => w.WorldGenFKNavigation)
-            .Include(w => w.WorldUserFKNavigation)
-            .Include(w => w.Pictures)
-            .Include(w => w.Tags)
-            .Include(w => w.Categories).ThenInclude(c => c.SubCategories).ThenInclude(sc => sc.Pictures)
-            .Include(w => w.Categories).ThenInclude(c => c.Pictures)
-            .FirstOrDefaultAsync(m => m.WorldIDPK == id);
+                .Include(w => w.WorldGenFKNavigation)
+                .Include(w => w.WorldUserFKNavigation)
+                .Include(w => w.Pictures)
+                .Include(w => w.Tags)
+                .Include(w => w.Categories).ThenInclude(c => c.SubCategories).ThenInclude(sc => sc.Pictures)
+                .Include(w => w.Categories).ThenInclude(c => c.Pictures)
+                .FirstOrDefaultAsync(m => m.WorldIDPK == id);
+
+            if (world == null)
+                return NotFound();
+
+            // CatIDPK is int, ScriptCatFK is string -> convert before querying
+            var categoryIds = world.Categories
+                .Select(c => c.CatIDPK.ToString())
+                .ToList();
+
+            var scripts = await _context.Scripts
+                .Where(s => categoryIds.Contains(s.ScriptCatFK))
+                .ToListAsync();
 
             builderView.SelectedWorld = world;
+            builderView.Categories = world.Categories;
+            builderView.Tags = world.Tags;
+            builderView.Scripts = scripts;                 // <-- assign it
 
-
+            builderView.WorldGenre = world.WorldGenFKNavigation;
+            builderView.TotalScripts = scripts.Count;       // use the queried list
+            builderView.TotalCategories = world.Categories?.Count ?? 0;
+            builderView.TotalSubCategories = world.Categories?.SelectMany(c => c.SubCategories).Count() ?? 0;
+            builderView.TotalTags = world.Tags?.Count ?? 0;
 
             return View(builderView);
         }

@@ -1,9 +1,137 @@
-﻿@model WorldBuilder.Models.World
+﻿@model WorldBuilder.Models.BuilderView
 @using WorldBuilder.Models
 @{
-
+    var status = Model.SelectedWorld.WorldIsPublic ? "public" : "private";
 }
+<div class="flex flex-col h-screen">
+    <div class="grid grid-cols-3 items-center border-y gap-2">
+        <div class="ms-3">
+            <div class="flex flex-col">
+                <h1 class="text-2xl pt-5 text-left truncate">
+                    @Model.SelectedWorld.WorldName
+                </h1>
+            </div>
+            <div class="pt-2 pb-5 indent-8">
+                your world * @Model.WorldGenre.GenreName * @Model.TotalScripts scripts * @status
+            </div>
+        </div>
+        <div class=" flex flex-row justify-center">
+            <div class="inline-flex items-center gap-1 rounded-full border border-stone-800 bg-stone-50 p-1.5">
+                <button data-view="board"
+                        class="view-btn flex items-center gap-2 rounded-full px-4 py-1.5 text-sm transition-colors">
+                    <span>⊹</span> Board
+                </button>
+                <button data-view="cards"
+                        class="view-btn flex items-center gap-2 rounded-full px-4 py-1.5 text-sm transition-colors">
+                    <span>▦</span> Cards
+                </button>
+                <button data-view="outline"
+                        class="view-btn flex items-center gap-2 rounded-full px-4 py-1.5 text-sm transition-colors">
+                    <span>☰</span> Outline
+                </button>
+            </div>
+        </div>
+        <div class="flex flex-row-reverse gap-2 me-3">
+            <button class="bg-sky-500 text-white border rounded-xl p-3">
+                + New Script
+            </button>
+            
+            <button class="border border-sky-500 bg-white text-black border rounded-full p-3">
+                Settings
+            </button>
+            <select class="border border-sky-500 bg-white text-black border rounded-full p-3">
+                <option>Status</option>
+                <option>Public</option>
+                <option>Private</option>
+            </select>
+        </div>
+    </div>
+    <div class="flex flex-row flex-1 min-h-0">
+        <div class="border-r w-80 flex flex-col scrollable scroll-smooth">
+            <div class="flex flex-row items-center justify-between mt-2 me-5">
+                <h1 class="text-2xl indent-8">
+                    Scripts
+                </h1>
+                <button class="mt-1">
+                    @Model.TotalScripts
+                </button>
+            </div>
+            <div class="p-5 mx-5 mt-2 border rounded-xl border-dashed">
+                @if(Model.TotalScripts == 0)
+                {
+                    <div class="text-center">
+                        <p>no categories yet</p>
+                        <p>Categories hold sub-categories and scripts - whatever scheme fits your world!</p>
+                    </div>
+                    <div class="flex justify-center mt-2">
+                        <button class="bg-black text-white rounded-full p-3">
+                            + New Category
+                        </button>
+                    </div>
+                }
+            </div>
+            <div class="flex flex-row items-center justify-between mt-2 me-5">
+                <h1 class="text-2xl indent-8">
+                    Tags
+                </h1>
+                <button class="mt-1">
+                    @Model.TotalTags
+                </button>
+            </div>
+            <div class="p-5 mx-5 mt-2 border rounded-xl border-dashed">
+                @if (Model.TotalTags == 0)
+                {
+                    <div class="text-center">
+                        <p>no tags yet</p>
+                        <p>Tags help organize your content - add some to get started!</p>
+                    </div>
+                    <div class="flex justify-center mt-2">
+                        <button class="bg-black text-white rounded-full p-3">
+                            + New Tag
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="flex-1">
+            <div data-panel="board" class="view-panel">
+                <partial name="_BoardView" model="Model" />
+            </div>
+            <div data-panel="cards" class="view-panel hidden">
+                <partial name="_CardView" model="Model" />
+            </div>
+            <div data-panel="outline" class="view-panel hidden">
+                <partial name="_OutlineView" model="Model" />
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const buttons = document.querySelectorAll('.view-btn');
+    const panels  = document.querySelectorAll('.view-panel');
 
-<h1>
-    @Model.WorldName
-</h1>
+    // classes for active vs inactive state
+    const active   = ['bg-stone-900', 'text-stone-50', 'font-semibold', 'not-italic','bg-sky-500'];
+    const inactive = ['text-stone-800', 'hover:bg-stone-200'];
+
+    function select(view) {
+      buttons.forEach(btn => {
+        const isActive = btn.dataset.view === view;
+        btn.classList.toggle('bg-stone-900', isActive);
+        btn.classList.toggle('text-stone-50', isActive);
+        btn.classList.toggle('font-semibold', isActive);
+        btn.classList.toggle('not-italic', isActive);
+        btn.classList.toggle('bg-sky-500', isActive);
+        btn.classList.toggle('bg-stone-50', !isActive);
+        btn.classList.toggle('text-white', isActive);
+        btn.classList.toggle('text-stone-800', !isActive);
+        btn.classList.toggle('hover:bg-stone-200', !isActive);
+      });
+      panels.forEach(p => p.classList.toggle('hidden', p.dataset.panel !== view));
+    }
+
+    buttons.forEach(btn => btn.addEventListener('click', () => select(btn.dataset.view)));
+
+    // start on Board
+    select('board');
+</script>
