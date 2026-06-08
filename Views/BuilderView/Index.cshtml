@@ -64,7 +64,7 @@
                         <p>Categories hold sub-categories and scripts - whatever scheme fits your world!</p>
                     </div>
                     <div class="flex justify-center mt-2">
-                        <button class="bg-black text-white rounded-full p-3">
+                        <button onclick="showCategoryModal()" class="bg-black text-white rounded-full p-3 hover:bg-blue-500">
                             + New Category
                         </button>
                     </div>
@@ -86,7 +86,7 @@
                         <p>Tags help organize your content - add some to get started!</p>
                     </div>
                     <div class="flex justify-center mt-2">
-                        <button class="bg-black text-white rounded-full p-3">
+                        <button class="bg-black text-white rounded-full p-3 hover:bg-blue-500">
                             + New Tag
                         </button>
                     </div>
@@ -106,7 +106,69 @@
         </div>
     </div>
 </div>
+<!--Overlay-->
+<div id="catModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center">
+    <!--Modal-->
+    <div class="bg-white rounded shadow-md p-8 w-[40%] opacity-100 ">
+        <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-2">
+            <h2 class="text-2xl">Create New Category</h2>
+            <button onclick="hideCategoryModal()" class="text-gray-500 hover:text-gray-700 border rounded-full py-3 px-5">
+                x
+            </button>
+        </div>
+        <div>
+            Name
+        </div>
+        <input class="border-2 " />
+        <div>
+            <div>
+                Color
+            </div>
+            <div>
+                categorises cards on the board
+            </div>
+        </div>
+        <div>
+
+        </div>
+        <div>
+            <div>
+                preview:
+            </div>
+            <div>
+                @Model.TotalScripts scripts
+            </div>
+        </div>
+        <div>
+            <div class="flex flex-row justify-between">
+                <button class="border text-black p-4 rounded-xl">
+                    Cancel
+                </button>
+                <button class="border bg-black text-white p-4 rounded-xl">
+                    Save
+                </button>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+
+
+
+
 <script>
+
+        function showCategoryModal() {
+        let modal = document.getElementById('catModal');
+        modal.style.display = 'flex';
+    }
+
+        function hideCategoryModal() {
+        let modal = document.getElementById('catModal');
+        modal.style.display = 'none';
+    }
+
     const buttons = document.querySelectorAll('.view-btn');
     const panels  = document.querySelectorAll('.view-panel');
 
