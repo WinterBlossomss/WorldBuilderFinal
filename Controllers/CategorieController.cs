@@ -47,15 +47,23 @@ public class CategorieController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("CatIDPK,CatName,CatDescription,CatWorldFK,CatColor,CatWorldFKNavigation,Pictures,SubCategories")] Category category)
+    public async Task<IActionResult> Create(int worldId, string name, string color)
     {
-        if (ModelState.IsValid)
+        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(color))
+            return BadRequest("Name and color are required.");
+
+        var category = new Category
         {
-            _context.Add(category);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(category);
+            CatName = name,
+            CatColor = color,
+            CatWorldFK = worldId
+        };
+
+        _context.Categories.Add(category);
+        await _context.SaveChangesAsync();
+
+        // return a small partial that renders this one category card
+        return PartialView("_CategoryCard", category);
     }
 
     // GET: CATEGORYS/Edit/5

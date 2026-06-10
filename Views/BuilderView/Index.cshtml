@@ -57,7 +57,7 @@
                 </button>
             </div>
             <div class="p-5 mx-5 mt-2 border rounded-xl border-dashed">
-                @if(Model.TotalScripts == 0)
+                @if(Model.TotalCategories == 0)
                 {
                     <div class="text-center">
                         <p>no categories yet</p>
@@ -68,6 +68,23 @@
                             + New Category
                         </button>
                     </div>
+                }
+                else
+                {
+                    @* foreach (var cat in Model.SelectedWorld.Categories)
+                    {
+                        <div class="border rounded-md p-3 mb-2">
+                            <div class="flex flex-row items-center gap-2">
+                                <div class="w-4 h-4 rounded-full" style="background-color:@cat.CatColor"></div>
+                                <h2 class="text-lg font-semibold">
+                                    @cat.CatName
+                                </h2>
+                            </div>
+                            <div class="ms-6 mt-1 text-sm text-gray-600">
+                                @cat.ScriptCount scripts
+                            </div>
+                        </div>
+                    } *@
                 }
             </div>
             <div class="flex flex-row items-center justify-between mt-2 me-5">
@@ -109,7 +126,7 @@
 <!--Overlay-->
 <div id="catModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center">
     <!--Modal-->
-    <div class="bg-white rounded shadow-md p-8 w-[40%] opacity-100 ">
+    <div class="bg-white rounded-md shadow-md p-8 w-[40%] opacity-100 ">
         <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-2">
             <h2 class="text-2xl">Create New Category</h2>
             <button onclick="hideCategoryModal()" class="text-gray-500 hover:text-gray-700 border rounded-full py-3 px-5">
@@ -117,26 +134,38 @@
             </button>
         </div>
         <div class="text-xl text-semibold pb-1 pt-2">
-            Name
+            <div class="flex flex-row">
+                <div class="text-xl text-semibold">
+                    Color
+                </div>
+                <div class="text-red-500">
+                    *
+                </div>
+            </div>
         </div>
-        <input id="nameInput" class="border-2 w-full py-1" />
-        <div class="flex flex-row justify-between">
-            <div class="text-xl text-semibold">
-                Color
+        <input id="nameInput" class="border w-full py-1" />
+        <div class="flex flex-row justify-between mt-3">
+            <div class="flex flex-row">
+                <div class="text-xl text-semibold">
+                    Color
+                </div>
+                <div class="text-red-500">
+                    *
+                </div>
             </div>
             <div class="italic">
                 categorises cards on the board
             </div>
         </div>
         <div class="p-5 border">
-            <div id="colorContainer" class="items-center flex flex-wrap">
+            <div id="colorContainer" class="items-center flex flex-wrap mb-3">
 
             </div>
             <div id="colorHex">
             </div>
         </div>
         
-        <div class="my-3 p-3 border flex flex-row justify-between items-center">
+        <div class="my-3 p-3 border border-dashed flex flex-row justify-between items-center">
             <div class="flex flex-row items-center justify-center">
                 <div>
                     preview:
@@ -157,11 +186,10 @@
                 <button class="border cursor-pointer text-black p-4 rounded-xl">
                     Cancel
                 </button>
-                <button class="border cursor-pointer bg-black text-white p-4 rounded-xl">
+                <button onclick="saveCategory()" class="border cursor-pointer bg-black text-white p-4 rounded-xl">
                     Save
                 </button>
             </div>
-            
         </div>
     </div>
 </div>
@@ -257,7 +285,7 @@
 
     const preview = document.getElementById('colorPreview');
     const colorPreview = document.createElement('div');
-    colorPreview.className = 'w-8 h-8 p-2 mt-2 ms-2 me-2 inline-block border border-dashed rounded-md';
+    colorPreview.className = 'w-8 h-8 mt-2 ms-2 me-2 inline-block border border-dashed rounded-md';
     preview.appendChild(colorPreview);
 
     colorPickerInput.addEventListener('input', () => {
@@ -293,6 +321,39 @@
     nameInput.addEventListener('input', (e) => {
         const value = e.target.value.trim();
         namePreview.textContent = value ? value : "Name...";
+    });
+
+    //const saveBtn = document.getElementById('saveBtn');
+    const worldId = @Model.SelectedWorld.WorldIDPK;  
+
+    function saveCategory(){
+        const name = nameInput.value.trim();
+        const color = colorHex.textContent.trim();
+        //console.log("here");
+        // if (!name) {
+        //     alert("Please enter a name for the category.");
+        //     return;
+        // }
+        // if (!color) {
+        //     alert("Please pick a color.");
+        //     return;
+        // }
+
+        $.ajax({
+            url: "@Url.Action("Create", "Category")",
+            data: { worldId: worldId, name: name, color: color }
+        }).done(function (res) {
+            document.getElementById('categoryList').insertAdjacentHTML('beforeend', res);
+            hideCategoryModal();
+            nameInput.value = "";
+            namePreview.textContent = "Name...";
+            hideCategoryModal();
+        }).fail(function (xhr) {
+            alert("Could not save category: " + xhr.statusText);
+        });
+    }
+    saveBtn.addEventListener('click', () => {
+        
     });
 
     buttons.forEach(btn => btn.addEventListener('click', () => select(btn.dataset.view)));

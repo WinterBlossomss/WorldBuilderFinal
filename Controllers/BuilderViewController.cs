@@ -65,10 +65,7 @@ namespace WorldBuilder.Controllers
         }
 
         // GET: BuilderViewController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
+        
 
         // POST: BuilderViewController/Create
         [HttpPost]
