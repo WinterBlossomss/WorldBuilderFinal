@@ -1,4 +1,5 @@
 ﻿@model WorldBuilder.Models.BuilderView
+@Html.AntiForgeryToken()
 @using WorldBuilder.Models
 @{
     var status = Model.SelectedWorld.WorldIsPublic ? "public" : "private";
@@ -56,7 +57,7 @@
                     @Model.TotalScripts
                 </button>
             </div>
-            <div class="p-5 mx-5 mt-2 border rounded-xl border-dashed">
+            <div id="categoryList" class="p-5 mx-5 mt-2 border rounded-xl border-dashed">
                 @if(Model.TotalCategories == 0)
                 {
                     <div class="text-center">
@@ -71,20 +72,26 @@
                 }
                 else
                 {
-                    @* foreach (var cat in Model.SelectedWorld.Categories)
+                    foreach (var cat in Model.SelectedWorld.Categories)
                     {
                         <div class="border rounded-md p-3 mb-2">
                             <div class="flex flex-row items-center gap-2">
-                                <div class="w-4 h-4 rounded-full" style="background-color:@cat.CatColor"></div>
-                                <h2 class="text-lg font-semibold">
-                                    @cat.CatName
-                                </h2>
-                            </div>
-                            <div class="ms-6 mt-1 text-sm text-gray-600">
-                                @cat.ScriptCount scripts
+                                <div>
+                                    <div class="w-4 h-4 rounded-md mb-1 border-2 border-dashed" style="background-color:@cat.CatColor"></div>
+                                    <h2 class="text-lg font-semibold">
+                                        @cat.CatName
+                                    </h2>
+                                </div>
+                                
                             </div>
                         </div>
-                    } *@
+                        
+                    }
+                    <div class="flex justify-center mt-2">
+                        <button onclick="showCategoryModal()" class="bg-black text-white rounded-full p-3 hover:bg-blue-500">
+                            + New Category
+                        </button>
+                    </div>
                 }
             </div>
             <div class="flex flex-row items-center justify-between mt-2 me-5">
@@ -340,8 +347,14 @@
         // }
 
         $.ajax({
-            url: "@Url.Action("Create", "Category")",
-            data: { worldId: worldId, name: name, color: color }
+        url: "@Url.Action("Create", "Categorie")",
+        type: "POST",
+        data: {
+            worldId: worldId,
+            name: name,
+            color: color,
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+        }
         }).done(function (res) {
             document.getElementById('categoryList').insertAdjacentHTML('beforeend', res);
             hideCategoryModal();
@@ -352,9 +365,8 @@
             alert("Could not save category: " + xhr.statusText);
         });
     }
-    saveBtn.addEventListener('click', () => {
-        
-    });
+   
+
 
     buttons.forEach(btn => btn.addEventListener('click', () => select(btn.dataset.view)));
 

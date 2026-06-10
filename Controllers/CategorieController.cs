@@ -63,7 +63,7 @@ public class CategorieController : Controller
         await _context.SaveChangesAsync();
 
         // return a small partial that renders this one category card
-        return PartialView("_CategoryCard", category);
+        return View();
     }
 
     // GET: CATEGORYS/Edit/5
