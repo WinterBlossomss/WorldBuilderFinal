@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
 using WorldBuilder.Models;
 
@@ -15,7 +16,8 @@ public class ScriptController : Controller
     // GET: SCRIPTS
     public async Task<IActionResult> Index()    
     {
-        return View(await _context.Scripts.ToListAsync());
+
+        return View();
     }
 
     // GET: SCRIPTS/Details/5
@@ -37,9 +39,10 @@ public class ScriptController : Controller
     }
 
     // GET: SCRIPTS/Create
-    public IActionResult Create()
+    public IActionResult Create(int worldID)
     {
-        return View();
+        var world = _context.Worlds.Find(worldID);
+        return View(world);
     }
 
     // POST: SCRIPTS/Create
@@ -47,15 +50,16 @@ public class ScriptController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("ScriptIDPK,ScriptContent,ScriptTitle,ScriptCatFK,ScriptSubFK,ScriptUpdateAt,ScriptCreateAt,ScriptIsPublic,ScriptIsChar,ScriptBoardX,ScriptBoardY,ScriptBoardColor,DetailViews,ScriptLikes,ScriptScriptScriptScriptOneFKNavigations,ScriptScriptScriptScriptTwoFKNavigations,PicScriptPicFKs,ScriptTagTagFKs")] Script script)
+    public async Task<IActionResult> Create()
     {
         if (ModelState.IsValid)
         {
+            WorldBuilder.Models.Script script = new WorldBuilder.Models.Script();
             _context.Add(script);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        return View(script);
+        return View();
     }
 
     // GET: SCRIPTS/Edit/5
@@ -79,7 +83,7 @@ public class ScriptController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? scriptidpk, [Bind("ScriptIDPK,ScriptContent,ScriptTitle,ScriptCatFK,ScriptSubFK,ScriptUpdateAt,ScriptCreateAt,ScriptIsPublic,ScriptIsChar,ScriptBoardX,ScriptBoardY,ScriptBoardColor,DetailViews,ScriptLikes,ScriptScriptScriptScriptOneFKNavigations,ScriptScriptScriptScriptTwoFKNavigations,PicScriptPicFKs,ScriptTagTagFKs")] Script script)
+    public async Task<IActionResult> Edit(int? scriptidpk, [Bind("ScriptIDPK,ScriptContent,ScriptTitle,ScriptCatFK,ScriptSubFK,ScriptUpdateAt,ScriptCreateAt,ScriptIsPublic,ScriptIsChar,ScriptBoardX,ScriptBoardY,ScriptBoardColor,DetailViews,ScriptLikes,ScriptScriptScriptScriptOneFKNavigations,ScriptScriptScriptScriptTwoFKNavigations,PicScriptPicFKs,ScriptTagTagFKs")] WorldBuilder.Models.Script script)
     {
         if (scriptidpk != script.ScriptIDPK)
         {

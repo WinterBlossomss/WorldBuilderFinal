@@ -33,9 +33,9 @@
             </div>
         </div>
         <div class="flex flex-row-reverse gap-2 me-3">
-            <button class="bg-sky-500 text-white border rounded-xl p-3">
+            <a class="bg-sky-500 text-white border rounded-xl p-3 cursor-pointer" asp-controller="Script" asp-action="Create" asp-route-worldID="@Model.SelectedWorld.WorldIDPK">
                 + New Script
-            </button>
+            </a>
             
             <button class="border border-sky-500 bg-white text-black border rounded-full p-3">
                 Settings
@@ -246,7 +246,47 @@
     </div>
 </div>
 
-
+<div id="scriptModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center">
+    <!--Modal-->
+    <div class="bg-white rounded-md shadow-md p-8 w-[40%] opacity-100 ">
+        <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-2">
+            <h2 class="text-2xl">Where does this Script live?</h2>
+            <button onclick="hideScriptModal()" class="text-gray-500 hover:text-gray-700 border rounded-full py-3 px-5">
+                x
+            </button>
+        </div>
+        <div class="border m-5 flex flex-row">
+            <div>
+                <div>
+                    Category
+                </div>
+                <div>
+                    @foreach (var cat in Model.SelectedWorld.Categories)
+                    {
+                        <button class="border p-2 rounded-md w-full text-left">
+                            @cat.CatName
+                        </button>
+                    }
+                </div>
+            </div>
+            <div>
+                <div id="subCategoryScriptDisplay">
+                    Sub-Category in 
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="flex flex-row justify-between">
+                <button class="border cursor-pointer text-black p-4 rounded-xl">
+                    Cancel
+                </button>
+                <button onclick="saveSubCategory()" class="border cursor-pointer bg-black text-white p-4 rounded-xl">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script>
