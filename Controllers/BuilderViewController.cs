@@ -37,17 +37,17 @@ namespace WorldBuilder.Controllers
 
             // CatIDPK is int, ScriptCatFK is string -> convert before querying
             var categoryIds = world.Categories
-                .Select(c => c.CatIDPK.ToString())
+                .Select(c => c.CatIDPK)
                 .ToList();
 
             var scripts = await _context.Scripts
-                .Where(s => categoryIds.Contains(s.ScriptCatFK))
+                .Where(s => categoryIds.Contains(s.ScriptCatFK ?? 0))
                 .ToListAsync();
 
             builderView.SelectedWorld = world;
             builderView.Categories = world.Categories;
             builderView.Tags = world.Tags;
-            builderView.Scripts = scripts;                 // <-- assign it
+            builderView.Scripts = scripts;               
 
             builderView.WorldGenre = world.WorldGenFKNavigation;
             builderView.TotalScripts = scripts.Count;       // use the queried list

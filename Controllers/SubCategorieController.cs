@@ -13,9 +13,26 @@ public class SubCategorieController : Controller
     }
 
     // GET: SUBCATEGORYS
-    public async Task<IActionResult> Index()    
+    // Category's direct children: subcategories + scripts directly under the category
+    public async Task<IActionResult> Index(int catID)
     {
-        return View(await _context.SubCategories.ToListAsync());
+        var subCategories = await _context.SubCategories
+            .Where(sc => sc.SubCatFK == catID)
+            .Select(sc => new { sc.SubIDPK, sc.SubName })
+            .ToListAsync();
+
+        return Json(subCategories);
+    }
+
+    // A subcategory's scripts
+    public async Task<IActionResult> Scripts(int subID)
+    {
+        var scripts = await _context.Scripts
+            .Where(scr => scr.ScriptSubFK == subID)
+            .Select(scr => new { scr.ScriptIDPK, scr.ScriptTitle })
+            .ToListAsync();
+
+        return Json(scripts);
     }
 
     // GET: SUBCATEGORYS/Details/5

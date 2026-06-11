@@ -19,11 +19,9 @@ public partial class Script
     [StringLength(100)]
     public string ScriptTitle { get; set; }
 
-    [StringLength(100)]
-    public string ScriptCatFK { get; set; }
+    public int? ScriptCatFK { get; set; }
 
-    [StringLength(100)]
-    public string ScriptSubFK { get; set; }
+    public int? ScriptSubFK { get; set; }
 
     [Column(TypeName = "date")]
     public DateTime? ScriptUpdateAt { get; set; }

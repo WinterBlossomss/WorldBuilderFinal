@@ -62,8 +62,7 @@ public class CategorieController : Controller
         _context.Categories.Add(category);
         await _context.SaveChangesAsync();
 
-        // return a small partial that renders this one category card
-        return View();
+        return Json(new { category.CatIDPK, category.CatName, category.CatColor });
     }
 
     // GET: CATEGORYS/Edit/5
