@@ -263,9 +263,17 @@
                 <div>
                     @foreach (var cat in Model.SelectedWorld.Categories)
                     {
-                        <button class="border p-2 rounded-md w-full text-left">
-                            @cat.CatName
-                        </button>
+                        <div class="p-3">
+                            <div class="flex flex-row items-center justify-between">
+                                <button class="flex flex-row gap-2 items-center cursor-pointer">
+                                    <div class="w-4 h-4 rounded-md border-2 border-dashed flex-shrink-0" style="background-color:@cat.CatColor"></div>
+                                    <h2 class="text-md">@cat.CatName</h2>
+                                </button>
+                                <div>
+                                    @cat.CatName
+                                </div>
+                            </div>
+                        </div>
                     }
                 </div>
             </div>
