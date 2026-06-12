@@ -188,7 +188,7 @@ function selectCategoryForScript(catID, catName) {
 
 
         let skipSubDiv = document.createElement('div');
-        skipSubDiv.className = "p-3 ms-5 border-l-2 border-dashed";
+        skipSubDiv.className = "p-3 ms-5 border-b-2 border-dashed me-2";
         skipSubDiv.innerHTML = `
             <div class="flex flex-row items-center gap-2">
                 <button class="flex flex-row gap-2 items-center cursor-pointer">
