@@ -15,6 +15,12 @@ function showSubCategoryModal() {
 function hideSubCategoryModal() {
     document.getElementById('subCatModal').style.display = 'none';
 }
+function showScriptModal() {
+    document.getElementById('scriptModal').style.display = 'flex';
+}
+function hideScriptModal() {
+    document.getElementById('scriptModal').style.display = 'none';
+}
 
 // ---- Color helpers ----
 const colors = ["#000000", "#FFFFFF", "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#008000", "#800080", "#800000", "#000080", "#C0C0C0"];
@@ -145,5 +151,54 @@ function saveCategory() {
         hideCategoryModal();
     }).fail(function (xhr) {
         alert("Could not save category: " + xhr.statusText);
+    });
+}
+
+// --- Save a new script ---
+
+function selectCategoryForScript(catID, catName) {
+    const subCategoryDisplay = document.getElementById('subCategoryDisplay');
+    const subCategoryScriptName = document.getElementById('subCategoryName');
+    const subCategoryContainer = document.getElementById('subCategoryContainer');
+
+    // Update the view
+    subCategoryScriptName.textContent = `Sub-Category in ${catName}`;
+    subCategoryDisplay.classList.remove('hidden');
+
+    $.ajax({
+        url: window.builderConfig.urls.subFromCat,
+        type: "GET",
+        data: { catID: catID }
+    }).done(function (res) {
+        subCategoryContainer.innerHTML = "";
+
+        res.forEach(sub => {
+            let div = document.createElement('div');
+            div.className = "p-2 ms-5 border-l-2 border-dashed text-sm text-gray-700";
+            div.innerHTML = `
+                <div class="flex flex-row items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:11px;height:11px;" class="text-gray-500 flex-shrink-0">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25" />
+                    </svg>
+                    <span>${sub.subName}</span>
+                </div>
+            `;
+            subCategoryContainer.appendChild(div);
+        });
+
+
+        let skipSubDiv = document.createElement('div');
+        skipSubDiv.className = "p-3 ms-5 border-l-2 border-dashed";
+        skipSubDiv.innerHTML = `
+            <div class="flex flex-row items-center gap-2">
+                <button class="flex flex-row gap-2 items-center cursor-pointer">
+                    <h2 class="text-md italic">+ or skip the sub-category</h2>
+                </button>
+            </div>
+        `;
+        subCategoryContainer.appendChild(skipSubDiv);
+
+    }).fail(function (xhr) {
+        alert("Could not load subcategories: " + xhr.statusText);
     });
 }

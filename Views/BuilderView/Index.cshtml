@@ -3,6 +3,7 @@
 @using WorldBuilder.Models
 @{
     var status = Model.SelectedWorld.WorldIsPublic ? "public" : "private";
+    var catSubCount = Model.SelectedWorld.Categories.Count > 0 ? Model.SelectedWorld.Categories.Sum(c => c.SubCategories.Count) : 0;
 }
 <div class="flex flex-col h-screen">
     <div class="grid grid-cols-3 items-center border-y gap-2">
@@ -33,7 +34,7 @@
             </div>
         </div>
         <div class="flex flex-row-reverse gap-2 me-3">
-            <a class="bg-sky-500 text-white border rounded-xl p-3 cursor-pointer" asp-controller="Script" asp-action="Create" asp-route-worldID="@Model.SelectedWorld.WorldIDPK">
+            <a class="bg-sky-500 text-white border rounded-xl p-3 cursor-pointer" onclick="showScriptModal()">
                 + New Script
             </a>
             
@@ -48,16 +49,17 @@
         </div>
     </div>
     <div class="flex flex-row flex-1 min-h-0 scrollbar-auto">
-        <div class="border-r w-80 flex flex-col scrollable scroll-smooth ">
+        <!-- sidebar -->
+        <div class="border-r w-80 flex flex-col min-h-0 overflow-y-auto scroll-smooth gap-3">
             <div class="flex flex-row items-center justify-between mt-2 me-5">
-                <h1 class="text-2xl indent-8">
+                <h1 class="text-2xl indent-8 mt-3">
                     Scripts
                 </h1>
                 <button class="mt-1">
                     @Model.TotalScripts
                 </button>
             </div>
-            <div id="categoryList" class="p-5 mx-5 mt-2 border rounded-xl border-dashed ">
+            <div id="categoryList" class="p-5 mx-5 mt-2 border rounded-xl border-dashed overflow-y-auto max-h-64">
                 @if(Model.TotalCategories == 0)
                 {
                     <div class="text-center">
@@ -140,7 +142,8 @@
         </div>
     </div>
 </div>
-<!--Overlay-->
+
+<!-- Modals -->
 <div id="catModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center">
     <!--Modal-->
     <div class="bg-white rounded-md shadow-md p-8 w-[40%] opacity-100 ">
@@ -210,8 +213,6 @@
         </div>
     </div>
 </div>
-
-<!--Overlay-->
 <div id="subCatModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center">
     <!--Modal-->
     <div class="bg-white rounded-md shadow-md p-8 w-[40%] opacity-100 ">
@@ -245,7 +246,6 @@
         </div>
     </div>
 </div>
-
 <div id="scriptModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center">
     <!--Modal-->
     <div class="bg-white rounded-md shadow-md p-8 w-[40%] opacity-100 ">
@@ -255,9 +255,9 @@
                 x
             </button>
         </div>
-        <div class="border m-5 flex flex-row">
+        <div id="scriptModalContent" class="border m-5 grid grid-cols-2 ">
             <div>
-                <div>
+                <div class="text-xl text-semibold">
                     Category
                 </div>
                 <div>
@@ -265,21 +265,24 @@
                     {
                         <div class="p-3">
                             <div class="flex flex-row items-center justify-between">
-                                <button class="flex flex-row gap-2 items-center cursor-pointer">
+                                <button class="flex flex-row gap-2 items-center cursor-pointer" onclick="selectCategoryForScript(@cat.CatIDPK, '@cat.CatName')">
                                     <div class="w-4 h-4 rounded-md border-2 border-dashed flex-shrink-0" style="background-color:@cat.CatColor"></div>
                                     <h2 class="text-md">@cat.CatName</h2>
                                 </button>
                                 <div>
-                                    @cat.CatName
+                                    @cat.SubCategoryCount
                                 </div>
                             </div>
                         </div>
                     }
                 </div>
             </div>
-            <div>
-                <div id="subCategoryScriptDisplay">
+            <div id="subCategoryDisplay" class="hidden">
+                <div id="subCategoryName" class="text-xl text-semibold">
                     Sub-Category in 
+                </div>
+                <div id="subCategoryContainer">
+
                 </div>
             </div>
         </div>
@@ -302,8 +305,9 @@
             worldId: @Model.SelectedWorld.WorldIDPK,
             urls: {
                 subCategories: "@Url.Action("Index", "SubCategorie")",
-                scripts: "@Url.Action("Scripts", "SubCategorie")",
-                createCategory: "@Url.Action("Create", "Categorie")"
+                // scripts: "@Url.Action("Scripts", "SubCategorie")",
+                createCategory: "@Url.Action("Create", "Categorie")",
+                subFromCat: "@Url.Action("getSubFromCat", "BuilderView")"
             }
         };
     </script>

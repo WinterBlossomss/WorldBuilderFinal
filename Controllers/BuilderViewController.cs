@@ -35,10 +35,28 @@ namespace WorldBuilder.Controllers
             if (world == null)
                 return NotFound();
 
+            var category = world.Categories.ToList();
             // CatIDPK is int, ScriptCatFK is string -> convert before querying
             var categoryIds = world.Categories
                 .Select(c => c.CatIDPK)
                 .ToList();
+
+            foreach (var cat in category)
+            {
+                var sub = await _context.SubCategories
+                    .Where(sc => sc.SubCatFK == cat.CatIDPK)
+                    .ToListAsync();
+                cat.SubCategoryCount = sub.Count;
+                foreach(var s in sub)
+                {
+                    var scriptCount = await _context.Scripts
+                        .Where(s => s.ScriptSubFK == s.ScriptSubFK)
+                        .CountAsync();
+                }
+            }
+            
+
+
 
             var scripts = await _context.Scripts
                 .Where(s => categoryIds.Contains(s.ScriptCatFK ?? 0))
@@ -56,6 +74,20 @@ namespace WorldBuilder.Controllers
             builderView.TotalTags = world.Tags?.Count ?? 0;
 
             return View(builderView);
+        }
+        [HttpGet]
+        public async Task<ActionResult> getSubFromCat(int catID)
+        {
+            var subs = await _context.Categories
+                .Where(c => c.CatIDPK == catID)
+                .SelectMany(c => c.SubCategories)
+                .Select(sc => new
+                {
+                    sc.SubIDPK,
+                    sc.SubName
+                })
+                .ToListAsync();
+            return Json(subs);
         }
 
         // GET: BuilderViewController/Details/5
