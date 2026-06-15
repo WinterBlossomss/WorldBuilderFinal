@@ -19,9 +19,9 @@ public partial class Script
     [StringLength(100)]
     public string ScriptTitle { get; set; }
 
-    public int? ScriptCatFK { get; set; }
+    public int ScriptCatFK { get; set; }
 
-    public int? ScriptSubFK { get; set; }
+    public int ScriptSubFK { get; set; }
 
     [Column(TypeName = "date")]
     public DateTime? ScriptUpdateAt { get; set; }
@@ -33,9 +33,9 @@ public partial class Script
 
     public bool ScriptIsChar { get; set; }
 
-    public double? ScriptBoardX { get; set; }
+    public double ScriptBoardX { get; set; }
 
-    public double? ScriptBoardY { get; set; }
+    public double ScriptBoardY { get; set; }
 
     [StringLength(7)]
     public string ScriptBoardColor { get; set; }

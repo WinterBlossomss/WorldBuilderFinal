@@ -59,7 +59,7 @@ namespace WorldBuilder.Controllers
 
 
             var scripts = await _context.Scripts
-                .Where(s => categoryIds.Contains(s.ScriptCatFK ?? 0))
+                .Where(s => categoryIds.Contains(s.ScriptCatFK))
                 .ToListAsync();
 
             builderView.SelectedWorld = world;

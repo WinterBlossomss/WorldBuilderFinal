@@ -21,7 +21,7 @@ public partial class SubCategory
     [StringLength(500)]
     public string SubDescription { get; set; }
 
-    public int? SubCatFK { get; set; }
+    public int SubCatFK { get; set; }
 
     [InverseProperty("PicSubFKNavigation")]
     public virtual ICollection<Picture> Pictures { get; set; } = new List<Picture>();

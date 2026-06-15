@@ -250,7 +250,7 @@ function selectCategoryForScript(catID, catName) {
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:15px;height:15px;" class="text-gray-500 flex-shrink-0 mb-1">
                       <path stroke-linecap="round" stroke-linejoin="round" d="m16.49 12 3.75 3.75m0 0-3.75 3.75m3.75-3.75H3.74V4.499" />
                     </svg>
-                    <button>
+                    <button onclick="window.location.href='/Script/Create?subID=${sub.subIDPK}'">
                         <div class="text-base">${sub.subName}</div>
                     </button>
                 </div>
@@ -266,7 +266,7 @@ function selectCategoryForScript(catID, catName) {
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:15px;height:15px;" class="text-gray-500 flex-shrink-0 mb-1">
                       <path stroke-linecap="round" stroke-linejoin="round" d="m16.49 12 3.75 3.75m0 0-3.75 3.75m3.75-3.75H3.74V4.499" />
                     </svg>
-                <button class="flex flex-row gap-2 items-center cursor-pointer" onclick="">
+                <button class="flex flex-row gap-2 items-center cursor-pointer" onclick="window.location.href='/Script/Create?catID=${catID}'">
                     <h2 class="text-md italic"> (directly under ${catName})</h2>
                 </button>
             </div>

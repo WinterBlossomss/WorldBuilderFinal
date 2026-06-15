@@ -39,27 +39,65 @@ public class ScriptController : Controller
     }
 
     // GET: SCRIPTS/Create
-    public IActionResult Create(int worldID)
+    // GET: SCRIPTS/Create
+    public async Task<IActionResult> Create(int? catID, int? subID, int? worldID)
     {
-        var world = _context.Worlds.Find(worldID);
-        return View(world);
+        var script = new WorldBuilder.Models.Script
+        {
+            ScriptCreateAt = DateTime.UtcNow
+        };
+
+        if (subID != null)
+        {
+            var sub = await _context.SubCategories
+                .Include(s => s.SubCatFKNavigation)
+                .FirstOrDefaultAsync(s => s.SubIDPK == subID);
+
+            if (sub == null) return NotFound();
+
+            script.ScriptSubFK = sub.SubIDPK;      // the sub's own id
+            script.ScriptCatFK = sub.SubCatFK;    // parent category id
+
+            ViewData["SubName"] = sub.SubName;
+            ViewData["CatName"] = sub.SubCatFKNavigation;
+        }
+        else if (catID != null)
+        {
+            var cat = await _context.Categories
+                .FirstOrDefaultAsync(c => c.CatIDPK == catID);
+
+            if (cat == null) return NotFound();
+
+            script.ScriptCatFK = cat.CatIDPK;
+            ViewData["CatName"] = cat.CatName;
+        }
+
+        var world = await _context.Worlds
+            .FirstOrDefaultAsync(w => w.WorldIDPK == worldID);
+
+        
+
+        var builderView = new BuilderView
+        {
+            NewScript = script,
+            SelectedWorld = world,
+        };
+
+        return View(builderView);
     }
 
     // POST: SCRIPTS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create()
+    public async Task<IActionResult> Create([Bind("ScriptContent,ScriptTitle,ScriptCatFK,ScriptSubFK,ScriptUpdateAt,ScriptCreateAt,ScriptIsPublic,ScriptIsChar,ScriptBoardX,ScriptBoardY,ScriptBoardColor")] WorldBuilder.Models.Script script)
     {
         if (ModelState.IsValid)
         {
-            WorldBuilder.Models.Script script = new WorldBuilder.Models.Script();
             _context.Add(script);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        return View();
+        return View(script);
     }
 
     // GET: SCRIPTS/Edit/5
