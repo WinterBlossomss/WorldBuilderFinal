@@ -2,20 +2,31 @@
 // Category/subcategory modals, the color picker swatches, name preview,
 // and saving a new category. Reads endpoints + worldId from window.builderConfig.
 
+let currentSubCatParentId = null;
+const subCategoryContainer = document.getElementById('subCategoryContainer');
+
 // ---- Modal show/hide ----
 function showCategoryModal() {
+    hideSubCategoryModal()
+    hideScriptModal()
     document.getElementById('catModal').style.display = 'flex';
 }
 function hideCategoryModal() {
     document.getElementById('catModal').style.display = 'none';
 }
-function showSubCategoryModal() {
+function showSubCategoryModal(catID) {
+    currentSubCatParentId = catID;
+    subCategoryContainer.innerHTML = "";
+    hideScriptModal();
+    hideCategoryModal();
     document.getElementById('subCatModal').style.display = 'flex';
 }
 function hideSubCategoryModal() {
     document.getElementById('subCatModal').style.display = 'none';
 }
 function showScriptModal() {
+    hideSubCategoryModal()
+    hideCategoryModal()
     document.getElementById('scriptModal').style.display = 'flex';
 }
 function hideScriptModal() {
@@ -105,6 +116,7 @@ colorPickerInput.addEventListener('input', () => {
 // ---- Live name preview ----
 const nameInput = document.getElementById('nameInput');
 const namePreview = document.getElementById('namePreview');
+const scriptModalCatList = document.getElementById("scriptModalCatList");
 
 nameInput.addEventListener('input', (e) => {
     const value = e.target.value.trim();
@@ -137,7 +149,7 @@ function saveCategory() {
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-right text-black flex-shrink-0">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                         </svg>
-                        <div class="w-4 h-4 rounded-md border-2 border-dashed flex-shrink-0" style="background-color:${res.catColor}"></div>
+                        class="w-3 h-3 rounded-sm border-2 border-dashed flex-shrink-0 p-3 rounded-xl" style="background-color:${res.catColor}"></div>
                         <h2 class="text-md">${res.catName}</h2>
                     </button>
                 </div>
@@ -145,7 +157,22 @@ function saveCategory() {
             <div id="subCatContainer-${res.catIDPK}" class="hidden"></div>
         `;
 
+        const listCat = `
+            <div class="p-1.5">
+                            <div class="flex flex-row items-center justify-between">
+                                <button class="flex flex-row gap-1.5 items-center cursor-pointer" onclick="selectCategoryForScript(${res.catIDPK}, '${res.catName}')">
+                                    <div class="w-3 h-3 rounded-sm border-2 border-dashed flex-shrink-0 p-3 rounded-xl" style="background-color:${res.catColor}"></div>
+                                    <h2 class="text-sm">${res.catName}</h2>
+                                </button>
+                                <div class="text-xs text-gray-500"  id="subCatCount-${res.catIDPK}">
+                                    0
+                                </div>
+                            </div>
+            </div>
+        `;
+
         document.getElementById('categoryList').insertAdjacentHTML('beforeend', html);
+        scriptModalCatList.insertAdjacentHTML('beforeend',listCat)
         nameInput.value = "";
         namePreview.textContent = "Name...";
         hideCategoryModal();
@@ -153,13 +180,55 @@ function saveCategory() {
         alert("Could not save category: " + xhr.statusText);
     });
 }
+// --- Save a new Sub-Category ---
+const subName = document.getElementById("subNameInput");
+
+function saveSubCategory() {
+    $.ajax({
+        url: window.builderConfig.urls.createSubCategory,
+        type: "POST",
+        data: {
+            subName: subName.value.trim(), 
+            catID: currentSubCatParentId,
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+        }
+    }).done(function (res) {
+        const containerId = `subCatContainer-${currentSubCatParentId}`;
+        const html = `
+            <div class="p-3 ms-5 border-l-2 border-dashed">
+                <div class="flex flex-row items-center gap-2">
+                    <button class="flex flex-row gap-2 items-center cursor-pointer"
+                            onclick="loadScripts(${res.subIDPK}, 'scriptContainer-${res.subIDPK}', this)">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-down text-black flex-shrink-0 hidden">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-right text-black flex-shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                        <h2 class="text-md">${res.subName}</h2>
+                    </button>
+                </div>
+                <div id="scriptContainer-${res.subIDPK}" class="hidden"></div>
+            </div>
+        `;
+        document.getElementById(containerId).insertAdjacentHTML('beforeend', html);
+        
+        const countEl = document.getElementById(`subCatCount-${currentSubCatParentId}`);
+        if (countEl) {
+            countEl.textContent = (parseInt(countEl.textContent, 10) || 0) + 1;
+        }
+
+        subName.value = "";
+        hideSubCategoryModal();
+    }).fail(function (xhr) {
+        alert("Could not save sub-category: " + xhr.statusText);
+    });
+}
 
 // --- Save a new script ---
-
 function selectCategoryForScript(catID, catName) {
     const subCategoryDisplay = document.getElementById('subCategoryDisplay');
     const subCategoryScriptName = document.getElementById('subCategoryName');
-    const subCategoryContainer = document.getElementById('subCategoryContainer');
 
     // Update the view
     subCategoryScriptName.textContent = `Sub-Category in ${catName}`;
@@ -172,31 +241,50 @@ function selectCategoryForScript(catID, catName) {
     }).done(function (res) {
         subCategoryContainer.innerHTML = "";
 
+        //All Sub-Categories
         res.forEach(sub => {
             let div = document.createElement('div');
-            div.className = "p-2 ms-5 border-l-2 border-dashed text-sm text-gray-700";
+            div.className = "ms-1 text-sm text-gray-700 py-2";
             div.innerHTML = `
                 <div class="flex flex-row items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:11px;height:11px;" class="text-gray-500 flex-shrink-0">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25" />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:15px;height:15px;" class="text-gray-500 flex-shrink-0 mb-1">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m16.49 12 3.75 3.75m0 0-3.75 3.75m3.75-3.75H3.74V4.499" />
                     </svg>
-                    <span>${sub.subName}</span>
+                    <button>
+                        <div class="text-base">${sub.subName}</div>
+                    </button>
                 </div>
             `;
             subCategoryContainer.appendChild(div);
         });
 
-
+        //Button for creating Script under the Category itself
         let skipSubDiv = document.createElement('div');
-        skipSubDiv.className = "p-3 ms-5 border-b-2 border-dashed me-2";
+        skipSubDiv.className = "p-3 border-y-1 border-dashed";
         skipSubDiv.innerHTML = `
             <div class="flex flex-row items-center gap-2">
-                <button class="flex flex-row gap-2 items-center cursor-pointer">
-                    <h2 class="text-md italic">+ or skip the sub-category</h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:15px;height:15px;" class="text-gray-500 flex-shrink-0 mb-1">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m16.49 12 3.75 3.75m0 0-3.75 3.75m3.75-3.75H3.74V4.499" />
+                    </svg>
+                <button class="flex flex-row gap-2 items-center cursor-pointer" onclick="">
+                    <h2 class="text-md italic"> (directly under ${catName})</h2>
                 </button>
             </div>
         `;
         subCategoryContainer.appendChild(skipSubDiv);
+
+        //Button for creating a new Sub-Category
+
+        let newSubBtn = document.createElement('div');
+        newSubBtn.className = "p-3 border-y-1 border-dashed";
+        newSubBtn.innerHTML = `
+                <div class="flex flex-row items-center gap-2">
+                        <button class="flex flex-row gap-2 items-center cursor-pointer" onclick="showSubCategoryModal(${catID})"">
+                            <h2 class="text-md italic">+ New sub-category</h2>
+                        </button>
+                    </div>
+        `;
+        subCategoryContainer.appendChild(newSubBtn);
 
     }).fail(function (xhr) {
         alert("Could not load subcategories: " + xhr.statusText);

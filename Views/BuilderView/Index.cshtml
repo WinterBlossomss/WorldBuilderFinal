@@ -60,7 +60,7 @@
                 </button>
             </div>
             <div id="categoryList" class="p-5 mx-5 mt-2 border rounded-xl border-dashed overflow-y-auto max-h-64">
-                @if(Model.TotalCategories == 0)
+                @if (Model.TotalCategories == 0)
                 {
                     <div class="text-center">
                         <p>no categories yet</p>
@@ -76,7 +76,7 @@
                 {
                     foreach (var cat in Model.SelectedWorld.Categories)
                     {
-                        <div class="p-3">
+                        <div class="py-2">
                             <div class="flex flex-row items-center gap-2">
                                 <button class="flex flex-row gap-2 items-center cursor-pointer" onclick="loadSubCategories(@cat.CatIDPK, 'subCatContainer-@cat.CatIDPK',this)">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-down text-black flex-shrink-0 hidden">
@@ -90,12 +90,10 @@
                                     <h2 class="text-md">@cat.CatName</h2>
                                 </button>
                             </div>
+                            <div id="subCatContainer-@cat.CatIDPK" class="hidden pl-5">
+                            </div>
                         </div>
-                        <div id="subCatContainer-@cat.CatIDPK" class="hidden">
-                        </div>
-                        
                     }
-                    
                 }
             </div>
             <div class="flex justify-center mt-2">
@@ -236,7 +234,7 @@
         
         <div>
             <div class="flex flex-row justify-between">
-                <button class="border cursor-pointer text-black p-4 rounded-xl">
+                <button onclick="hideSubCategoryModal()" class="border cursor-pointer text-black p-4 rounded-xl">
                     Cancel
                 </button>
                 <button onclick="saveSubCategory()" class="border cursor-pointer bg-black text-white p-4 rounded-xl">
@@ -248,51 +246,54 @@
 </div>
 <div id="scriptModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center">
     <!--Modal-->
-    <div class="bg-white rounded-md shadow-md p-8 w-[40%] opacity-100 ">
-        <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-2">
+    <div class="bg-white rounded-md shadow-md p-4 w-[40%] opacity-100">
+        <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-1">
             <h2 class="text-2xl">Where does this Script live?</h2>
             <button onclick="hideScriptModal()" class="text-gray-500 hover:text-gray-700 border rounded-full py-3 px-5">
                 x
             </button>
         </div>
-        <div id="scriptModalContent" class="border m-5 grid grid-cols-2 ">
-            <div>
-                <div class="text-xl text-semibold">
+        <div id="scriptModalContent" class="border m-2 grid grid-cols-2">
+            <div class="border-r">
+                <div class="text-xl font-semibold p-2 border-b border-dashed">
                     Category
                 </div>
-                <div>
+                <div id="scriptModalCatList" class="overflow-y-auto max-h-72">
                     @foreach (var cat in Model.SelectedWorld.Categories)
                     {
-                        <div class="p-3">
+                        <div class="p-1.5">
                             <div class="flex flex-row items-center justify-between">
-                                <button class="flex flex-row gap-2 items-center cursor-pointer" onclick="selectCategoryForScript(@cat.CatIDPK, '@cat.CatName')">
-                                    <div class="w-4 h-4 rounded-md border-2 border-dashed flex-shrink-0" style="background-color:@cat.CatColor"></div>
-                                    <h2 class="text-md">@cat.CatName</h2>
+                                <button class="flex flex-row gap-1.5 items-center cursor-pointer" onclick="selectCategoryForScript(@cat.CatIDPK, '@cat.CatName')">
+                                    <div class="w-3 h-3 rounded-sm border-2 border-dashed flex-shrink-0 p-3 rounded-xl" style="background-color:@cat.CatColor"></div>
+                                    <h2 class="text-sm">@cat.CatName</h2>
                                 </button>
-                                <div>
+                                <div class="text-xs text-gray-500" id="subCatCount-@cat.CatIDPK">
                                     @cat.SubCategoryCount
                                 </div>
                             </div>
                         </div>
                     }
                 </div>
+                <div class="p-3 border-y-1 border-dashed">
+                    <div class="flex flex-row items-center gap-2">
+                        <button class="flex flex-row gap-2 items-center cursor-pointer" onclick="showCategoryModal()">
+                            <h2 class="text-md italic">+ New category</h2>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div id="subCategoryDisplay" class="hidden">
-                <div id="subCategoryName" class="text-xl text-semibold">
-                    Sub-Category in 
+                <div id="subCategoryName" class="text-xl font-semibold p-2 border-b border-dashed">
+                    Sub-Category in
                 </div>
-                <div id="subCategoryContainer">
-
+                <div id="subCategoryContainer" class="overflow-y-auto max-h-72">
                 </div>
             </div>
         </div>
         <div>
-            <div class="flex flex-row justify-between">
-                <button class="border cursor-pointer text-black p-4 rounded-xl">
+            <div class="flex flex-row justify-between p-1">
+                <button class="border cursor-pointer text-black p-2 text-sm rounded-lg">
                     Cancel
-                </button>
-                <button onclick="saveSubCategory()" class="border cursor-pointer bg-black text-white p-4 rounded-xl">
-                    Save
                 </button>
             </div>
         </div>
@@ -305,8 +306,9 @@
             worldId: @Model.SelectedWorld.WorldIDPK,
             urls: {
                 subCategories: "@Url.Action("Index", "SubCategorie")",
-                // scripts: "@Url.Action("Scripts", "SubCategorie")",
+                scripts: "@Url.Action("Scripts", "SubCategorie")",
                 createCategory: "@Url.Action("Create", "Categorie")",
+                createSubCategory:"@Url.Action("Create","SubCategorie")",
                 subFromCat: "@Url.Action("getSubFromCat", "BuilderView")"
             }
         };

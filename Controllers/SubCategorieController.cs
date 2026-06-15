@@ -64,15 +64,20 @@ public class SubCategorieController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("SubIDPK,SubName,SubDescription,SubCatFK,Pictures,SubCatFKNavigation")] SubCategory subcategory)
+    public async Task<IActionResult> Create(string subName, int catID)
     {
-        if (ModelState.IsValid)
+        var subCat = new SubCategory
         {
-            _context.Add(subcategory);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(subcategory);
+            SubName = subName,
+            SubCatFK = catID
+        };
+
+        var cat = await _context.Categories.FirstOrDefaultAsync(c => c.CatIDPK == catID);
+        cat.SubCategoryCount += cat.SubCategoryCount;
+
+        _context.SubCategories.Add(subCat);
+        await _context.SaveChangesAsync();
+        return Json(new {subCat.SubName,subCat.SubCatFK});
     }
 
     // GET: SUBCATEGORYS/Edit/5

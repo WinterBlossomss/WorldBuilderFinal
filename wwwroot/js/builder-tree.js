@@ -32,7 +32,7 @@ function loadSubCategories(catID, containerId, btn) {
             div.innerHTML = `
                 <div class="flex flex-row items-center gap-2">
                     <button class="flex flex-row gap-2 items-center cursor-pointer"
-                            onclick="loadScripts(${sub.subIDPK}, '${scriptId}', this)">
+                            onclick="loadScripts(${sub.subIDPK}, 'scriptContainer-${sub.subIDPK}', this)">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-down text-black flex-shrink-0 hidden">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                         </svg>
@@ -52,12 +52,13 @@ function loadSubCategories(catID, containerId, btn) {
         addDiv.className = "p-3 ms-5 border-l-2 border-dashed";
         addDiv.innerHTML = `
             <div class="flex flex-row items-center gap-2">
-                <button class="flex flex-row gap-2 items-center cursor-pointer" onclick="showSubCategoryModal()">
+                <button class="flex flex-row gap-2 items-center cursor-pointer" onclick="showSubCategoryModal(${catID})">
                     <h2 class="text-md italic">+ New sub-category</h2>
                 </button>
             </div>
         `;
         container.appendChild(addDiv);
+
 
         container.dataset.loaded = 'true';
         container.classList.remove('hidden');
