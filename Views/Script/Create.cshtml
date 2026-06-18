@@ -1,47 +1,278 @@
 @model WorldBuilder.Models.BuilderView
 
 @{
+    var subName = ViewData["SubName"] as string;
+    var catName = ViewData["CatName"] as string;
 }
 
+@* @if (!string.IsNullOrEmpty(subName))
+{
+    <p>Living under sub-category: @subName</p>
+}
+else
+{
+    <p>Living directly under category: @catName</p>
+}
+ *@
 <div class="flex flex-row">
     <div class="grid grid-cols-3 items-center border-y gap-2">
         <div class="ms-3">
-            <a class="flex flex-col" asp-controller="Builder" asp-action="Index">
+            <a class="flex flex-col" asp-action="Index" asp-controller="BuilderView" asp-route-id="@Model.SelectedWorld.WorldIDPK">
                 <h1 class="text-2xl pt-5 text-left truncate">
                     @Model.SelectedWorld.WorldName
                 </h1>
             </a>
         </div>
     </div>  
+    
+    
+</div>
+<div class="flex flex-col  m-5">
     <div class="flex flex-row justify-between">
-        <nav class="flex" aria-label="Breadcrumb">
+        <nav class="flex my-3" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                <li class="inline-flex items-center">
-                    <a asp-action="Details" asp-controller="Builder" asp-route-id="@Model.SelectedWorld" class="inline-flex items-center text-sm font-medium text-body hover:text-fg-brand">
+                <li class="inline-flex items-center truncate">
+                    <a asp-action="Index" asp-controller="BuilderView" asp-route-id="@Model.SelectedWorld.WorldIDPK" class="inline-flex items-center text-sm font-medium text-body hover:text-fg-brand">
                         <svg class="w-4 h-4 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5" /></svg>
-                        @Model.SelectedWorld.WorldName
+                        <span class="inline-flex items-center text-sm font-medium text-body-subtle">@Model.SelectedWorld.WorldName</span>
                     </a>
                 </li>
-                <li>
-                    <div class="flex items-center space-x-1.5">
-                        <svg class="w-3.5 h-3.5 rtl:rotate-180 text-body" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" /></svg>
-                        <a asp-action=" " asp-controller="Builder" asp-route-cat="@Model.SelectedWorld.WorldIDPK" class="inline-flex items-center text-sm font-medium text-body hover:text-fg-brand">Projects</a>
-                    </div>
-                </li>
+                @if (catName != null)
+                {
+                    <li>
+                        <div class="flex items-center space-x-1.5">
+                            <svg class="w-3.5 h-3.5 rtl:rotate-180 text-body" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" /></svg>
+                            <a class="inline-flex items-center text-sm font-medium text-body hover:text-fg-brand">@catName</a>
+                        </div>
+                    </li>
+                }
+                @if (subName != null)
+                {
+                    <li>
+                        <div class="flex items-center space-x-1.5">
+                            <svg class="w-3.5 h-3.5 rtl:rotate-180 text-body" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" /></svg>
+                            <a class="inline-flex items-center text-sm font-medium text-body hover:text-fg-brand">@subName</a>
+                        </div>
+                    </li>
+                }
                 <li aria-current="page">
                     <div class="flex items-center space-x-1.5">
                         <svg class="w-3.5 h-3.5 rtl:rotate-180 text-body" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" /></svg>
-                        <span class="inline-flex items-center text-sm font-medium text-body-subtle">Flowbite</span>
+                        <span class="inline-flex items-center text-sm font-medium text-body-subtle">Script name...</span>
                     </div>
                 </li>
             </ol>
         </nav>
         <div>
             <div>
-
             </div>
         </div>
     </div>
     
+    <input class="text-5xl border-b border-dashed" placeholder="Name this script...">
+    <div class="flex flex-row my-2 items-center">
+        <div>
+            tags:
+        </div>
+        <div id="tagContainer" class="flex flex-row gap-3 items-center">
+            @if(Model.TotalTags > 0)
+            {
+                @foreach(var tag in Model.Tags)
+                {
+                    <div class="flex flex-row py-1 px-2 border border-dashed rounded-full">
+                        <div class="rounded-full p-1" style="background-color:@tag.TagColor">
+                        </div>
+                        <div class="text-black text-base">
+                            @tag.TagName
+                        </div>
+                        @if(tag.TagUserFK != null)
+                        {
+                            <div class="border text-sm">
+                                all worlds
+                            </div>
+                        }
+                        <button>
+                            x
+                        </button>
+                    </div>
+                    
+                }
+            }
+            else
+            {
+                <div class="indent-2 text-base italic">
+                    none yet -
+                </div>
+            }
+            <button onclick="showTagModal()" class="py-1 px-2 border border-dashed rounded-full text-black cursor-pointer text-base">
+                + tag
+            </button>
+        </div>
+    </div>
+    <div class=" grid grid-cols-2">
+        <div id="mainContainer" class="flex flex-col">
+        <div id="editorContainer">
+                <div id="toolbar" class="editor-toolbar">
+                    <span class="ql-formats">
+                        <button class="ql-header" value="1">H1</button>
+                        <button class="ql-header" value="2">H2</button>
+                        <button class="ql-header" value="3">H3</button>
+                    </span>
+
+                    <span class="ql-formats">
+                        <button class="ql-bold"></button>
+                        <button class="ql-italic"></button>
+                        <button class="ql-underline"></button>
+                        <button class="ql-strike"></button>
+                    </span>
+
+                    <span class="ql-formats">
+                        <button class="ql-list" value="bullet"></button>
+                        <button class="ql-list" value="ordered"></button>
+
+                        <button class="ql-blockquote"></button>
+                    </span>
+
+                    <span class="ql-formats">
+                        <button class="ql-link"></button>
+                        <button class="ql-image"></button>
+                    </span>
+
+                    <span class="ql-formats">
+                        <button class="ql-script" value="sub"></button>
+                        <button class="ql-script" value="super"></button>
+                    </span>
+
+                    <span class="ql-formats">
+                        <button class="ql-link"></button>
+                        <button class="ql-image"></button>
+
+                        <button id="characterLinkButton" type="button">
+                            🧙
+                        </button>
+                    </span>
+
+                </div>
+
+                <div id="editor"></div>
+        </div>
+        @* <div>
+             Quick starts
+        </div> *@
+            
+        </div>
+    <div id="detailContainer">
+
+    </div>
 </div>
+</div>
+
+
+<!-- Tag Modal -->
+<div id="tagModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center">
+    <!--Modal-->
+    <div class="bg-white rounded-md shadow-md p-8 w-[40%] opacity-100 ">
+        <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-2">
+            <h2 class="text-2xl">Add tags</h2>
+            <button onclick="hideTagModal()" class="text-gray-500 hover:text-gray-700 border rounded-full py-3 px-5">
+                x
+            </button>
+        </div>
+        <div>
+            Tags cross-reference scripts across @Model.SelectedWorld.WorldName. Pick any number.
+        </div>
+        <div class="flex flex-row border justify-between">
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+                <input id="tagSearchInput">
+            </div>
+            <div id="tagMatchCount">
+
+            </div>
+        </div>
+        <div class="flex flex-row border border-dashed">
+            <div>
+                selected:
+            </div>
+            <div id="tagSelectedContainer">
+
+            </div>
+        </div>
+        <div class="font-bold">
+            MATCHING TAGS
+        </div>
+        <div id="tagContainer">
+
+        </div>
+        <div class="uppercase">
+            Don't see one? Create a new tag
+        </div>
+        <div class="flex flex-row">
+            <div class="border rounded-2 flex flex-row">
+                <div>
+                    <div id="tagColorPreview" class="w-8 h-8 mt-2 ms-2 me-2 inline-block border border-dashed rounded-full">
+                    </div>
+                </div>
+            </div>
+            <button class="p-3 bg-black text-white">
+                + Create
+            </button>
+        </div>
+        <div class="flex flex-row">
+            <div>
+                color
+            </div>
+            <div id="tagColorContainer">
+
+            </div>
+        </div>
+        <div class="flex flex-row items-center">
+            <div class="flex flex-col">
+                <div>
+                    Available in all my worlds
+                </div>
+                <div>
+                    off - this tag lives only in @Model.SelectedWorld.WorldName
+                </div>
+                <div>
+                    on - reuse it across every world you own
+                </div>
+            </div>
+            <div id="tagSwitch">
+
+            </div>
+        </div>
+        
+
+        <div>
+            <div class="flex flex-row justify-between">
+                <div>
+                    click a tag to add - click again to remove
+                </div>
+                <div>
+                    <button onclick="hideTagModal()" class="border cursor-pointer text-black p-4 rounded-xl">
+                        Cancel
+                    </button>
+                    <button onclick="saveTag()" class="border cursor-pointer bg-black text-white p-4 rounded-xl">
+                        Done 
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.builderConfig = {
+            worldId: @Model.SelectedWorld.WorldIDPK,
+            urls: {
+                tags: "@Url.Action("Index", "SubCategorie")",
+            }
+        };
+    </script>
+    <script src="~/js/script-create.js" asp-append-version="true"></script>
+}
 

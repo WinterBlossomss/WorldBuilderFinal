@@ -40,6 +40,7 @@ public class ScriptController : Controller
 
     // GET: SCRIPTS/Create
     // GET: SCRIPTS/Create
+    // GET: SCRIPTS/Create
     public async Task<IActionResult> Create(int? catID, int? subID, int? worldID)
     {
         var script = new WorldBuilder.Models.Script
@@ -47,7 +48,7 @@ public class ScriptController : Controller
             ScriptCreateAt = DateTime.UtcNow
         };
 
-        if (subID != null)
+        if (subID is > 0)
         {
             var sub = await _context.SubCategories
                 .Include(s => s.SubCatFKNavigation)
@@ -55,13 +56,13 @@ public class ScriptController : Controller
 
             if (sub == null) return NotFound();
 
-            script.ScriptSubFK = sub.SubIDPK;      // the sub's own id
-            script.ScriptCatFK = sub.SubCatFK;    // parent category id
+            script.ScriptSubFK = sub.SubIDPK;
+            script.ScriptCatFK = sub.SubCatFK;
 
             ViewData["SubName"] = sub.SubName;
             ViewData["CatName"] = sub.SubCatFKNavigation;
         }
-        else if (catID != null)
+        if (catID is > 0)
         {
             var cat = await _context.Categories
                 .FirstOrDefaultAsync(c => c.CatIDPK == catID);
@@ -75,12 +76,18 @@ public class ScriptController : Controller
         var world = await _context.Worlds
             .FirstOrDefaultAsync(w => w.WorldIDPK == worldID);
 
-        
+        var tags = await _context.Tags
+            .Where(t => t.TagWorldFK == worldID)
+            .ToListAsync();
+
+        var tagsCount = tags.Count();
 
         var builderView = new BuilderView
         {
             NewScript = script,
             SelectedWorld = world,
+            Tags = tags,
+            TotalTags = tagsCount
         };
 
         return View(builderView);
@@ -188,4 +195,5 @@ public class ScriptController : Controller
     {
         return _context.Scripts.Any(e => e.ScriptIDPK == scriptidpk);
     }
+
 }
