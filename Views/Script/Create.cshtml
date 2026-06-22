@@ -3,6 +3,8 @@
 @{
     var subName = ViewData["SubName"] as string;
     var catName = ViewData["CatName"] as string;
+    var scriptId = Model.NewScript?.ScriptIDPK ?? 0;
+    var isEdit = scriptId > 0;
 }
 
 @* @if (!string.IsNullOrEmpty(subName))
@@ -69,7 +71,17 @@ else
         </div>
     </div>
     
-    <input class="text-5xl border-b border-dashed" placeholder="Name this script...">
+    <form id="scriptForm" method="post"
+          asp-controller="Script"
+          asp-action="@(isEdit ? "Edit" : "Create")"
+          asp-route-scriptidpk="@scriptId">
+        @Html.AntiForgeryToken()
+        <input name="ScriptTitle" value="@Model.NewScript?.ScriptTitle"
+               class="text-5xl border-b border-dashed w-full" placeholder="Name this script...">
+        <input type="hidden" id="ScriptContentField" name="ScriptContent" />
+        <input type="hidden" name="ScriptCatFK" value="@Model.NewScript?.ScriptCatFK" />
+        <input type="hidden" name="ScriptSubFK" value="@Model.NewScript?.ScriptSubFK" />
+    </form>
     <div class="flex flex-row my-2 items-center">
         <div class="me-5">
             tags:
@@ -81,9 +93,9 @@ else
             </button>
         </div>
     </div>
-    <div class=" grid grid-cols-2">
-        <div id="mainContainer" class="flex flex-col">
-        <div id="editorContainer">
+    <div class="w-full">
+        <div id="mainContainer" class="flex flex-col w-full">
+            <div id="editorContainer" class="w-full">
                 <div id="toolbar" class="editor-toolbar">
                     <span class="ql-formats">
                         <button class="ql-header" value="1">H1</button>
@@ -126,8 +138,8 @@ else
 
                 </div>
 
-                <div id="editor"></div>
-        </div>
+                <div id="editor" class="w-full"></div>
+            </div>
         @* <div>
              Quick starts
         </div> *@
@@ -135,19 +147,81 @@ else
         </div>
     
     </div>
-    <div class="border border-dashed rounded-xl p-3">
-        <div>
-            <div >
-                Pictures
+    <div class="p-5 m-5">
+
+    </div>
+    <div id="picturePanel" class="border border-dashed rounded-xl p-5 mt-5">
+        <div class="flex flex-row justify-between items-start">
+            <div>
+                <div class="text-2xl font-semibold">Pictures</div>
+                <div id="pictureSubtitle" class="text-sm text-gray-500"></div>
             </div>
-            <div class="border font-bold rounded-full">
+            <label class="border font-bold rounded-full px-4 py-2 cursor-pointer whitespace-nowrap">
                 + Add picture
+                <input id="pictureBrowse" type="file" accept="image/*" multiple class="hidden">
+            </label>
+        </div>
+
+        <div id="pictureGrid" class="grid grid-cols-6 gap-4 mt-4">
+            <!-- cards + dropzone injected by JS -->
+            <div id="pictureDrop"
+                 class="border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-gray-400 cursor-pointer text-center gap-1"
+                 style="aspect-ratio:3/2;">
+                <div class="text-2xl text-black">+</div>
+                <div>drop a picture</div>
+                <div>or <span class="underline">browse</span></div>
             </div>
         </div>
-        
+    </div>
+
+    <div id="relatedScripts" class="border border-dashed rounded-xl p-5 mt-5">
+        <div class="flex flex-row justify-between items-start">
+            <div>
+                <div class="text-2xl font-semibold">Related scripts</div>
+                <div class="text-sm text-gray-500" id="relSubtitle"></div>
+            </div>
+            <div class="text-sm text-gray-400 italic">relations are bidirectional — adding here updates the other script too</div>
+        </div>
+
+        @if (!isEdit)
+        {
+            <div class="text-gray-400 italic text-center py-10">
+                Save this script first to link it to other scripts.
+            </div>
+        }
+        else
+        {
+            <div id="relList" class="flex flex-col gap-2 mt-4"></div>
+
+            <div class="border border-dashed rounded-lg p-4 mt-4">
+                <div class="font-bold uppercase text-xs text-gray-500 mb-3">+ Link a new script</div>
+                <div class="flex flex-row items-center gap-3">
+                    <span class="text-sm text-gray-500 whitespace-nowrap">Connected to →</span>
+                    <div class="relative flex-grow">
+                        <input id="relSearchInput" autocomplete="off" placeholder="search a script to connect..."
+                               class="border rounded-lg px-3 py-2 w-full">
+                        <div id="relSearchResults"
+                             class="absolute left-0 right-0 bg-white border rounded-lg mt-1 hidden z-10 max-h-48 overflow-y-auto"></div>
+                    </div>
+                </div>
+                <div class="flex flex-row items-center gap-2 flex-wrap mt-3">
+                    <span class="text-sm text-gray-500">HOW:</span>
+                    <div id="relTypePills" class="flex flex-row flex-wrap gap-2"></div>
+                </div>
+                <div class="flex justify-end mt-3">
+                    <button type="button" id="relAddBtn" class="bg-black text-white px-5 py-2 rounded-lg cursor-pointer">+ Add link</button>
+                </div>
+            </div>
+        }
     </div>
 </div>
 <div id="detailContainer">
+</div>
+<div class="flex justify-end mt-6">
+    <button id="saveScriptBtn" type="button"
+            class="bg-black text-white px-6 py-3 rounded-xl cursor-pointer">
+        Save script
+    </button>
 </div>
 
 <!-- Tag Modal -->
@@ -251,14 +325,56 @@ else
 @section Scripts {
     @Html.AntiForgeryToken()
     <script>
-        window.builderConfig = {
-            worldId: @Model.SelectedWorld.WorldIDPK,
-            urls: {
-                list:   "@Url.Action("List", "Tag")",
-                create: "@Url.Action("CreateAjax", "Tag")"
-            }
-        };
-    </script>
-    <script src="~/js/script-create.js" asp-append-version="true"></script>
+    window.builderConfig = {
+        worldId: @Model.SelectedWorld.WorldIDPK,
+        scriptId: @scriptId,
+        urls: {
+            list:       "@Url.Action("List", "Tag")",
+            create:     "@Url.Action("CreateAjax", "Tag")",
+            picUpload:  "@Url.Action("UploadAjax", "Picture")",
+            picCaption: "@Url.Action("UpdateCaptionAjax", "Picture")",
+            picDelete:  "@Url.Action("DeleteAjax", "Picture")",
+            relForScript:  "@Url.Action("ForScript", "Relation")",
+            relSearch:     "@Url.Action("SearchScripts", "Relation")",
+            relLink:       "@Url.Action("LinkAjax", "Relation")",
+            relUnlink:     "@Url.Action("UnlinkAjax", "Relation")",
+            relTypes:      "@Url.Action("TypesAjax", "Connection")",
+            relCreateType: "@Url.Action("CreateTypeAjax", "Connection")"
+        }
+    };
+</script>
+<script src="~/js/script-create.js" asp-append-version="true"></script>
+<script src="~/js/picture-create.js" asp-append-version="true"></script>
+<script src="~/js/relation-create.js" asp-append-version="true"></script>
+<script>
+        document.getElementById('saveScriptBtn').addEventListener('click', async () => {
+        const btn  = document.getElementById('saveScriptBtn');
+        const form = document.getElementById('scriptForm');
+        btn.disabled = true;
+
+        const cf = document.getElementById('ScriptContentField');
+        if (!window.quill) { alert("Editor not ready — Quill failed to load."); btn.disabled = false; return; }
+        cf.value = window.quill.getSemanticHTML(0);
+        console.log("saving content length:", cf.value.length);   // temporary sanity check
+
+        // tags
+        if (window.syncTagInputs) window.syncTagInputs();
+
+        // pictures
+        if (window.uploadPictures) {
+        const ids = await window.uploadPictures();
+        if (ids === null) { btn.disabled = false; return; }
+        form.querySelectorAll('input[name="pictureIds"]').forEach(n => n.remove());
+        ids.forEach(id => {
+        const h = document.createElement('input');
+        h.type = 'hidden'; h.name = 'pictureIds'; h.value = id; form.appendChild(h);
+        });
+        }
+
+        form.submit();
+        });
+
+        document.getElementById('ScriptContentField').closest('form')?.id   // should print "scriptForm"
+</script>
 }
 

@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorldBuilder.Models;
@@ -6,140 +7,51 @@ using WorldBuilder.Models;
 public class ConnectionController : Controller
 {
     private readonly WorldBuilderDBContext _context;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public ConnectionController(WorldBuilderDBContext context)
+    public ConnectionController(WorldBuilderDBContext context, UserManager<IdentityUser> userManager)
     {
         _context = context;
+        _userManager = userManager;
+
     }
 
-    // GET: CONNECTIONTABLES
-    public async Task<IActionResult> Index()    
+    private async Task<int?> CurrentUserInfoIdAsync()
     {
-        return View(await _context.ConnectionTables.ToListAsync());
+        var uid = _userManager.GetUserId(User);
+        if (uid == null) return null;
+        var me = await _context.UserInfos.FirstOrDefaultAsync(u => u.UserInfoUserIDFK == uid);
+        return me?.UserInfoIDPK;
     }
 
-    // GET: CONNECTIONTABLES/Details/5
-    public async Task<IActionResult> Details(int? connidpk)
+    // GET /Connection/TypesAjax  — relation types this user has defined
+    [HttpGet]
+    public async Task<IActionResult> TypesAjax()
     {
-        if (connidpk == null)
-        {
-            return NotFound();
-        }
-
-        var connectiontable = await _context.ConnectionTables
-            .FirstOrDefaultAsync(m => m.ConnIDPK == connidpk);
-        if (connectiontable == null)
-        {
-            return NotFound();
-        }
-
-        return View(connectiontable);
+        var myId = await CurrentUserInfoIdAsync();
+        var types = await _context.ConnectionTables
+            .Where(c => c.ConnUserFK == myId)
+            .OrderBy(c => c.ConnDescr)
+            .Select(c => new { id = c.ConnIDPK, descr = c.ConnDescr })
+            .ToListAsync();
+        return Json(types);
     }
 
-    // GET: CONNECTIONTABLES/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
+    public class CreateTypeDto { public string Descr { get; set; } }
 
-    // POST: CONNECTIONTABLES/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    // POST /Connection/CreateTypeAjax
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("ConnIDPK,ConnDescr,ConnUserFK,ScriptScripts")] ConnectionTable connectiontable)
+    public async Task<IActionResult> CreateTypeAjax([FromBody] CreateTypeDto dto)
     {
-        if (ModelState.IsValid)
-        {
-            _context.Add(connectiontable);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(connectiontable);
-    }
+        if (string.IsNullOrWhiteSpace(dto?.Descr)) return BadRequest(new { error = "Required" });
+        var myId = await CurrentUserInfoIdAsync();
+        if (myId == null) return Unauthorized();
 
-    // GET: CONNECTIONTABLES/Edit/5
-    public async Task<IActionResult> Edit(int? connidpk)
-    {
-        if (connidpk == null)
-        {
-            return NotFound();
-        }
-
-        var connectiontable = await _context.ConnectionTables.FindAsync(connidpk);
-        if (connectiontable == null)
-        {
-            return NotFound();
-        }
-        return View(connectiontable);
-    }
-
-    // POST: CONNECTIONTABLES/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? connidpk, [Bind("ConnIDPK,ConnDescr,ConnUserFK,ScriptScripts")] ConnectionTable connectiontable)
-    {
-        if (connidpk != connectiontable.ConnIDPK)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(connectiontable);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ConnectionTableExists(connectiontable.ConnIDPK))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(connectiontable);
-    }
-
-    // GET: CONNECTIONTABLES/Delete/5
-    public async Task<IActionResult> Delete(int? connidpk)
-    {
-        if (connidpk == null)
-        {
-            return NotFound();
-        }
-
-        var connectiontable = await _context.ConnectionTables
-            .FirstOrDefaultAsync(m => m.ConnIDPK == connidpk);
-        if (connectiontable == null)
-        {
-            return NotFound();
-        }
-
-        return View(connectiontable);
-    }
-
-    // POST: CONNECTIONTABLES/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? connidpk)
-    {
-        var connectiontable = await _context.ConnectionTables.FindAsync(connidpk);
-        if (connectiontable != null)
-        {
-            _context.ConnectionTables.Remove(connectiontable);
-        }
-
+        var t = new ConnectionTable { ConnDescr = dto.Descr.Trim(), ConnUserFK = myId.Value };
+        _context.ConnectionTables.Add(t);
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return Json(new { id = t.ConnIDPK, descr = t.ConnDescr });
     }
 
     private bool ConnectionTableExists(int? connidpk)

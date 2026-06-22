@@ -14,8 +14,11 @@ public class PictureController : Controller
         _context = context;
         _env = env;
     }
-
-    // POST: /Picture/UploadAjax  (multipart form -> token comes as a form field)
+    public class CaptionDto
+    {
+        public int Id { get; set; }
+        public string Caption { get; set; }
+    }
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UploadAjax(IFormFile file, int worldId, string caption)
@@ -49,9 +52,8 @@ public class PictureController : Controller
         return Json(new { id = picture.PicIDPK, path = picture.PicPath, caption = picture.PicCaption ?? "" });
     }
 
-    public class CaptionDto { public int Id { get; set; } public string Caption { get; set; } }
+   
 
-    // POST: /Picture/UpdateCaptionAjax  (JSON body -> token via header)
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateCaptionAjax([FromBody] CaptionDto dto)

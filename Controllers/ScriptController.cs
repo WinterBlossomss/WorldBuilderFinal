@@ -94,80 +94,101 @@ public class ScriptController : Controller
     }
 
     // POST: SCRIPTS/Create
+    // POST: SCRIPTS/Create  — persist, then go to Edit where relations live
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(
-      [Bind("ScriptContent,ScriptTitle,ScriptCatFK,ScriptSubFK,ScriptUpdateAt,ScriptCreateAt,ScriptIsPublic,ScriptIsChar,ScriptBoardX,ScriptBoardY,ScriptBoardColor")]
+        [Bind("ScriptContent,ScriptTitle,ScriptCatFK,ScriptSubFK,ScriptIsPublic,ScriptIsChar,ScriptBoardX,ScriptBoardY,ScriptBoardColor")]
     WorldBuilder.Models.Script script,
-      int[] tagIds)
+        int[] tagIds, int[] pictureIds)
     {
-        if (ModelState.IsValid)
-        {
-            if (tagIds is { Length: > 0 })
-            {
-                var tags = await _context.Tags
-                    .Where(t => tagIds.Contains(t.TagIDPK))
-                    .ToListAsync();
-                foreach (var t in tags)
-                    script.ScriptTagTagFKs.Add(t);  
-            }
+        script.ScriptCreateAt = DateTime.UtcNow;   // set server-side, don't trust the form
 
-            _context.Add(script);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+        if (tagIds is { Length: > 0 })
+        {
+            var tags = await _context.Tags.Where(t => tagIds.Contains(t.TagIDPK)).ToListAsync();
+            foreach (var t in tags) script.ScriptTagTagFKs.Add(t);
         }
-        return View(script);
+        if (pictureIds is { Length: > 0 })
+        {
+            var pics = await _context.Pictures.Where(p => pictureIds.Contains(p.PicIDPK)).ToListAsync();
+            foreach (var p in pics) script.PicScriptPicFKs.Add(p);
+        }
+
+        _context.Add(script);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Edit), new { scriptidpk = script.ScriptIDPK });
     }
 
-    // GET: SCRIPTS/Edit/5
+    // GET: SCRIPTS/Edit/5  — renders the SAME Create view, now with a real id
     public async Task<IActionResult> Edit(int? scriptidpk)
     {
-        if (scriptidpk == null)
+        if (scriptidpk == null) return NotFound();
+
+        var script = await _context.Scripts
+            .Include(s => s.ScriptTagTagFKs)
+            .Include(s => s.PicScriptPicFKs)
+            .FirstOrDefaultAsync(s => s.ScriptIDPK == scriptidpk);
+        if (script == null) return NotFound();
+
+        var cat = await _context.Categories.FirstOrDefaultAsync(c => c.CatIDPK == script.ScriptCatFK);
+
+        // ↓↓ adjust "CatWorldFK" if your Category→World FK is named differently
+        World world = cat == null ? null
+            : await _context.Worlds.FirstOrDefaultAsync(w => w.WorldIDPK == cat.CatWorldFK);
+
+        var tags = world == null ? new List<Tag>()
+            : await _context.Tags.Where(t => t.TagWorldFK == world.WorldIDPK).ToListAsync();
+
+        ViewData["CatName"] = cat?.CatName;
+        if (script.ScriptSubFK > 0)
         {
-            return NotFound();
+            var sub = await _context.SubCategories.FirstOrDefaultAsync(s => s.SubIDPK == script.ScriptSubFK);
+            ViewData["SubName"] = sub?.SubName;   // adjust SubIDPK/SubName if named differently
         }
 
-        var script = await _context.Scripts.FindAsync(scriptidpk);
-        if (script == null)
+        return View("Create", new BuilderView
         {
-            return NotFound();
-        }
-        return View(script);
+            NewScript = script,
+            SelectedWorld = world,
+            Tags = tags,
+            TotalTags = tags.Count
+        });
     }
 
-    // POST: SCRIPTS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    // POST: SCRIPTS/Edit/5  — update title/content; ADD new tags/pictures (no removal yet)
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? scriptidpk, [Bind("ScriptIDPK,ScriptContent,ScriptTitle,ScriptCatFK,ScriptSubFK,ScriptUpdateAt,ScriptCreateAt,ScriptIsPublic,ScriptIsChar,ScriptBoardX,ScriptBoardY,ScriptBoardColor,DetailViews,ScriptLikes,ScriptScriptScriptScriptOneFKNavigations,ScriptScriptScriptScriptTwoFKNavigations,PicScriptPicFKs,ScriptTagTagFKs")] WorldBuilder.Models.Script script)
+    public async Task<IActionResult> Edit(int scriptidpk,
+        [Bind("ScriptTitle,ScriptContent")] WorldBuilder.Models.Script form,
+        int[] tagIds, int[] pictureIds)
     {
-        if (scriptidpk != script.ScriptIDPK)
+        var script = await _context.Scripts
+            .Include(s => s.ScriptTagTagFKs)
+            .Include(s => s.PicScriptPicFKs)
+            .FirstOrDefaultAsync(s => s.ScriptIDPK == scriptidpk);
+        if (script == null) return NotFound();
+
+        script.ScriptTitle = form.ScriptTitle;
+        script.ScriptContent = form.ScriptContent;
+        script.ScriptUpdateAt = DateTime.UtcNow;
+
+        if (tagIds is { Length: > 0 })
         {
-            return NotFound();
+            var have = script.ScriptTagTagFKs.Select(t => t.TagIDPK).ToHashSet();
+            var add = await _context.Tags.Where(t => tagIds.Contains(t.TagIDPK) && !have.Contains(t.TagIDPK)).ToListAsync();
+            foreach (var t in add) script.ScriptTagTagFKs.Add(t);
+        }
+        if (pictureIds is { Length: > 0 })
+        {
+            var have = script.PicScriptPicFKs.Select(p => p.PicIDPK).ToHashSet();
+            var add = await _context.Pictures.Where(p => pictureIds.Contains(p.PicIDPK) && !have.Contains(p.PicIDPK)).ToListAsync();
+            foreach (var p in add) script.PicScriptPicFKs.Add(p);
         }
 
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(script);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ScriptExists(script.ScriptIDPK))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(script);
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Edit), new { scriptidpk });
     }
 
     // GET: SCRIPTS/Delete/5

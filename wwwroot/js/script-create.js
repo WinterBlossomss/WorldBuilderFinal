@@ -270,6 +270,20 @@ const quill = new Quill('#editor', {
 
 const toolbar = quill.getModule('toolbar');
 
-new QuillMarkdown(quill);
-
 const html = quill.getSemanticHTML(0);
+
+
+
+// expose for the save orchestrator
+window.editorGetHtml = () => quill.getSemanticHTML(0);
+window.syncTagInputs = function () {
+    const form = document.getElementById('scriptForm');
+    if (!form) return;
+    form.querySelectorAll('input[name="tagIds"]').forEach(n => n.remove());
+    selectedTagIds.forEach(id => {
+        const h = document.createElement('input');
+        h.type = 'hidden'; h.name = 'tagIds'; h.value = id; form.appendChild(h);
+    });
+};
+
+window.quill = quill;   // expose the editor instance
