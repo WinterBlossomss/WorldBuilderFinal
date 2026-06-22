@@ -1,4 +1,5 @@
-
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorldBuilder.Models;
@@ -6,144 +7,81 @@ using WorldBuilder.Models;
 public class PictureController : Controller
 {
     private readonly WorldBuilderDBContext _context;
+    private readonly IWebHostEnvironment _env;
 
-    public PictureController(WorldBuilderDBContext context)
+    public PictureController(WorldBuilderDBContext context, IWebHostEnvironment env)
     {
         _context = context;
+        _env = env;
     }
 
-    // GET: PICTURES
-    public async Task<IActionResult> Index()    
-    {
-        return View(await _context.Pictures.ToListAsync());
-    }
-
-    // GET: PICTURES/Details/5
-    public async Task<IActionResult> Details(int? picidpk)
-    {
-        if (picidpk == null)
-        {
-            return NotFound();
-        }
-
-        var picture = await _context.Pictures
-            .FirstOrDefaultAsync(m => m.PicIDPK == picidpk);
-        if (picture == null)
-        {
-            return NotFound();
-        }
-
-        return View(picture);
-    }
-
-    // GET: PICTURES/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: PICTURES/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    // POST: /Picture/UploadAjax  (multipart form -> token comes as a form field)
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("PicIDPK,PicCaption,PicPath,PicSubFK,PicCatFK,PicWorldFK,DetailViews,PicCatFKNavigation,PicSubFKNavigation,PicWorldFKNavigation,PicScriptScriptFKs")] Picture picture)
+    public async Task<IActionResult> UploadAjax(IFormFile file, int worldId, string caption)
     {
-        if (ModelState.IsValid)
+        if (file == null || file.Length == 0)
+            return BadRequest(new { error = "No file." });
+
+        var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!allowed.Contains(ext))
+            return BadRequest(new { error = "Unsupported file type." });
+        if (file.Length > 5 * 1024 * 1024)
+            return BadRequest(new { error = "File too large (max 5 MB)." });
+
+        var dir = Path.Combine(_env.WebRootPath, "uploads", "pictures");
+        Directory.CreateDirectory(dir);
+
+        var fileName = $"{Guid.NewGuid():N}{ext}";
+        await using (var stream = System.IO.File.Create(Path.Combine(dir, fileName)))
+            await file.CopyToAsync(stream);
+
+        var picture = new Picture
         {
-            _context.Add(picture);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(picture);
-    }
-
-    // GET: PICTURES/Edit/5
-    public async Task<IActionResult> Edit(int? picidpk)
-    {
-        if (picidpk == null)
-        {
-            return NotFound();
-        }
-
-        var picture = await _context.Pictures.FindAsync(picidpk);
-        if (picture == null)
-        {
-            return NotFound();
-        }
-        return View(picture);
-    }
-
-    // POST: PICTURES/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? picidpk, [Bind("PicIDPK,PicCaption,PicPath,PicSubFK,PicCatFK,PicWorldFK,DetailViews,PicCatFKNavigation,PicSubFKNavigation,PicWorldFKNavigation,PicScriptScriptFKs")] Picture picture)
-    {
-        if (picidpk != picture.PicIDPK)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(picture);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PictureExists(picture.PicIDPK))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(picture);
-    }
-
-    // GET: PICTURES/Delete/5
-    public async Task<IActionResult> Delete(int? picidpk)
-    {
-        if (picidpk == null)
-        {
-            return NotFound();
-        }
-
-        var picture = await _context.Pictures
-            .FirstOrDefaultAsync(m => m.PicIDPK == picidpk);
-        if (picture == null)
-        {
-            return NotFound();
-        }
-
-        return View(picture);
-    }
-
-    // POST: PICTURES/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? picidpk)
-    {
-        var picture = await _context.Pictures.FindAsync(picidpk);
-        if (picture != null)
-        {
-            _context.Pictures.Remove(picture);
-        }
-
+            PicPath = $"/uploads/pictures/{fileName}",
+            PicCaption = caption,
+            PicWorldFK = worldId
+        };
+        _context.Pictures.Add(picture);
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+
+        return Json(new { id = picture.PicIDPK, path = picture.PicPath, caption = picture.PicCaption ?? "" });
     }
 
-    private bool PictureExists(int? picidpk)
+    public class CaptionDto { public int Id { get; set; } public string Caption { get; set; } }
+
+    // POST: /Picture/UpdateCaptionAjax  (JSON body -> token via header)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateCaptionAjax([FromBody] CaptionDto dto)
     {
-        return _context.Pictures.Any(e => e.PicIDPK == picidpk);
+        var pic = await _context.Pictures.FindAsync(dto.Id);
+        if (pic == null) return NotFound();
+        pic.PicCaption = dto.Caption;
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
+
+    public class IdDto { public int Id { get; set; } }
+
+    // POST: /Picture/DeleteAjax
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteAjax([FromBody] IdDto dto)
+    {
+        var pic = await _context.Pictures.FindAsync(dto.Id);
+        if (pic == null) return NotFound();
+
+        if (!string.IsNullOrEmpty(pic.PicPath))
+        {
+            var full = Path.Combine(_env.WebRootPath,
+                pic.PicPath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+            if (System.IO.File.Exists(full)) System.IO.File.Delete(full);
+        }
+
+        _context.Pictures.Remove(pic);
+        await _context.SaveChangesAsync();
+        return Ok();
     }
 }

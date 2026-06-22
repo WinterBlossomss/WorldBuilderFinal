@@ -76,18 +76,18 @@ public class ScriptController : Controller
         var world = await _context.Worlds
             .FirstOrDefaultAsync(w => w.WorldIDPK == worldID);
 
-        var tags = await _context.Tags
-            .Where(t => t.TagWorldFK == worldID)
-            .ToListAsync();
+        //var tags = await _context.Tags
+        //    .Where(t => t.TagWorldFK == worldID)
+        //    .ToListAsync();
 
-        var tagsCount = tags.Count();
+        //var tagsCount = tags.Count();
 
         var builderView = new BuilderView
         {
             NewScript = script,
             SelectedWorld = world,
-            Tags = tags,
-            TotalTags = tagsCount
+            //Tags = tags,
+            //TotalTags = tagsCount
         };
 
         return View(builderView);
@@ -96,10 +96,22 @@ public class ScriptController : Controller
     // POST: SCRIPTS/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("ScriptContent,ScriptTitle,ScriptCatFK,ScriptSubFK,ScriptUpdateAt,ScriptCreateAt,ScriptIsPublic,ScriptIsChar,ScriptBoardX,ScriptBoardY,ScriptBoardColor")] WorldBuilder.Models.Script script)
+    public async Task<IActionResult> Create(
+      [Bind("ScriptContent,ScriptTitle,ScriptCatFK,ScriptSubFK,ScriptUpdateAt,ScriptCreateAt,ScriptIsPublic,ScriptIsChar,ScriptBoardX,ScriptBoardY,ScriptBoardColor")]
+    WorldBuilder.Models.Script script,
+      int[] tagIds)
     {
         if (ModelState.IsValid)
         {
+            if (tagIds is { Length: > 0 })
+            {
+                var tags = await _context.Tags
+                    .Where(t => tagIds.Contains(t.TagIDPK))
+                    .ToListAsync();
+                foreach (var t in tags)
+                    script.ScriptTagTagFKs.Add(t);  
+            }
+
             _context.Add(script);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

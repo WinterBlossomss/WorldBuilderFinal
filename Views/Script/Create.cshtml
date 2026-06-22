@@ -71,39 +71,11 @@ else
     
     <input class="text-5xl border-b border-dashed" placeholder="Name this script...">
     <div class="flex flex-row my-2 items-center">
-        <div>
+        <div class="me-5">
             tags:
         </div>
         <div id="tagContainer" class="flex flex-row gap-3 items-center">
-            @if(Model.TotalTags > 0)
-            {
-                @foreach(var tag in Model.Tags)
-                {
-                    <div class="flex flex-row py-1 px-2 border border-dashed rounded-full">
-                        <div class="rounded-full p-1" style="background-color:@tag.TagColor">
-                        </div>
-                        <div class="text-black text-base">
-                            @tag.TagName
-                        </div>
-                        @if(tag.TagUserFK != null)
-                        {
-                            <div class="border text-sm">
-                                all worlds
-                            </div>
-                        }
-                        <button>
-                            x
-                        </button>
-                    </div>
-                    
-                }
-            }
-            else
-            {
-                <div class="indent-2 text-base italic">
-                    none yet -
-                </div>
-            }
+            <div id="noTagsLabel" class="indent-2 text-base italic">none yet -</div>
             <button onclick="showTagModal()" class="py-1 px-2 border border-dashed rounded-full text-black cursor-pointer text-base">
                 + tag
             </button>
@@ -161,12 +133,22 @@ else
         </div> *@
             
         </div>
-    <div id="detailContainer">
-
+    
+    </div>
+    <div class="border border-dashed rounded-xl p-3">
+        <div>
+            <div >
+                Pictures
+            </div>
+            <div class="border font-bold rounded-full">
+                + Add picture
+            </div>
+        </div>
+        
     </div>
 </div>
+<div id="detailContainer">
 </div>
-
 
 <!-- Tag Modal -->
 <div id="tagModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center">
@@ -178,11 +160,13 @@ else
                 x
             </button>
         </div>
-        <div class="my-2">
-            Tags cross-reference scripts across @Model.SelectedWorld.WorldName. Pick any number.
+        <div class="my-2 flex flex-row">
+            <div>
+                Tags cross-reference scripts across <a class="italics bold">@Model.SelectedWorld.WorldName.</a>Pick any number.
+            </div>
         </div>
         <div class="flex flex-row border justify-between">
-            <div class="flex flex-row p-2 items-center">
+            <div class="flex flex-row p-2 items-center w-full" ">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:20px;height:20px;">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                 </svg>
@@ -192,21 +176,20 @@ else
 
             </div>
         </div>
-        <div class="flex flex-row border border-dashed p-3">
+        <div class="flex flex-row border border-dashed p-3 mt-3 items-center gap-3">
             <div>
                 selected:
             </div>
-            <div id="tagSelectedContainer">
+            <div id="tagSelectedContainer" class="flex flex-row gap-3 flex-wrap">
 
             </div>
         </div>
-        <div class="font-bold my-2">
+        <div class="font-bold mt-2">
             MATCHING TAGS
         </div>
-        <div id="tagContainer">
-
+        <div id="tagMatchContainer" class="flex flex-row gap-3 border-b border-dashed py-3">
         </div>
-        <div class="uppercase">
+        <div class="uppercase mt-3 font-bold">
             Don't see one? Create a new tag
         </div>
         <div class="flex flex-row">
@@ -215,20 +198,21 @@ else
                     <div id="tagColorPreview" class="w-8 h-8 mt-2 ms-2 me-2 inline-block border border-dashed rounded-full">
                     </div>
                 </div>
+                <input id="tagNameInput" placeholder="e.g. retainer" class="border p-2 w-full" />
             </div>
-            <button class="p-3 bg-black text-white">
+            <button class="p-3 bg-black text-white cursor-pointer" onclick="createTag()">
                 + Create
             </button>
         </div>
-        <div class="flex flex-row">
-            <div>
+        <div class="flex flex-row items-center my-5">
+            <div class="pe-5">
                 color
             </div>
             <div id="tagColorContainer">
 
             </div>
         </div>
-        <div class="flex flex-row items-center">
+        <div class="flex flex-row items-center p-3 border border-dashed rounded-md gap-3">
             <div class="flex flex-col">
                 <div>
                     Available in all my worlds
@@ -241,17 +225,17 @@ else
                 </div>
             </div>
             <div id="tagSwitch">
-
+                <input type="checkbox" id="tagAllWorlds" />
             </div>
         </div>
         
 
-        <div>
-            <div class="flex flex-row justify-between">
+        <div class="mt-5 border-t border-dashed">
+            <div class="flex flex-row justify-between mt-4">
                 <div>
                     click a tag to add - click again to remove
                 </div>
-                <div>
+                <div class="flex flex-row">
                     <button onclick="hideTagModal()" class="border cursor-pointer text-black p-4 rounded-xl">
                         Cancel
                     </button>
@@ -265,11 +249,13 @@ else
 </div>
 
 @section Scripts {
+    @Html.AntiForgeryToken()
     <script>
         window.builderConfig = {
             worldId: @Model.SelectedWorld.WorldIDPK,
             urls: {
-                tags: "@Url.Action("Index", "SubCategorie")",
+                list:   "@Url.Action("List", "Tag")",
+                create: "@Url.Action("CreateAjax", "Tag")"
             }
         };
     </script>

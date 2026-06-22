@@ -139,7 +139,7 @@ function saveCategory() {
         }
     }).done(function (res) {
         const html = `
-            <div class="p-3">
+            <div class="py-2">
                 <div class="flex flex-row items-center gap-2">
                     <button class="flex flex-row gap-2 items-center cursor-pointer"
                             onclick="loadSubCategories(${res.catIDPK}, 'subCatContainer-${res.catIDPK}', this)">
@@ -149,7 +149,7 @@ function saveCategory() {
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-right text-black flex-shrink-0">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                         </svg>
-                        class="w-3 h-3 rounded-sm border-2 border-dashed flex-shrink-0 p-3 rounded-xl" style="background-color:${res.catColor}"></div>
+                        <div class="w-4 h-4 rounded-md border-2 border-dashed flex-shrink-0" style="background-color:${res.catColor}"></div>
                         <h2 class="text-md">${res.catName}</h2>
                     </button>
                 </div>

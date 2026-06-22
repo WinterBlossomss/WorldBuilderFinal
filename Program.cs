@@ -22,7 +22,7 @@ namespace WorldBuilder
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-
+            builder.Services.AddAntiforgery(o => o.HeaderName = "RequestVerificationToken");
             builder.Services.AddControllersWithViews();
             var app = builder.Build();
 

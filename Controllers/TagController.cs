@@ -1,4 +1,4 @@
-
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorldBuilder.Models;
@@ -6,146 +6,97 @@ using WorldBuilder.Models;
 public class TagController : Controller
 {
     private readonly WorldBuilderDBContext _context;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public TagController(WorldBuilderDBContext context)
+    public TagController(WorldBuilderDBContext context, UserManager<IdentityUser> userManager)
     {
         _context = context;
+        _userManager = userManager;
     }
 
-    // GET: TAGS
-    public async Task<IActionResult> Index()    
+    // domain user id (UserInfo PK) for the logged-in identity user
+    private async Task<int?> CurrentUserInfoIdAsync()
     {
-        return View(await _context.Tags.ToListAsync());
+        var uid = _userManager.GetUserId(User);
+        if (uid == null) return null;
+        var me = await _context.UserInfos
+            .FirstOrDefaultAsync(u => u.UserInfoUserIDFK == uid);
+        return me?.UserInfoIDPK;
     }
 
-    // GET: TAGS/Details/5
-    public async Task<IActionResult> Details(int? tagidpk)
+    // GET: /Tag/List?worldId=5&q=re
+    [HttpGet]
+    public async Task<IActionResult> List(int worldId, string q = null)
     {
-        if (tagidpk == null)
+        var myId = await CurrentUserInfoIdAsync();
+
+        // tags usable here = this world's tags + my "all-worlds" tags
+        var baseQuery = _context.Tags
+            .Where(t => t.TagWorldFK == worldId
+                     || (myId != null && t.TagUserFK == myId));
+
+        var total = await baseQuery.CountAsync();
+
+        var filtered = baseQuery;
+        if (!string.IsNullOrWhiteSpace(q))
         {
-            return NotFound();
+            var term = q.Trim();
+            filtered = filtered.Where(t => EF.Functions.Like(t.TagName, term + "%"));
         }
 
-        var tag = await _context.Tags
-            .FirstOrDefaultAsync(m => m.TagIDPK == tagidpk);
-        if (tag == null)
-        {
-            return NotFound();
-        }
+        var tags = await filtered
+            .OrderBy(t => t.TagName)
+            .Select(t => new
+            {
+                id = t.TagIDPK,
+                name = t.TagName,
+                color = t.TagColor,
+                allWorlds = t.TagUserFK != null,
+                count = t.ScriptTagScriptFKs.Count  
+            })
+            .ToListAsync();
 
-        return View(tag);
+        return Json(new { total, matched = tags.Count, tags });
     }
 
-    // GET: TAGS/Create
-    public IActionResult Create()
+    public class CreateTagDto
     {
-        return View();
+        public string Name { get; set; }
+        public string Color { get; set; }
+        public bool AllWorlds { get; set; }
+        public int WorldId { get; set; }
     }
 
-    // POST: TAGS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    // POST: /Tag/CreateAjax
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("TagName,TagDescription,TagColor")] Tag tag)
+    public async Task<IActionResult> CreateAjax([FromBody] CreateTagDto dto)
     {
-        if (ModelState.IsValid)
+        if (string.IsNullOrWhiteSpace(dto?.Name))
+            return BadRequest(new { error = "Name is required." });
+
+        var myId = await CurrentUserInfoIdAsync();
+        if (myId == null) return Unauthorized();
+
+        var tag = new Tag
         {
-            //Need to put world fk and user fk manually
+            TagName = dto.Name.Trim(),
+            TagColor = dto.Color,
+            // all-worlds => owned by user, not pinned to a world; otherwise world-scoped
+            TagWorldFK = dto.AllWorlds ? (int?)null : dto.WorldId,
+            TagUserFK = dto.AllWorlds ? myId : (int?)null
+        };
 
-            _context.Add(tag);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(tag);
-    }
-
-    // GET: TAGS/Edit/5
-    public async Task<IActionResult> Edit(int? tagidpk)
-    {
-        if (tagidpk == null)
-        {
-            return NotFound();
-        }
-
-        var tag = await _context.Tags.FindAsync(tagidpk);
-        if (tag == null)
-        {
-            return NotFound();
-        }
-        return View(tag);
-    }
-
-    // POST: TAGS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? tagidpk, [Bind("TagIDPK,TagName,TagDescription,TagColor,TagWorldFK,TagUserFK,TagUserFKNavigation,TagWorldFKNavigation,ScriptTagScriptFKs")] Tag tag)
-    {
-        if (tagidpk != tag.TagIDPK)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(tag);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TagExists(tag.TagIDPK))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(tag);
-    }
-
-    // GET: TAGS/Delete/5
-    public async Task<IActionResult> Delete(int? tagidpk)
-    {
-        if (tagidpk == null)
-        {
-            return NotFound();
-        }
-
-        var tag = await _context.Tags
-            .FirstOrDefaultAsync(m => m.TagIDPK == tagidpk);
-        if (tag == null)
-        {
-            return NotFound();
-        }
-
-        return View(tag);
-    }
-
-    // POST: TAGS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? tagidpk)
-    {
-        var tag = await _context.Tags.FindAsync(tagidpk);
-        if (tag != null)
-        {
-            _context.Tags.Remove(tag);
-        }
-
+        _context.Tags.Add(tag);
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
 
-    private bool TagExists(int? tagidpk)
-    {
-        return _context.Tags.Any(e => e.TagIDPK == tagidpk);
+        return Json(new
+        {
+            id = tag.TagIDPK,
+            name = tag.TagName,
+            color = tag.TagColor,
+            allWorlds = tag.TagUserFK != null,
+            count = 0
+        });
     }
 }
