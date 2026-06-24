@@ -90,6 +90,46 @@ namespace WorldBuilder.Controllers
             return Json(subs);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> OutlineData(int worldId)
+        {
+            var cats = await _context.Categories
+                .Where(c => c.CatWorldFK == worldId)          // ← adjust if named differently
+                .OrderBy(c => c.CatName).ToListAsync();
+            var catIds = cats.Select(c => c.CatIDPK).ToList();
+
+            var subs = await _context.SubCategories
+                .Where(s => catIds.Contains(s.SubCatFK))
+                .OrderBy(s => s.SubName).ToListAsync();
+
+            var scripts = await _context.Scripts
+                .Where(s => catIds.Contains(s.ScriptCatFK))
+                .Select(s => new {
+                    id = s.ScriptIDPK,
+                    title = s.ScriptTitle,
+                    catFk = s.ScriptCatFK,
+                    subFk = s.ScriptSubFK,
+                    edited = s.ScriptUpdateAt ?? s.ScriptCreateAt,
+                    links = _context.ScriptScripts.Count(ss =>
+                        ss.ScriptScriptOneFK == s.ScriptIDPK || ss.ScriptScriptTwoFK == s.ScriptIDPK),
+                    tags = s.ScriptTagTagFKs.Select(t => new { name = t.TagName, color = t.TagColor }).ToList()
+                }).ToListAsync();
+
+            var tree = cats.Select(c => new {
+                id = c.CatIDPK,
+                name = c.CatName,
+                color = c.CatColor,
+                scriptCount = scripts.Count(s => s.catFk == c.CatIDPK),
+                directScripts = scripts.Where(s => s.catFk == c.CatIDPK && s.subFk == 0).ToList(),
+                subs = subs.Where(su => su.SubCatFK == c.CatIDPK).Select(su => new {
+                    id = su.SubIDPK,
+                    name = su.SubName,
+                    scripts = scripts.Where(s => s.subFk == su.SubIDPK).ToList()
+                }).ToList()
+            }).ToList();
+
+            return Json(new { totalScripts = scripts.Count, totalCats = cats.Count, cats = tree });
+        }
         // GET: BuilderViewController/Details/5
         public ActionResult Details(int id)
         {

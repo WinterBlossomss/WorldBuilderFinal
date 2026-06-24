@@ -29,7 +29,7 @@ else
     
     
 </div>
-<div class="flex flex-col  m-5">
+<div class="m-5">
     <div class="flex flex-row justify-between">
         <nav class="flex my-3" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
@@ -70,7 +70,6 @@ else
             </div>
         </div>
     </div>
-    
     <form id="scriptForm" method="post"
           asp-controller="Script"
           asp-action="@(isEdit ? "Edit" : "Create")"
@@ -93,130 +92,169 @@ else
             </button>
         </div>
     </div>
-    <div class="w-full">
-        <div id="mainContainer" class="flex flex-col w-full">
-            <div id="editorContainer" class="w-full">
-                <div id="toolbar" class="editor-toolbar">
-                    <span class="ql-formats">
-                        <button class="ql-header" value="1">H1</button>
-                        <button class="ql-header" value="2">H2</button>
-                        <button class="ql-header" value="3">H3</button>
-                    </span>
+</div>
 
-                    <span class="ql-formats">
-                        <button class="ql-bold"></button>
-                        <button class="ql-italic"></button>
-                        <button class="ql-underline"></button>
-                        <button class="ql-strike"></button>
-                    </span>
 
-                    <span class="ql-formats">
-                        <button class="ql-list" value="bullet"></button>
-                        <button class="ql-list" value="ordered"></button>
+<div class="grid grid-cols-3 gap-3">
+    <div class="flex flex-col col-span-2  m-5">
+        <div class="w-full">
+            <div id="mainContainer" class="flex flex-col w-full">
+                <div id="editorContainer" class="w-full">
+                    <div id="toolbar" class="editor-toolbar">
+                        <span class="ql-formats">
+                            <button class="ql-header" value="1">H1</button>
+                            <button class="ql-header" value="2">H2</button>
+                            <button class="ql-header" value="3">H3</button>
+                        </span>
 
-                        <button class="ql-blockquote"></button>
-                    </span>
+                        <span class="ql-formats">
+                            <button class="ql-bold"></button>
+                            <button class="ql-italic"></button>
+                            <button class="ql-underline"></button>
+                            <button class="ql-strike"></button>
+                        </span>
 
-                    <span class="ql-formats">
-                        <button class="ql-link"></button>
-                        <button class="ql-image"></button>
-                    </span>
+                        <span class="ql-formats">
+                            <button class="ql-list" value="bullet"></button>
+                            <button class="ql-list" value="ordered"></button>
 
-                    <span class="ql-formats">
-                        <button class="ql-script" value="sub"></button>
-                        <button class="ql-script" value="super"></button>
-                    </span>
+                            <button class="ql-blockquote"></button>
+                        </span>
 
-                    <span class="ql-formats">
-                        <button class="ql-link"></button>
-                        <button class="ql-image"></button>
 
-                        <button id="characterLinkButton" type="button">
-                            🧙
-                        </button>
-                    </span>
+                        <span class="ql-formats">
+                            <button class="ql-script" value="sub"></button>
+                            <button class="ql-script" value="super"></button>
+                        </span>
 
+                        <span class="ql-formats">
+                            <button class="ql-link"></button>
+                            <button id="characterLinkButton" type="button">
+                                🧙
+                            </button>
+                        </span>
+
+                    </div>
+
+                    <div id="editor" class="w-full h-[300px] overflow-auto" style="height:300px;"></div>
                 </div>
-
-                <div id="editor" class="w-full"></div>
-            </div>
-        @* <div>
+                @* <div>
              Quick starts
         </div> *@
             
-        </div>
-    
-    </div>
-    <div class="p-5 m-5">
-
-    </div>
-    <div id="picturePanel" class="border border-dashed rounded-xl p-5 mt-5">
-        <div class="flex flex-row justify-between items-start">
-            <div>
-                <div class="text-2xl font-semibold">Pictures</div>
-                <div id="pictureSubtitle" class="text-sm text-gray-500"></div>
             </div>
-            <label class="border font-bold rounded-full px-4 py-2 cursor-pointer whitespace-nowrap">
-                + Add picture
-                <input id="pictureBrowse" type="file" accept="image/*" multiple class="hidden">
-            </label>
+
+        </div>
+        <div class="p-5 m-5">
+        </div>
+        <div id="picturePanel" class="border border-dashed rounded-xl p-5 mt-5">
+            <div class="flex flex-row justify-between items-start">
+                <div>
+                    <div class="text-2xl font-semibold">Pictures</div>
+                    <div id="pictureSubtitle" class="text-sm text-gray-500"></div>
+                </div>
+                <label class="border font-bold rounded-full px-4 py-2 cursor-pointer whitespace-nowrap">
+                    + Add picture
+                    <input id="pictureBrowse" type="file" accept="image/*" multiple class="hidden">
+                </label>
+            </div>
+
+            <div id="pictureGrid" class="grid grid-cols-6 gap-4 mt-4">
+                <!-- cards + dropzone injected by JS -->
+                <div id="pictureDrop"
+                     class="border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-gray-400 cursor-pointer text-center gap-1"
+                     style="aspect-ratio:3/2;">
+                    <div class="text-2xl text-black">+</div>
+                    <div>drop a picture</div>
+                    <div>or <span class="underline">browse</span></div>
+                </div>
+            </div>
         </div>
 
-        <div id="pictureGrid" class="grid grid-cols-6 gap-4 mt-4">
-            <!-- cards + dropzone injected by JS -->
-            <div id="pictureDrop"
-                 class="border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-gray-400 cursor-pointer text-center gap-1"
-                 style="aspect-ratio:3/2;">
-                <div class="text-2xl text-black">+</div>
-                <div>drop a picture</div>
-                <div>or <span class="underline">browse</span></div>
+        <div id="relatedScripts" class="border border-dashed rounded-xl p-5 mt-5">
+            <div class="flex flex-row justify-between items-start">
+                <div>
+                    <div class="text-2xl font-semibold">Related scripts</div>
+                    <div class="text-sm text-gray-500" id="relSubtitle"></div>
+                </div>
+                <div class="text-sm text-gray-400 italic">relations are bidirectional — adding here updates the other script too</div>
             </div>
+
+            @if (!isEdit)
+            {
+                <div class="text-gray-400 italic text-center py-10">
+                    Save this script first to link it to other scripts.
+                </div>
+            }
+            else
+            {
+                <div id="relList" class="flex flex-col gap-2 mt-4"></div>
+
+                <div class="border border-dashed rounded-lg p-4 mt-4">
+                    <div class="font-bold uppercase text-xs text-gray-500 mb-3">+ Link a new script</div>
+                    <div class="flex flex-row items-center gap-3">
+                        <span class="text-sm text-gray-500 whitespace-nowrap">Connected to →</span>
+                        <div class="relative flex-grow">
+                            <input id="relSearchInput" autocomplete="off" placeholder="search a script to connect..."
+                                   class="border rounded-lg px-3 py-2 w-full">
+                            <div id="relSearchResults"
+                                 class="absolute left-0 right-0 bg-white border rounded-lg mt-1 hidden z-10 max-h-48 overflow-y-auto"></div>
+                        </div>
+                    </div>
+                    <div class="flex flex-row items-center gap-2 flex-wrap mt-3">
+                        <span class="text-sm text-gray-500">HOW:</span>
+                        <div id="relTypePills" class="flex flex-row flex-wrap gap-2"></div>
+                    </div>
+                    <div class="flex justify-end mt-3">
+                        <button type="button" id="relAddBtn" class="bg-black text-white px-5 py-2 rounded-lg cursor-pointer">+ Add link</button>
+                    </div>
+                </div>
+            }
         </div>
     </div>
-
-    <div id="relatedScripts" class="border border-dashed rounded-xl p-5 mt-5">
-        <div class="flex flex-row justify-between items-start">
-            <div>
-                <div class="text-2xl font-semibold">Related scripts</div>
-                <div class="text-sm text-gray-500" id="relSubtitle"></div>
-            </div>
-            <div class="text-sm text-gray-400 italic">relations are bidirectional — adding here updates the other script too</div>
+    <div id="detailContainer" class="border rounded-xl m-5 flex flex-col">
+        <div class="border-b flex flex-row items-center justify-between p-3">
+            <div class="font-bold flex items-center gap-2">📋 Detail Note</div>
+            <input type="checkbox" id="detailEnabled" checked />
         </div>
 
         @if (!isEdit)
         {
-            <div class="text-gray-400 italic text-center py-10">
-                Save this script first to link it to other scripts.
-            </div>
+            <div class="text-gray-400 italic text-center py-10">Save this script first to add a detail note.</div>
         }
         else
         {
-            <div id="relList" class="flex flex-col gap-2 mt-4"></div>
+            <div id="detailBody">
+                <input id="detailTitle" type="text" placeholder="Untitled"
+                       class="p-3 italic border-b text-center w-full text-2xl bg-transparent outline-none" />
 
-            <div class="border border-dashed rounded-lg p-4 mt-4">
-                <div class="font-bold uppercase text-xs text-gray-500 mb-3">+ Link a new script</div>
-                <div class="flex flex-row items-center gap-3">
-                    <span class="text-sm text-gray-500 whitespace-nowrap">Connected to →</span>
-                    <div class="relative flex-grow">
-                        <input id="relSearchInput" autocomplete="off" placeholder="search a script to connect..."
-                               class="border rounded-lg px-3 py-2 w-full">
-                        <div id="relSearchResults"
-                             class="absolute left-0 right-0 bg-white border rounded-lg mt-1 hidden z-10 max-h-48 overflow-y-auto"></div>
-                    </div>
+                <div id="detailPortrait"
+                     class="m-3 border-2 border-dashed rounded flex flex-col items-center justify-center text-gray-400 cursor-pointer"
+                     style="aspect-ratio:1/1;">
+                    <div class="text-2xl">+</div>
+                    <div>add portrait</div>
+                    <input id="detailPortraitInput" type="file" accept="image/*" class="hidden">
                 </div>
-                <div class="flex flex-row items-center gap-2 flex-wrap mt-3">
-                    <span class="text-sm text-gray-500">HOW:</span>
-                    <div id="relTypePills" class="flex flex-row flex-wrap gap-2"></div>
-                </div>
-                <div class="flex justify-end mt-3">
-                    <button type="button" id="relAddBtn" class="bg-black text-white px-5 py-2 rounded-lg cursor-pointer">+ Add link</button>
-                </div>
+
+                <div id="detailRows" class="flex flex-col"></div>
+
+                <button type="button" id="detailAddRow"
+                        class="text-sm text-gray-500 py-2 border-t border-dashed hover:bg-gray-50 w-full">
+                    + Add row
+                </button>
+                <button type="button" id="detailAddSection"
+                        class="text-sm text-gray-500 py-2 border-t border-dashed hover:bg-gray-50 w-full">
+                    + Add section
+                </button>
+            </div>
+            <div id="detailHiddenNote" class="text-gray-400 italic text-center py-6 hidden">
+                Hidden on the script — toggle on to show.
             </div>
         }
     </div>
 </div>
-<div id="detailContainer">
-</div>
+
+
 <div class="flex justify-end mt-6">
     <button id="saveScriptBtn" type="button"
             class="bg-black text-white px-6 py-3 rounded-xl cursor-pointer">
@@ -236,7 +274,7 @@ else
         </div>
         <div class="my-2 flex flex-row">
             <div>
-                Tags cross-reference scripts across <a class="italics bold">@Model.SelectedWorld.WorldName.</a>Pick any number.
+                Tags cross-reference scripts across <a class="italics bold">@Model.SelectedWorld.WorldName. </a>Pick any number.
             </div>
         </div>
         <div class="flex flex-row border justify-between">
@@ -267,12 +305,12 @@ else
             Don't see one? Create a new tag
         </div>
         <div class="flex flex-row">
-            <div class="border rounded-2 flex flex-row">
+            <div class="border rounded-2 flex flex-row items-center w-full">
                 <div>
                     <div id="tagColorPreview" class="w-8 h-8 mt-2 ms-2 me-2 inline-block border border-dashed rounded-full">
                     </div>
                 </div>
-                <input id="tagNameInput" placeholder="e.g. retainer" class="border p-2 w-full" />
+                <input id="tagNameInput" placeholder="e.g. retainer" class="border p-3 w-full" />
             </div>
             <button class="p-3 bg-black text-white cursor-pointer" onclick="createTag()">
                 + Create
@@ -288,11 +326,11 @@ else
         </div>
         <div class="flex flex-row items-center p-3 border border-dashed rounded-md gap-3">
             <div class="flex flex-col">
-                <div>
+                <div class="font-bold">
                     Available in all my worlds
                 </div>
                 <div>
-                    off - this tag lives only in @Model.SelectedWorld.WorldName
+                    off - this tag lives only in <a class="font-semibold">@Model.SelectedWorld.WorldName</a>
                 </div>
                 <div>
                     on - reuse it across every world you own
@@ -339,13 +377,16 @@ else
             relLink:       "@Url.Action("LinkAjax", "Relation")",
             relUnlink:     "@Url.Action("UnlinkAjax", "Relation")",
             relTypes:      "@Url.Action("TypesAjax", "Connection")",
-            relCreateType: "@Url.Action("CreateTypeAjax", "Connection")"
+            relCreateType: "@Url.Action("CreateTypeAjax", "Connection")",
+            detailForScript: "@Url.Action("ForScript", "Detail")",
+            detailSave:      "@Url.Action("SaveAjax", "Detail")"
         }
     };
 </script>
 <script src="~/js/script-create.js" asp-append-version="true"></script>
 <script src="~/js/picture-create.js" asp-append-version="true"></script>
 <script src="~/js/relation-create.js" asp-append-version="true"></script>
+<script src="~/js/detail-create.js" asp-append-version="true"></script>
 <script>
         document.getElementById('saveScriptBtn').addEventListener('click', async () => {
         const btn  = document.getElementById('saveScriptBtn');
@@ -355,7 +396,7 @@ else
         const cf = document.getElementById('ScriptContentField');
         if (!window.quill) { alert("Editor not ready — Quill failed to load."); btn.disabled = false; return; }
         cf.value = window.quill.getSemanticHTML(0);
-        console.log("saving content length:", cf.value.length);   // temporary sanity check
+        //console.log("saving content length:", cf.value.length);   // temporary sanity check
 
         // tags
         if (window.syncTagInputs) window.syncTagInputs();
@@ -369,6 +410,11 @@ else
         const h = document.createElement('input');
         h.type = 'hidden'; h.name = 'pictureIds'; h.value = id; form.appendChild(h);
         });
+        }
+        // detail note (saves via its own AJAX endpoint)
+        if (window.saveDetailNote) {
+        const ok = await window.saveDetailNote();
+        if (!ok) { btn.disabled = false; return; }
         }
 
         form.submit();

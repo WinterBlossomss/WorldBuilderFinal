@@ -20,6 +20,7 @@ public partial class Attribute
     public string AttContent { get; set; }
 
     public bool? AttIsSection { get; set; }
+    public int AttOrder { get; set; }
 
     [InverseProperty("DVAttFKNavigation")]
     public virtual ICollection<DetailView> DetailViews { get; set; } = new List<DetailView>();

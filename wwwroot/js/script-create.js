@@ -263,14 +263,14 @@ const quill = new Quill('#editor', {
             maxStack: 100,
             userOnly: true
         }
+
     }
 });
 
 
 
-const toolbar = quill.getModule('toolbar');
-
-const html = quill.getSemanticHTML(0);
+// const toolbar = quill.getModule('toolbar');
+// const html = quill.getSemanticHTML(0);
 
 
 

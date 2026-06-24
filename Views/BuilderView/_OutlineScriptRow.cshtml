@@ -1,0 +1,30 @@
+﻿@model WorldBuilder.Models.OutlineScript
+@functions {
+    string Ago(System.DateTime? dt)
+    {
+        if (dt == null) return "";
+        var d = System.DateTime.UtcNow - dt.Value;
+        if (d.TotalDays >= 7) return $"{(int)(d.TotalDays / 7)}w ago";
+        if (d.TotalDays >= 1) return $"{(int)d.TotalDays}d ago";
+        if (d.TotalHours >= 1) return $"{(int)d.TotalHours}h ago";
+        return "just now";
+    }
+}
+<a asp-controller="Script" asp-action="Edit" asp-route-scriptidpk="@Model.Id"
+   class="outline-row flex flex-row items-center justify-between py-1.5 px-2 ms-6 hover:bg-gray-50"
+   data-name="@Model.Title.ToLower()" data-tags="@string.Join(",", Model.Tags.Select(t => t.Name.ToLower()))">
+    <div class="flex flex-row items-center gap-2">
+        <span class="text-gray-400 text-xs">↳</span>
+        <span class="italic">@Model.Title</span>
+    </div>
+    <div class="flex flex-row items-center gap-3">
+        <div class="flex flex-row gap-1">
+            @foreach (var t in Model.Tags)
+            {
+                <span class="text-xs px-2 py-0.5 rounded-full border" style="border-color:@t.Color">@t.Name</span>
+            }
+        </div>
+        <span class="text-xs text-gray-400 w-16 text-right">@Ago(Model.Edited)</span>
+        <span class="text-xs text-gray-400">↔ @Model.LinkCount</span>
+    </div>
+</a>

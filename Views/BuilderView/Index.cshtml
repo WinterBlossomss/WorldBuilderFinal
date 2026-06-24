@@ -127,7 +127,7 @@
                 }
             </div>
         </div>
-        <div class="flex-1">
+        <div class="flex-1 min-h-0 overflow-y-auto">
             <div data-panel="board" class="view-panel">
                 <partial name="_BoardView" model="Model" />
             </div>
@@ -310,12 +310,14 @@
                 createCategory: "@Url.Action("Create", "Categorie")",
                 createSubCategory:"@Url.Action("Create","SubCategorie")",
                 subFromCat: "@Url.Action("getSubFromCat", "BuilderView")",
-                scriptCreateRedirect:"@Url.Action("Create","Script")"
+                scriptCreateRedirect:"@Url.Action("Create","Script")",
+                outlineData: "@Url.Action("OutlineData", "BuilderView")",
             }
         };
     </script>
     <script src="~/js/builder-tree.js" asp-append-version="true"></script>
     <script src="~/js/builder-modal.js" asp-append-version="true"></script>
     <script src="~/js/builder-views.js" asp-append-version="true"></script>
+    <script src="~/js/outline.js" asp-append-version="true"></script>
 }
 

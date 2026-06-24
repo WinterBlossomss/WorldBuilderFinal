@@ -1,7 +1,16 @@
 ﻿@model WorldBuilder.Models.BuilderView
-@using WorldBuilder.Models
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+
+<div class="m-8" id="outlinePanel" data-world="@Model.SelectedWorld.WorldIDPK">
+    <div class="flex flex-row justify-between items-end mb-1">
+        <h1 class="text-4xl italic">Outline</h1>
+        <div class="flex flex-row gap-2 items-center">
+            <input id="outlineFilter" placeholder="filter scripts, tags..."
+                   class="border rounded-full px-4 py-2 text-sm w-64">
+            <button id="outlineExpandAll" class="border rounded-full px-4 py-2 text-sm">Expand all</button>
+            <button id="outlineCollapseAll" class="border rounded-full px-4 py-2 text-sm">Collapse all</button>
+            <button id="outlineSort" class="border rounded-full px-4 py-2 text-sm" data-dir="asc">Sort: A → Z</button>
+        </div>
+    </div>
+    <div id="outlineMeta" class="text-sm text-gray-500 mb-5">loading…</div>
+    <div id="outlineTree" class="border rounded-xl overflow-hidden"></div>
+</div>
