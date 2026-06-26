@@ -3,7 +3,7 @@
 // ----- TAGS -----
 const cfg = window.builderConfig;
 
-let selectedTagIds = new Set();   // tag ids applied to this script
+let selectedTagIds = new Set(); // tag ids applied to this script
 
 
 const $search = document.getElementById("tagSearchInput");
@@ -62,7 +62,7 @@ function tagChip(tag, { removable } = {}) {
         el.appendChild(x);
         el.classList.add("cursor-default");
     } else {
-        // matching list: clicking the whole chip toggles it
+        // matching list - clicking the whole chip toggles it
         el.className += " cursor-pointer";
         el.onclick = () => toggleTag(tag);
     }
@@ -96,7 +96,6 @@ const $pageTags = document.getElementById("tagContainer");
 const $addBtn = $pageTags.querySelector('button[onclick="showTagModal()"]');
 
 function renderPageChips() {
-    // remove existing chips, keep the "+ tag" button
     $pageTags.querySelectorAll("[data-pagechip]").forEach(n => n.remove());
     selectedTagIds.forEach(id => {
         const t = tagCache.get(id);
@@ -160,7 +159,7 @@ function buildTagPalette() {
         $colors.appendChild(btn);
     });
 
-    // custom color via the rainbow "+" button (hidden native input)
+    // custom color via the rainbow "+" button
     const colorPicker = document.createElement("label");
     colorPicker.className = "inline-flex items-center justify-center w-8 h-8 border border-dashed rounded-full cursor-pointer text-center";
     colorPicker.textContent = "+";
@@ -248,7 +247,17 @@ function saveTag() {
 
 //     container.appendChild(colorDiv);
 // });
-
+(function seedTags() {
+    const raw = $pageTags.dataset.applied;
+    if (!raw) return;
+    try {
+        JSON.parse(raw).forEach(t => {
+            selectedTagIds.add(t.id);
+            tagCache.set(t.id, t);
+        });
+        renderPageChips();
+    } catch { }
+})();
 
 // ----- Editor -----
 
@@ -274,7 +283,7 @@ const quill = new Quill('#editor', {
 
 
 
-// expose for the save orchestrator
+// expose for the save
 window.editorGetHtml = () => quill.getSemanticHTML(0);
 window.syncTagInputs = function () {
     const form = document.getElementById('scriptForm');
@@ -286,4 +295,9 @@ window.syncTagInputs = function () {
     });
 };
 
-window.quill = quill;   // expose the editor instance
+window.quill = quill;
+
+const saved = document.getElementById("savedContent");
+if (saved && saved.innerHTML.trim()) {
+    quill.clipboard.dangerouslyPasteHTML(saved.innerHTML);
+}

@@ -114,22 +114,29 @@
     async function uploadAll() {
         const ids = [];
         for (const p of pictures) {
+            if (p.id) { ids.push(p.id); continue; }   // already saved, reuse
             const fd = new FormData();
             fd.append("file", p.file);
             fd.append("worldId", cfg.worldId);
             fd.append("caption", p.caption || "");
             fd.append("__RequestVerificationToken", tok());
             const res = await fetch(cfg.urls.picUpload, { method: "POST", body: fd });
-            if (!res.ok) {
-                alert(`Picture upload failed (${res.status}): ${await res.text()}`);
-                return null;
-            }
+            if (!res.ok) { alert(`Picture upload failed (${res.status}): ${await res.text()}`); return null; }
             ids.push((await res.json()).id);
         }
-        return ids;   // in display order
+        return ids;
     }
 
-
+    // seed existing pictures
+    (function seedPictures() {
+        const raw = $grid.dataset.existing;
+        if (!raw) return;
+        try {
+            JSON.parse(raw).forEach(p => {
+                pictures.push({ uid: ++uid, id: p.id, file: null, url: p.path, caption: p.caption || "" });
+            });
+        } catch { }
+    })();
     // expose for the save orchestrator (was: handleSave + $saveBtn listener)
     window.uploadPictures = uploadAll;
 

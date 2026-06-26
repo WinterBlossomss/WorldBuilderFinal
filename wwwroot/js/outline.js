@@ -1,4 +1,5 @@
 ﻿// outline.js — lazy-loads the full outline when the Outline tab is first opened
+// lazy load - only load when it is needed
 (function () {
     const panel = document.getElementById("outlinePanel");
     if (!panel) return;
@@ -7,6 +8,7 @@
     const tree = document.getElementById("outlineTree");
     const meta = document.getElementById("outlineMeta");
 
+    //calculates time
     const ago = dt => {
         const d = (Date.now() - new Date(dt)) / 1000;
         if (d >= 604800) return `${Math.floor(d / 604800)}w ago`;
@@ -15,12 +17,13 @@
         return "just now";
     };
 
+    // loads rows of categories 
     function scriptRow(s) {
         const tags = (s.tags || []).map(t =>
             `<span class="text-xs px-2 py-0.5 rounded-full border" style="border-color:${t.color}">${t.name}</span>`).join("");
         const tagNames = (s.tags || []).map(t => t.name.toLowerCase()).join(",");
         return `
-        <a href="/Script/Edit/${s.id}" class="outline-row flex flex-row items-center justify-between py-1.5 px-2 ms-6 hover:bg-gray-50"
+        <a href="/Script/Edit?id=${s.id}"  class="outline-row flex flex-row items-center justify-between py-1.5 px-2 ms-6 hover:bg-gray-50"
            data-name="${(s.title || "untitled").toLowerCase()}" data-tags="${tagNames}">
             <div class="flex flex-row items-center gap-2">
                 <span class="text-gray-400 text-xs">↳</span>
@@ -35,6 +38,9 @@
     }
 
     function render(data) {
+        //totalScripts
+        //totalCats
+        //cats = tree
         meta.textContent = `${data.totalScripts} scripts · ${data.totalCats} categories · drag rows to reorder, drop on a parent to re-nest`;
         tree.innerHTML = data.cats.map(c => `
         <div class="outline-cat border-b" data-name="${c.name.toLowerCase()}">
@@ -75,24 +81,35 @@
         </div>`).join("");
     }
 
+    // loads outline - gives render the json from db
     async function load() {
         if (loaded) return;
         loaded = true;
-        const res = await fetch(`${window.builderConfig.urls.outlineData}?worldId=${panel.dataset.world}`);
-        render(await res.json());
+        try {
+            const res = await fetch(`${window.builderConfig.urls.outlineData}?worldId=${panel.dataset.world}`);
+            if (!res.ok) throw new Error(res.status);
+            render(await res.json());
+        } catch (e) {
+            loaded = false;            // allow a retry on next open
+            meta.textContent = "Couldn't load outline — try again.";
+        }
     }
 
-    // load when the outline panel becomes visible (your tab switch toggles .hidden)
+    // load when the outline panel becomes visible (tab switch toggles .hidden)
     const host = panel.closest('[data-panel="outline"]');
     if (host) {
-        new MutationObserver(() => { if (!host.classList.contains("hidden")) load(); })
+        //watches host for changes
+        new MutationObserver(() => {
+
+            if (!host.classList.contains("hidden")) load();
+        })
             .observe(host, { attributes: true, attributeFilter: ["class"] });
         if (!host.classList.contains("hidden")) load();   // already visible on page load
     } else {
         load();
     }
 
-    // ---- interactions (delegated; survive re-render) ----
+    // ---- interactions ----
     tree.addEventListener("click", e => {
         const cat = e.target.closest(".cat-toggle"), sub = e.target.closest(".sub-toggle");
         const body = cat ? cat.closest(".outline-cat").querySelector(".cat-body")
@@ -125,17 +142,20 @@
             return;
         }
 
-        // 2) hide sub-categories with no visible rows
+        // hide sub-categories with no visible rows
         tree.querySelectorAll(".outline-sub").forEach(sub => {
             const anyRow = [...sub.querySelectorAll(".outline-row")].some(r => r.style.display !== "none");
             sub.style.display = anyRow ? "" : "none";
         });
 
-        // 3) hide categories with no visible rows (direct OR inside any sub)
+        // hide categories with no visible rows (direct OR inside any sub)
         tree.querySelectorAll(".outline-cat").forEach(cat => {
             const anyRow = [...cat.querySelectorAll(".outline-row")].some(r => r.style.display !== "none");
             cat.style.display = anyRow ? "" : "none";
         });
+
+        //TODO: Add a "No Script found section"
+
 
         // auto-expand groups that survived the filter so matches are visible
         tree.querySelectorAll(".outline-cat, .outline-sub").forEach(g => {
@@ -145,8 +165,11 @@
             }
         });
 
+        // display new script button
         tree.querySelectorAll(".outline-newscript").forEach(b => b.style.display = q ? "none" : "");
     });
+
+    //Sorts A -> Z OR Z -> A
     document.getElementById("outlineSort").addEventListener("click", e => {
         const btn = e.currentTarget, asc = btn.dataset.dir !== "asc";
         btn.dataset.dir = asc ? "asc" : "desc";

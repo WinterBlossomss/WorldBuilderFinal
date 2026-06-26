@@ -54,8 +54,8 @@ public class ConnectionController : Controller
         return Json(new { id = t.ConnIDPK, descr = t.ConnDescr });
     }
 
-    private bool ConnectionTableExists(int? connidpk)
-    {
-        return _context.ConnectionTables.Any(e => e.ConnIDPK == connidpk);
-    }
+    //private bool ConnectionTableExists(int? connidpk)
+    //{
+    //    return _context.ConnectionTables.Any(e => e.ConnIDPK == connidpk);
+    //}
 }

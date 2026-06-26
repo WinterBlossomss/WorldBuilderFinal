@@ -94,7 +94,7 @@ namespace WorldBuilder.Controllers
         public async Task<IActionResult> OutlineData(int worldId)
         {
             var cats = await _context.Categories
-                .Where(c => c.CatWorldFK == worldId)          // ← adjust if named differently
+                .Where(c => c.CatWorldFK == worldId)        
                 .OrderBy(c => c.CatName).ToListAsync();
             var catIds = cats.Select(c => c.CatIDPK).ToList();
 

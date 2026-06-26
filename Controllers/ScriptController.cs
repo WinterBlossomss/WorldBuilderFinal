@@ -122,19 +122,18 @@ public class ScriptController : Controller
     }
 
     // GET: SCRIPTS/Edit/5  — renders the SAME Create view, now with a real id
-    public async Task<IActionResult> Edit(int? scriptidpk)
+    public async Task<IActionResult> Edit(int? id)
     {
-        if (scriptidpk == null) return NotFound();
+        if (id == null) return NotFound();
 
         var script = await _context.Scripts
             .Include(s => s.ScriptTagTagFKs)
             .Include(s => s.PicScriptPicFKs)
-            .FirstOrDefaultAsync(s => s.ScriptIDPK == scriptidpk);
+            .FirstOrDefaultAsync(s => s.ScriptIDPK == id);
         if (script == null) return NotFound();
 
         var cat = await _context.Categories.FirstOrDefaultAsync(c => c.CatIDPK == script.ScriptCatFK);
 
-        // ↓↓ adjust "CatWorldFK" if your Category→World FK is named differently
         World world = cat == null ? null
             : await _context.Worlds.FirstOrDefaultAsync(w => w.WorldIDPK == cat.CatWorldFK);
 
@@ -145,7 +144,7 @@ public class ScriptController : Controller
         if (script.ScriptSubFK > 0)
         {
             var sub = await _context.SubCategories.FirstOrDefaultAsync(s => s.SubIDPK == script.ScriptSubFK);
-            ViewData["SubName"] = sub?.SubName;   // adjust SubIDPK/SubName if named differently
+            ViewData["SubName"] = sub?.SubName; 
         }
 
         return View("Create", new BuilderView
@@ -160,14 +159,14 @@ public class ScriptController : Controller
     // POST: SCRIPTS/Edit/5  — update title/content; ADD new tags/pictures (no removal yet)
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int scriptidpk,
+    public async Task<IActionResult> Edit(int id,
         [Bind("ScriptTitle,ScriptContent")] WorldBuilder.Models.Script form,
         int[] tagIds, int[] pictureIds)
     {
         var script = await _context.Scripts
             .Include(s => s.ScriptTagTagFKs)
             .Include(s => s.PicScriptPicFKs)
-            .FirstOrDefaultAsync(s => s.ScriptIDPK == scriptidpk);
+            .FirstOrDefaultAsync(s => s.ScriptIDPK == id);
         if (script == null) return NotFound();
 
         script.ScriptTitle = form.ScriptTitle;
@@ -188,7 +187,7 @@ public class ScriptController : Controller
         }
 
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Edit), new { scriptidpk });
+        return RedirectToAction(nameof(Edit), new { id });
     }
 
     // GET: SCRIPTS/Delete/5

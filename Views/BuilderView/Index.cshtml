@@ -109,7 +109,7 @@
                     @Model.TotalTags
                 </button>
             </div>
-            <div class="p-5 mx-5 mt-2 border rounded-xl border-dashed">
+            <div class="p-5 mx-5 mt-2 border rounded-xl border-dashed items-center gap-3 flex flex-row flex-wrap">
                 @if (Model.TotalTags == 0)
                 {
                     <div class="text-center">
@@ -123,7 +123,12 @@
                 }
                 else
                 {
-                    <p>something something here</p>
+                    @foreach(var tag in Model.Tags)
+                    {
+                        <div class="p-2 border rounded-xl" style="border-color:@tag.">
+                            @tag.TagName
+                        </div>
+                    }
                 }
             </div>
         </div>

@@ -73,7 +73,7 @@ else
     <form id="scriptForm" method="post"
           asp-controller="Script"
           asp-action="@(isEdit ? "Edit" : "Create")"
-          asp-route-scriptidpk="@scriptId">
+          asp-route-id="@scriptId">
         @Html.AntiForgeryToken()
         <input name="ScriptTitle" value="@Model.NewScript?.ScriptTitle"
                class="text-5xl border-b border-dashed w-full" placeholder="Name this script...">
@@ -85,11 +85,10 @@ else
         <div class="me-5">
             tags:
         </div>
-        <div id="tagContainer" class="flex flex-row gap-3 items-center">
+        <div id="tagContainer" class="flex flex-row gap-3 items-center"
+             data-applied='@Html.Raw(Json.Serialize(Model.NewScript?.ScriptTagTagFKs?.Select(t => new { id = t.TagIDPK, name = t.TagName, color = t.TagColor })))'>
             <div id="noTagsLabel" class="indent-2 text-base italic">none yet -</div>
-            <button onclick="showTagModal()" class="py-1 px-2 border border-dashed rounded-full text-black cursor-pointer text-base">
-                + tag
-            </button>
+            <button onclick="showTagModal()" class="py-1 px-2 border border-dashed rounded-full text-black cursor-pointer text-base">+ tag</button>
         </div>
     </div>
 </div>
@@ -136,7 +135,9 @@ else
 
                     </div>
 
-                    <div id="editor" class="w-full h-[300px] overflow-auto" style="height:300px;"></div>
+                    <div id="editor" class="w-full h-[300px] overflow-auto" style="height:300px;">
+                        <div id="savedContent" class="hidden">@Html.Raw(Model.NewScript?.ScriptContent)</div>
+                    </div>
                 </div>
                 @* <div>
              Quick starts
@@ -159,7 +160,8 @@ else
                 </label>
             </div>
 
-            <div id="pictureGrid" class="grid grid-cols-6 gap-4 mt-4">
+            <div id="pictureGrid" class="grid grid-cols-6 gap-4 mt-4"
+                 data-existing='@Html.Raw(Json.Serialize(Model.NewScript?.PicScriptPicFKs?.Select(p => new { id = p.PicIDPK, path = p.PicPath, caption = p.PicCaption })))'>
                 <!-- cards + dropzone injected by JS -->
                 <div id="pictureDrop"
                      class="border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-gray-400 cursor-pointer text-center gap-1"
@@ -231,9 +233,10 @@ else
                 <div id="detailPortrait"
                      class="m-3 border-2 border-dashed rounded flex flex-col items-center justify-center text-gray-400 cursor-pointer"
                      style="aspect-ratio:1/1;">
+                    <input id="detailPortraitInput" type="file" accept="image/*" class="hidden">
                     <div class="text-2xl">+</div>
                     <div>add portrait</div>
-                    <input id="detailPortraitInput" type="file" accept="image/*" class="hidden">
+                    
                 </div>
 
                 <div id="detailRows" class="flex flex-col"></div>
@@ -388,6 +391,7 @@ else
 <script src="~/js/relation-create.js" asp-append-version="true"></script>
 <script src="~/js/detail-create.js" asp-append-version="true"></script>
 <script>
+    //Click handler for Save - gathers content from everywhere
         document.getElementById('saveScriptBtn').addEventListener('click', async () => {
         const btn  = document.getElementById('saveScriptBtn');
         const form = document.getElementById('scriptForm');
@@ -396,7 +400,7 @@ else
         const cf = document.getElementById('ScriptContentField');
         if (!window.quill) { alert("Editor not ready — Quill failed to load."); btn.disabled = false; return; }
         cf.value = window.quill.getSemanticHTML(0);
-        //console.log("saving content length:", cf.value.length);   // temporary sanity check
+        //console.log("saving content length:", cf.value.length); 
 
         // tags
         if (window.syncTagInputs) window.syncTagInputs();
@@ -420,7 +424,7 @@ else
         form.submit();
         });
 
-        document.getElementById('ScriptContentField').closest('form')?.id   // should print "scriptForm"
+        document.getElementById('ScriptContentField').closest('form')?.id
 </script>
 }
 
