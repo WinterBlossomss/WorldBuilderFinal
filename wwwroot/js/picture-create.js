@@ -8,7 +8,7 @@
     const $drop = document.getElementById("pictureDrop");
     const $browse = document.getElementById("pictureBrowse");
     const $subtitle = document.getElementById("pictureSubtitle");
-    const $saveBtn = document.getElementById("saveScriptBtn");
+    // const $saveBtn = document.getElementById("saveScriptBtn");
 
     function tok() {
         const el = document.querySelector('input[name="__RequestVerificationToken"]');
@@ -34,8 +34,9 @@
     function replacePicture(id, file) {
         const p = pictures.find(x => x.uid === id);
         if (!p || !file) return;
-        URL.revokeObjectURL(p.url);
+        if (p.url && p.url.startsWith("blob:")) URL.revokeObjectURL(p.url);
         p.file = file;
+        p.id = null;                     
         p.url = URL.createObjectURL(file);
         render();
     }
@@ -127,16 +128,6 @@
         return ids;
     }
 
-    // seed existing pictures
-    (function seedPictures() {
-        const raw = $grid.dataset.existing;
-        if (!raw) return;
-        try {
-            JSON.parse(raw).forEach(p => {
-                pictures.push({ uid: ++uid, id: p.id, file: null, url: p.path, caption: p.caption || "" });
-            });
-        } catch { }
-    })();
     // expose for the save orchestrator (was: handleSave + $saveBtn listener)
     window.uploadPictures = uploadAll;
 
@@ -148,7 +139,18 @@
     ["dragleave", "drop"].forEach(ev =>
         $drop.addEventListener(ev, e => { e.preventDefault(); $drop.classList.remove("bg-gray-50"); }));
     $drop.addEventListener("drop", e => addFiles(e.dataTransfer.files));
-    $saveBtn?.addEventListener("click", handleSave);
+    // $saveBtn?.addEventListener("click", handleSave);
+
+    // seed existing pictures from the server-rendered data
+    (function seedPictures() {
+        const raw = $grid.dataset.existing;
+        if (!raw) return;
+        try {
+            JSON.parse(raw).forEach(p => {
+                pictures.push({ uid: ++uid, id: p.id, file: null, url: p.path, caption: p.caption || "" });
+            });
+        } catch (e) { console.error("seed failed", e); }
+    })();
 
     render();
 })();

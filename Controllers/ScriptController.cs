@@ -160,8 +160,8 @@ public class ScriptController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id,
-        [Bind("ScriptTitle,ScriptContent")] WorldBuilder.Models.Script form,
-        int[] tagIds, int[] pictureIds)
+    [Bind("ScriptTitle,ScriptContent")] WorldBuilder.Models.Script form,
+    int[] tagIds, int[] pictureIds)
     {
         var script = await _context.Scripts
             .Include(s => s.ScriptTagTagFKs)
@@ -173,17 +173,20 @@ public class ScriptController : Controller
         script.ScriptContent = form.ScriptContent;
         script.ScriptUpdateAt = DateTime.UtcNow;
 
+        // ---- TAGS: make the set exactly what was posted ----
+        script.ScriptTagTagFKs.Clear();
         if (tagIds is { Length: > 0 })
         {
-            var have = script.ScriptTagTagFKs.Select(t => t.TagIDPK).ToHashSet();
-            var add = await _context.Tags.Where(t => tagIds.Contains(t.TagIDPK) && !have.Contains(t.TagIDPK)).ToListAsync();
-            foreach (var t in add) script.ScriptTagTagFKs.Add(t);
+            var tags = await _context.Tags.Where(t => tagIds.Contains(t.TagIDPK)).ToListAsync();
+            foreach (var t in tags) script.ScriptTagTagFKs.Add(t);
         }
+
+        // ---- PICTURES: make the set exactly what was posted ----
+        script.PicScriptPicFKs.Clear();
         if (pictureIds is { Length: > 0 })
         {
-            var have = script.PicScriptPicFKs.Select(p => p.PicIDPK).ToHashSet();
-            var add = await _context.Pictures.Where(p => pictureIds.Contains(p.PicIDPK) && !have.Contains(p.PicIDPK)).ToListAsync();
-            foreach (var p in add) script.PicScriptPicFKs.Add(p);
+            var pics = await _context.Pictures.Where(p => pictureIds.Contains(p.PicIDPK)).ToListAsync();
+            foreach (var p in pics) script.PicScriptPicFKs.Add(p);
         }
 
         await _context.SaveChangesAsync();
