@@ -4,7 +4,7 @@ namespace WorldBuilder.Models
     public partial class World
     {
         [NotMapped]
-        public IFormFile UploadedPicture { get; set; }
+        public IFormFile? UploadedPicture { get; set; }
         [NotMapped]
         public bool DeletePicture { get; set; }
     }

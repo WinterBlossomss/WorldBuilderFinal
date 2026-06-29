@@ -130,6 +130,60 @@ namespace WorldBuilder.Controllers
 
             return Json(new { totalScripts = scripts.Count, totalCats = cats.Count, cats = tree });
         }
+        // GET: /BuilderView/BoardLinks?worldId=#
+        [HttpGet]
+        public async Task<IActionResult> BoardLinks(int worldId)
+        {
+            var catIds = await _context.Categories
+                .Where(c => c.CatWorldFK == worldId)
+                .Select(c => c.CatIDPK)
+                .ToListAsync();
+
+            var scriptIds = await _context.Scripts
+                .Where(s => catIds.Contains(s.ScriptCatFK))
+                .Select(s => s.ScriptIDPK)
+                .ToListAsync();
+
+            var links = await _context.ScriptScripts
+                .Where(ss => scriptIds.Contains(ss.ScriptScriptOneFK)
+                          && scriptIds.Contains(ss.ScriptScriptTwoFK))
+                .Select(ss => new
+                {
+                    oneId = ss.ScriptScriptOneFK,
+                    twoId = ss.ScriptScriptTwoFK,
+                    label = ss.ScriptScriptConnFKNavigation.ConnDescr,
+                    loose = false   
+                })
+                .ToListAsync();
+
+            return Json(links);
+        }
+
+        // POST: /BuilderView/SavePosition   body: { scriptId, x, y }
+        public class BoardPosDto
+        {
+            public int ScriptId { get; set; }
+            public double X { get; set; }
+            public double Y { get; set; }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SavePosition([FromBody] BoardPosDto dto)
+        {
+            var script = await _context.Scripts.FirstOrDefaultAsync(s => s.ScriptIDPK == dto.ScriptId);
+            if (script == null) return NotFound();
+            if (dto.X < 0)
+                script.ScriptBoardX = 0;
+            else
+                script.ScriptBoardX = dto.X;
+            if (dto.Y < 0)
+                script.ScriptBoardY = 0;
+            else
+                script.ScriptBoardY = dto.Y;
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
         // GET: BuilderViewController/Details/5
         public ActionResult Details(int id)
         {

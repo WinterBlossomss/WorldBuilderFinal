@@ -219,7 +219,7 @@ public class WorldController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id,
-        [Bind("WorldIDPK,WorldName,WorldDesc,WorldGenFK,WorldIsPublic,UploadedPicture")] World input,
+        [Bind("WorldIDPK,WorldName,WorldDesc,WorldGenFK,WorldIsPublic")] World input, IFormFile? UploadedPicture,
         bool RemoveCover)
     {
         if (id != input.WorldIDPK)
@@ -255,7 +255,7 @@ public class WorldController : Controller
 
         var cover = world.Pictures.FirstOrDefault(p => p.PicWorldFK == world.WorldIDPK);
 
-        if (input.UploadedPicture != null)
+        if (UploadedPicture != null)
         {
             string[] fileParts = input.UploadedPicture.FileName.Split('.');
             if (fileParts.Length == 2)

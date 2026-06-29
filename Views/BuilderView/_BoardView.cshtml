@@ -1,84 +1,112 @@
 ﻿@model WorldBuilder.Models.BuilderView
 @using WorldBuilder.Models
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+
+@functions {
+    // Strip Quill/HTML markup down to a short plain-text preview for the card body.
+    string Plain(string html, int max = 90)
+    {
+        if (string.IsNullOrWhiteSpace(html)) return "";
+        var text = System.Text.RegularExpressions.Regex.Replace(html, "<.*?>", " ");
+        text = System.Net.WebUtility.HtmlDecode(text);
+        text = System.Text.RegularExpressions.Regex.Replace(text, "\\s+", " ").Trim();
+        return text.Length > max ? text.Substring(0, max).TrimEnd() + "…" : text;
+    }
 }
-<div class="flex flex-col">
-    <div class="border-dashed p-5 flex flex-row">
-        <div>
-            <h1 class="text-2xl indent-8">
-                Board View
-            </h1>
+
+@{
+    var cats = Model.SelectedWorld.Categories.ToList();
+    var subById = cats.SelectMany(c => c.SubCategories)
+                      .ToDictionary(s => s.SubIDPK, s => s.SubName);
+
+    // script count per category for the filter chips
+    int CountFor(int catId) => Model.Scripts.Count(s => s.ScriptCatFK == catId);
+}
+
+<div class="flex flex-col h-full">
+    <!-- ───────── board toolbar ───────── -->
+    <div class="sticky top-0 z-50 bg-white flex flex-row items-center justify-between gap-3 px-5 py-3 border-b">
+        <!-- category filters -->
+        <div class="flex flex-row flex-wrap items-center gap-2">
+            <span class="text-sm text-stone-500 me-1">view:</span>
+            <button class="filter-chip is-active rounded-full border border-stone-800 bg-stone-900 text-white px-3 py-1 text-sm"
+                    data-cat="all">
+                All (@Model.TotalScripts)
+            </button>
+            @foreach (var cat in cats)
+            {
+                <button class="filter-chip rounded-full border px-3 py-1 text-sm transition-colors"
+                        data-cat="@cat.CatIDPK"
+                        style="border-color:@cat.CatColor; color:@cat.CatColor">
+                    @cat.CatName <span class="opacity-60">@CountFor(cat.CatIDPK)</span>
+                </button>
+            }
+        </div>
+
+        <!-- legend + zoom -->
+        <div class="flex flex-row items-center gap-5 shrink-0">
+            <div class="flex items-center gap-2">
+                <button id="linkModeBtn"
+                        class="rounded-full border border-stone-300 px-3 py-1 text-sm hover:bg-stone-100 transition-colors">
+                    🔗 Link cards
+                </button>
+                <span id="linkHint" class="text-xs text-sky-600 hidden">select two cards…</span>
+            </div>
+            <div class="inline-flex items-center gap-1 rounded-full border border-stone-300 px-1 py-0.5">
+                <button id="zoomOut" class="w-7 h-7 rounded-full hover:bg-stone-100">−</button>
+                <span id="zoomLabel" class="text-sm w-12 text-center tabular-nums">100%</span>
+                <button id="zoomIn" class="w-7 h-7 rounded-full hover:bg-stone-100">+</button>
+            </div>
+            <button id="resetBoardBtn"
+                    class="rounded-full border border-stone-300 px-3 py-1 text-sm hover:bg-stone-100 transition-colors"
+                    title="Reset zoom, filter, and restore removed cards">
+                ↺ Reset
+            </button>
         </div>
     </div>
-    <div id="board" class="relative flex-1">
-        <div id="card" class="absolute bg-sky-500 text-white p-4 rounded-md shadow-lg cursor-grab"
-             style="top: 0px; left: 0px;">
-            I am a card
+
+    <!-- ───────── board canvas (pan via scroll) ───────── -->
+    <div id="boardViewport" class="relative flex-1 min-h-0 overflow-auto bg-stone-50">
+        <!-- #boardWorld is the zoom/transform target; geometry is computed in its unscaled space -->
+        <div id="boardWorld" class="relative" style="width:3200px; height:2200px; transform-origin:0 0;">
+            <!-- connection lines are drawn here by board-view.js -->
+            <svg id="boardLines" class="absolute inset-0 pointer-events-none"
+                 width="3200" height="2200" style="overflow:visible; z-index:0;"></svg>
+
+            @foreach (var s in Model.Scripts)
+            {
+                var cat = cats.FirstOrDefault(c => c.CatIDPK == s.ScriptCatFK);
+                var color = !string.IsNullOrWhiteSpace(s.ScriptBoardColor)
+                                ? s.ScriptBoardColor
+                                : (cat?.CatColor ?? "#78716c");
+                var catName = cat?.CatName ?? "uncategorised";
+                var label = (s.ScriptSubFK > 0 && subById.ContainsKey(s.ScriptSubFK))
+                                ? $"{catName} · {subById[s.ScriptSubFK]}"
+                                : catName;
+
+                <div class="board-card absolute w-56 bg-white border border-stone-300 rounded-md shadow-sm"
+                     style="left:@s.ScriptBoardX.ToString(System.Globalization.CultureInfo.InvariantCulture)px; top:@s.ScriptBoardY.ToString(System.Globalization.CultureInfo.InvariantCulture)px; border-top:4px solid @color; z-index:10;"
+                     data-script-id="@s.ScriptIDPK"
+                     data-cat-id="@s.ScriptCatFK">
+                    <div class="flex items-center justify-between gap-2 px-3 pt-2">
+                        <span class="text-[10px] font-semibold uppercase tracking-wide truncate"
+                              style="color:@color">@label</span>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button class="card-edit w-5 h-5 grid place-items-center rounded border border-stone-300 text-stone-500 hover:bg-stone-100 text-xs"
+                                    title="Edit">
+                                ✎
+                            </button>
+                            <button class="card-remove w-5 h-5 grid place-items-center rounded border border-stone-300 text-stone-500 hover:bg-stone-100 text-xs"
+                                    title="Remove from board">
+                                ✕
+                            </button>
+                        </div>
+                    </div>
+                    <div class="px-3 pb-3 pt-1 cursor-grab card-body">
+                        <div class="text-lg leading-tight">@s.ScriptTitle</div>
+                        <div class="board-desc text-xs text-stone-500 mt-1">@Plain(s.ScriptContent)</div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>
-
-<script>
-
-    // const CARD_W = 200;
-    // const catById = id =>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    let startX = 0, startY = 0, startLeft = 0, startTop = 0;
-    const card = document.getElementById('card');
-
-    card.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        startX = e.clientX;
-        startY = e.clientY;
-        startLeft = parseInt(card.style.left) || 0;
-        startTop  = parseInt(card.style.top)  || 0;
-
-        document.addEventListener('mousemove', mouseMove);
-        document.addEventListener('mouseup', mouseUp);
-    });
-
-    function mouseMove(e) {
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        card.style.left = (startLeft + dx) + 'px';
-        card.style.top  = (startTop  + dy) + 'px';
-    }
-
-    function mouseUp() {
-        document.removeEventListener('mousemove', mouseMove);
-        document.removeEventListener('mouseup', mouseUp);
-    }
-</script>

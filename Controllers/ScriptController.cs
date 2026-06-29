@@ -39,8 +39,6 @@ public class ScriptController : Controller
     }
 
     // GET: SCRIPTS/Create
-    // GET: SCRIPTS/Create
-    // GET: SCRIPTS/Create
     public async Task<IActionResult> Create(int? catID, int? subID, int? worldID)
     {
         var script = new WorldBuilder.Models.Script
@@ -98,7 +96,7 @@ public class ScriptController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(
-        [Bind("ScriptContent,ScriptTitle,ScriptCatFK,ScriptSubFK,ScriptIsPublic,ScriptIsChar,ScriptBoardX,ScriptBoardY,ScriptBoardColor")]
+        [Bind("ScriptContent,ScriptTitle,ScriptCatFK,ScriptSubFK,ScriptIsPublic,ScriptIsChar,ScriptBoardColor")]
     WorldBuilder.Models.Script script,
         int[] tagIds, int[] pictureIds)
     {

@@ -55,7 +55,7 @@
         //cats = tree
         meta.textContent = `${data.totalScripts} scripts · ${data.totalCats} categories · drag rows to reorder, drop on a parent to re-nest`;
         tree.innerHTML = data.cats.map(c => `
-        <div class="outline-cat border-b" data-name="${c.name.toLowerCase()}">
+        <div class="outline-cat border-b" data-id="${c.id}" data-name="${c.name.toLowerCase()}">
             <div class="flex flex-row items-center justify-between py-2 px-2">
                 <button class="cat-toggle flex flex-row items-center gap-2 cursor-pointer">
                     <span class="chev text-gray-500">▾</span>
@@ -70,22 +70,25 @@
                             onclick="event.stopPropagation(); navigateToScriptCreate(0, ${c.id})">
                         + add
                     </button>
+                    <button class="border rounded-full px-3 py-0.5 text-sm text-red-600 hover:bg-red-50 cursor-pointer"
+                            onclick="event.stopPropagation(); deleteCategory(${c.id})">
+                        🗑️
+                    </button>
                 </div>
             </div>
             <div class="cat-body">
                 ${c.directScripts.map(scriptRow).join("")}
                 ${c.subs.map(sub => `
-                    <div class="outline-sub ms-4 border-s" data-name="${sub.name.toLowerCase()}">
-                        <button class="sub-toggle flex flex-row items-center gap-2 py-2 px-2 cursor-pointer">
-                            <span class="chev">▾</span>
-                            <span class="font-medium">${sub.name}</span>
-                            <span class="text-xs text-gray-400">${sub.scripts.length}</span>
-                        </button>
-                        <div class="sub-body">
-                            ${sub.scripts.map(scriptRow).join("")}
-                            <button type="button" class="outline-newscript text-sm text-gray-400 italic py-1.5 px-2 ms-6 hover:bg-gray-50 w-full text-left"
-                                    onclick="navigateToScriptCreate(${sub.id}, ${c.id})">
-                                + New script in ${sub.name}
+                    <div class="outline-sub ms-4 border-s" data-id="${sub.id}" data-name="${sub.name.toLowerCase()}">
+                        <div class="flex flex-row items-center justify-between pe-2">
+                            <button class="sub-toggle flex flex-row items-center gap-2 py-2 px-2 cursor-pointer">
+                                <span class="chev">▾</span>
+                                <span class="font-medium">${sub.name}</span>
+                                <span class="text-xs text-gray-400">${sub.scripts.length}</span>
+                            </button>
+                            <button class="border rounded-full px-2 py-0.5 text-sm text-red-600 hover:bg-red-50 cursor-pointer"
+                                    onclick="event.stopPropagation(); deleteSubCategory(${sub.id})">
+                                🗑️
                             </button>
                         </div>
                     </div>`).join("")}

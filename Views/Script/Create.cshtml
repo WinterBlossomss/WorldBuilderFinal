@@ -17,10 +17,10 @@ else
 }
  *@
 <div class="flex flex-row">
-    <div class="grid grid-cols-3 items-center border-y gap-2">
+    <div class="grid grid-cols-3 items-center border-y gap-2 w-full">
         <div class="ms-3">
             <a class="flex flex-col" asp-action="Index" asp-controller="BuilderView" asp-route-id="@Model.SelectedWorld.WorldIDPK">
-                <h1 class="text-2xl pt-5 text-left truncate">
+                <h1 class="text-2xl py-5 text-left truncate justify-center">
                     @Model.SelectedWorld.WorldName
                 </h1>
             </a>
@@ -266,7 +266,7 @@ else
 </div>
 
 <!-- Tag Modal -->
-<div id="tagModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center">
+<div id="tagModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center z-100">
     <!--Modal-->
     <div class="bg-white rounded-md shadow-md p-8 w-[40%] opacity-100 ">
         <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-2">

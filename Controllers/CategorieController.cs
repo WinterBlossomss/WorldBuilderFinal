@@ -115,7 +115,28 @@ public class CategorieController : Controller
         }
         return View(category);
     }
+    // POST: Categorie/DeleteAjax/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteAjax(int catidpk)
+    {
+        var category = await _context.Categories.FindAsync(catidpk);
+        if (category == null)
+            return NotFound();
 
+        try
+        {
+            _context.Categories.Remove(category);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            // FK constraint: children aren't set to cascade-delete in the DB
+            return BadRequest("Category still has sub-categories or scripts attached.");
+        }
+
+        return Json(new { success = true, id = catidpk });
+    }
     // GET: CATEGORYS/Delete/5
     public async Task<IActionResult> Delete(int? catidpk)
     {

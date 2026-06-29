@@ -79,7 +79,33 @@ public class SubCategorieController : Controller
         await _context.SaveChangesAsync();
         return Json(new {subCat.SubName,subCat.SubCatFK});
     }
+    // POST: SubCategorie/DeleteAjax/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteAjax(int subidpk)
+    {
+        var subcategory = await _context.SubCategories.FindAsync(subidpk);
+        if (subcategory == null)
+            return NotFound();
 
+        // keep the parent category's counter in sync
+        var cat = await _context.Categories
+            .FirstOrDefaultAsync(c => c.CatIDPK == subcategory.SubCatFK);
+        if (cat != null && cat.SubCategoryCount > 0)
+            cat.SubCategoryCount--;
+
+        try
+        {
+            _context.SubCategories.Remove(subcategory);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            return BadRequest("Sub-category still has scripts attached.");
+        }
+
+        return Json(new { success = true, id = subidpk });
+    }
     // GET: SUBCATEGORYS/Edit/5
     public async Task<IActionResult> Edit(int? subidpk)
     {

@@ -62,14 +62,9 @@
             <div id="categoryList" class="p-5 mx-5 mt-2 border rounded-xl border-dashed overflow-y-auto max-h-64">
                 @if (Model.TotalCategories == 0)
                 {
-                    <div class="text-center">
+                    <div id="noCatTxt" class="text-center">
                         <p>no categories yet</p>
                         <p>Categories hold sub-categories and scripts - whatever scheme fits your world!</p>
-                    </div>
-                    <div class="flex justify-center mt-2">
-                        <button onclick="showCategoryModal()" class="bg-black text-white rounded-full p-3 hover:bg-blue-500">
-                            + New Category
-                        </button>
                     </div>
                 }
                 else
@@ -125,31 +120,33 @@
                 {
                     @foreach(var tag in Model.Tags)
                     {
-                        <div class="p-2 border rounded-xl" style="border-color:@tag.">
+                        <div class="p-2 border rounded-xl" style="border-color:@tag.TagColor">
                             @tag.TagName
                         </div>
                     }
                 }
+
+
             </div>
         </div>
         <div class="flex-1 min-h-0 overflow-y-auto">
-            <div data-panel="board" class="view-panel">
-                <partial name="_BoardView" model="Model" />
-            </div>
             <div data-panel="cards" class="view-panel hidden">
                 <partial name="_CardView" model="Model" />
             </div>
             <div data-panel="outline" class="view-panel hidden">
                 <partial name="_OutlineView" model="Model" />
             </div>
-        </div>
+            <div data-panel="board" class="view-panel">
+                <partial name="_BoardView" model="Model" />
+            </div>
+        
     </div>
 </div>
 
 <!-- Modals -->
-<div id="catModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center">
+    <div id="catModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center z-100">
     <!--Modal-->
-    <div class="bg-white rounded-md shadow-md p-8 w-[40%] opacity-100 ">
+        <div class="bg-white rounded-md shadow-md p-8 w-[40%] opacity-100 z-100">
         <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-2">
             <h2 class="text-2xl">Create New Category</h2>
             <button onclick="hideCategoryModal()" class="text-gray-500 hover:text-gray-700 border rounded-full py-3 px-5">
@@ -216,9 +213,9 @@
         </div>
     </div>
 </div>
-<div id="subCatModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center">
+    <div id="subCatModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center z-100">
     <!--Modal-->
-    <div class="bg-white rounded-md shadow-md p-8 w-[40%] opacity-100 ">
+        <div class="bg-white rounded-md shadow-md p-8 w-[40%] opacity-100 z-100">
         <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-2">
             <h2 class="text-2xl">Create New Sub-Category</h2>
             <button onclick="hideSubCategoryModal()" class="text-gray-500 hover:text-gray-700 border rounded-full py-3 px-5">
@@ -249,9 +246,9 @@
         </div>
     </div>
 </div>
-<div id="scriptModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center">
+    <div id="scriptModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center z-100">
     <!--Modal-->
-    <div class="bg-white rounded-md shadow-md p-4 w-[40%] opacity-100">
+        <div class="bg-white rounded-md shadow-md p-4 w-[40%] opacity-100 z-100">
         <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-1">
             <h2 class="text-2xl">Where does this Script live?</h2>
             <button onclick="hideScriptModal()" class="text-gray-500 hover:text-gray-700 border rounded-full py-3 px-5">
@@ -303,20 +300,42 @@
             </div>
         </div>
     </div>
+        <div id="deleteModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center z-100">
+            <div class="bg-white rounded-md shadow-md p-8 w-[30%] opacity-100 z-100">
+                <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-2">
+                    <h2 class="text-2xl">Confirm delete</h2>
+                    <button onclick="hideDeleteModal()" class="text-gray-500 hover:text-gray-700 border rounded-full py-3 px-5">x</button>
+                </div>
+                <p id="deleteModalText" class="py-4">Are you sure?</p>
+                <p class="text-sm text-red-500 italic pb-4">This can't be undone.</p>
+                <div class="flex flex-row justify-between">
+                    <button onclick="hideDeleteModal()" class="border cursor-pointer text-black p-4 rounded-xl">Cancel</button>
+                    <button id="deleteConfirmBtn" class="border cursor-pointer bg-red-600 text-white p-4 rounded-xl">Delete</button>
+                </div>
+            </div>
+        </div>
 </div>
 
 @section Scripts {
     <script>
-        window.builderConfig = {
+            window.builderConfig = {
             worldId: @Model.SelectedWorld.WorldIDPK,
             urls: {
                 subCategories: "@Url.Action("Index", "SubCategorie")",
                 scripts: "@Url.Action("Scripts", "SubCategorie")",
                 createCategory: "@Url.Action("Create", "Categorie")",
-                createSubCategory:"@Url.Action("Create","SubCategorie")",
+                createSubCategory:"@Url.Action("Create", "SubCategorie")",
                 subFromCat: "@Url.Action("getSubFromCat", "BuilderView")",
-                scriptCreateRedirect:"@Url.Action("Create","Script")",
+                scriptCreateRedirect:"@Url.Action("Create", "Script")",
+                catDeleteAjax: "@Url.Action("DeleteAjax", "Categorie")",
+                subDeleteAjax: "@Url.Action("DeleteAjax", "SubCategorie")",
                 outlineData: "@Url.Action("OutlineData", "BuilderView")",
+                boardLinks:   "@Url.Action("BoardLinks", "BuilderView")",
+                savePosition: "@Url.Action("SavePosition", "BuilderView")",
+                scriptEdit:   "@Url.Action("Edit", "Script")",
+                relLink:       "@Url.Action("LinkAjax", "Relation")",
+                relTypes:      "@Url.Action("TypesAjax", "Connection")",
+                relCreateType: "@Url.Action("CreateTypeAjax", "Connection")",
             }
         };
     </script>
@@ -324,5 +343,71 @@
     <script src="~/js/builder-modal.js" asp-append-version="true"></script>
     <script src="~/js/builder-views.js" asp-append-version="true"></script>
     <script src="~/js/outline.js" asp-append-version="true"></script>
+    <script src="~/js/board-view.js" asp-append-version="true"></script>
+    <script>
+            (function () {
+            const modal = document.getElementById("deleteModal");
+            const text = document.getElementById("deleteModalText");
+            const confirmBtn = document.getElementById("deleteConfirmBtn");
+            let action = null; // async fn run on confirm
+
+            window.openDeleteModal = function (message, onConfirm) {
+            text.textContent = message;
+            action = onConfirm;
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+            };
+
+            window.hideDeleteModal = function () {
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+            action = null;
+            };
+
+            // click the dark backdrop to cancel
+            modal.addEventListener("click", e => { if (e.target === modal) hideDeleteModal(); });
+
+            confirmBtn.addEventListener("click", async () => {
+            if (!action) return;
+            confirmBtn.disabled = true;
+            try { await action(); }
+            finally { confirmBtn.disabled = false; hideDeleteModal(); }
+            });
+
+            function token() {
+            const el = document.querySelector('input[name="__RequestVerificationToken"]');
+            return el ? el.value : "";
+            }
+
+            async function postDelete(url, key, id) {
+            return fetch(url, {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "RequestVerificationToken": token()
+            },
+            body: `${key}=${encodeURIComponent(id)}`
+            });
+            }
+
+            window.deleteCategory = function (id) {
+            openDeleteModal("Delete this category? Its sub-categories and scripts go with it.", async () => {
+            const res = await postDelete(window.builderConfig.urls.catDeleteAjax, "catidpk", id);
+            if (res.ok) document.querySelector(`.outline-cat[data-id="${id}"]`)?.remove();
+            else alert(await res.text() || "Couldn't delete this category.");
+            });
+            };
+
+            window.deleteSubCategory = function (id) {
+            openDeleteModal("Delete this sub-category and its scripts?", async () => {
+            const res = await postDelete(window.builderConfig.urls.subDeleteAjax, "subidpk", id);
+            if (res.ok) document.querySelector(`.outline-sub[data-id="${id}"]`)?.remove();
+            else alert(await res.text() || "Couldn't delete this sub-category.");
+            });
+            };
+            })();
+            
+
+    </script>
 }
 

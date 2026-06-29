@@ -125,6 +125,7 @@ nameInput.addEventListener('input', (e) => {
 
 // ---- Save a new category ----
 function saveCategory() {
+    const txt = document.getElementById("noCatTxt");
     const name = nameInput.value.trim();
     const color = colorHex.textContent.trim();
 
