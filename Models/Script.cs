@@ -23,10 +23,8 @@ public partial class Script
 
     public int ScriptSubFK { get; set; }
 
-    [Column(TypeName = "date")]
     public DateTime? ScriptUpdateAt { get; set; }
 
-    [Column(TypeName = "date")]
     public DateTime ScriptCreateAt { get; set; }
 
     public bool ScriptIsPublic { get; set; }

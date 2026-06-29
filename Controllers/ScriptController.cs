@@ -118,7 +118,7 @@ public class ScriptController : Controller
         _context.Add(script);
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(nameof(Edit), new { scriptidpk = script.ScriptIDPK });
+        return RedirectToAction(nameof(Edit), new { id = script.ScriptIDPK });
     }
 
     // GET: SCRIPTS/Edit/5  — renders the SAME Create view, now with a real id
@@ -171,7 +171,7 @@ public class ScriptController : Controller
 
         script.ScriptTitle = form.ScriptTitle;
         script.ScriptContent = form.ScriptContent;
-        script.ScriptUpdateAt = DateTime.UtcNow;
+        script.ScriptUpdateAt = DateTime.UtcNow.ToLocalTime();
 
         // ---- TAGS: make the set exactly what was posted ----
         script.ScriptTagTagFKs.Clear();

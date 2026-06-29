@@ -8,13 +8,25 @@
     const tree = document.getElementById("outlineTree");
     const meta = document.getElementById("outlineMeta");
 
-    //calculates time
+    //Calculates time using Relative Time Format
+    const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+
+    const DIVISIONS = [
+        { amount: 60, unit: 'second' },
+        { amount: 60, unit: 'minute' },
+        { amount: 24, unit: 'hour' },
+        { amount: 7, unit: 'day' },
+        { amount: 4.34524, unit: 'week' },
+        { amount: 12, unit: 'month' },
+        { amount: Infinity, unit: 'year' },
+    ];
+
     const ago = dt => {
-        const d = (Date.now() - new Date(dt)) / 1000;
-        if (d >= 604800) return `${Math.floor(d / 604800)}w ago`;
-        if (d >= 86400) return `${Math.floor(d / 86400)}d ago`;
-        if (d >= 3600) return `${Math.floor(d / 3600)}h ago`;
-        return "just now";
+        let duration = (new Date(dt) - Date.now()) / 1000; // seconds; negative = past
+        for (const { amount, unit } of DIVISIONS) {
+            if (Math.abs(duration) < amount) return rtf.format(Math.round(duration), unit);
+            duration /= amount;
+        }
     };
 
     // loads rows of categories 
