@@ -296,7 +296,7 @@ public class WorldController : Controller
             throw;
         }
 
-        return RedirectToAction(nameof(Details), new { id = world.WorldIDPK });
+        return RedirectToAction("Index", "BuilderView", new { id = world.WorldIDPK });
     }
 
     // GET: WORLDS/Delete/5

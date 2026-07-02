@@ -72,13 +72,13 @@
                 <div class="flex flex-row items-center gap-3">
                     <span class="text-sm text-gray-400 italic">${c.scriptCount} scripts</span>
                     <button type="button"
-                            class="border rounded-full px-3 py-0.5 text-sm text-gray-600 hover:bg-gray-50 cursor-pointer"
+                            class="border rounded-full px-3 py-0.5 text-sm text-gray-600 hover:bg-gray-50 cursor-pointer" style="border-color:#66FF00 "
                             onclick="event.stopPropagation(); navigateToScriptCreate(0, ${c.id})">
                         + add
                     </button>
                     <button class="border rounded-full px-3 py-0.5 text-sm text-red-600 hover:bg-red-50 cursor-pointer"
                             onclick="event.stopPropagation(); deleteCategory(${c.id})">
-                        🗑️
+                        delete
                     </button>
                 </div>
             </div>
@@ -94,7 +94,7 @@
                             </button>
                             <button class="border rounded-full px-2 py-0.5 text-sm text-red-600 hover:bg-red-50 cursor-pointer"
                                     onclick="event.stopPropagation(); deleteSubCategory(${sub.id})">
-                                🗑️
+                                delete
                             </button>
                         </div>
                         <div class="sub-body">

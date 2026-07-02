@@ -1,8 +1,4 @@
-﻿// board-view.js
-// Powers the Board panel: draws connection lines, drag-to-move with persistence,
-// zoom, and per-category filtering. Reads endpoints from window.builderConfig.urls.
-
-(function () {
+﻿(function () {
     const cfg = window.builderConfig || {};
     const urls = cfg.urls || {};
 

@@ -19,6 +19,7 @@ public class ConnectionController : Controller
     private async Task<int?> CurrentUserInfoIdAsync()
     {
         var uid = _userManager.GetUserId(User);
+
         if (uid == null) return null;
         var me = await _context.UserInfos.FirstOrDefaultAsync(u => u.UserInfoUserIDFK == uid);
         return me?.UserInfoIDPK;

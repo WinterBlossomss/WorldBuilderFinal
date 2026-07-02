@@ -130,6 +130,54 @@ namespace WorldBuilder.Controllers
 
             return Json(new { totalScripts = scripts.Count, totalCats = cats.Count, cats = tree });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> CardData(int worldId)
+        {
+            var cats = await _context.Categories
+                .Where(c => c.CatWorldFK == worldId)
+                .OrderBy(c => c.CatName)
+                .ToListAsync();
+            var catIds = cats.Select(c => c.CatIDPK).ToList();
+
+            var subs = await _context.SubCategories
+                .Where(s => catIds.Contains(s.SubCatFK))
+                .ToListAsync();
+            var subNameById = subs.ToDictionary(s => s.SubIDPK, s => s.SubName);
+
+            var scripts = await _context.Scripts
+                .Where(s => catIds.Contains(s.ScriptCatFK))
+                .Select(s => new {
+                    id = s.ScriptIDPK,
+                    title = s.ScriptTitle,
+                    content = s.ScriptContent,
+                    catFk = s.ScriptCatFK,
+                    subFk = s.ScriptSubFK,
+                    edited = s.ScriptUpdateAt ?? s.ScriptCreateAt,
+                    links = _context.ScriptScripts.Count(ss =>
+                        ss.ScriptScriptOneFK == s.ScriptIDPK || ss.ScriptScriptTwoFK == s.ScriptIDPK)
+                })
+                .ToListAsync();
+
+            var cardCats = cats.Select(c => new {
+                id = c.CatIDPK,
+                name = c.CatName,
+                color = c.CatColor,
+                scripts = scripts.Where(s => s.catFk == c.CatIDPK)
+                    .Select(s => new {
+                        s.id,
+                        s.title,
+                        snippet = string.IsNullOrEmpty(s.content) ? "" :
+                            (s.content.Length > 100 ? s.content.Substring(0, 100) + "…" : s.content),
+                        subName = s.subFk > 0 && subNameById.ContainsKey(s.subFk) ? subNameById[s.subFk] : null,
+                        s.edited,
+                        s.links
+                    }).ToList()
+            }).ToList();
+
+            return Json(new { totalScripts = scripts.Count, totalCats = cats.Count, cats = cardCats });
+        }
+
         // GET: /BuilderView/BoardLinks?worldId=#
         [HttpGet]
         public async Task<IActionResult> BoardLinks(int worldId)

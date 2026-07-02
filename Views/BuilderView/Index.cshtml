@@ -38,9 +38,9 @@
                 + New Script
             </a>
             
-            <button class="border border-sky-500 bg-white text-black border rounded-full p-3">
-                Settings
-            </button>
+            <a asp-action="Edit" asp-controller="World" asp-route-id="@Model.SelectedWorld.WorldIDPK" class="border border-sky-500 bg-white text-black border rounded-full p-3 cursor-pointer">
+                Edit World
+            </a>
             <select class="border border-sky-500 bg-white text-black border rounded-full p-3">
                 <option>Status</option>
                 <option>Public</option>
@@ -336,14 +336,18 @@
                 relLink:       "@Url.Action("LinkAjax", "Relation")",
                 relTypes:      "@Url.Action("TypesAjax", "Connection")",
                 relCreateType: "@Url.Action("CreateTypeAjax", "Connection")",
+                cardData: "@Url.Action("CardData", "BuilderView")",
             }
         };
     </script>
     <script src="~/js/builder-tree.js" asp-append-version="true"></script>
     <script src="~/js/builder-modal.js" asp-append-version="true"></script>
-    <script src="~/js/builder-views.js" asp-append-version="true"></script>
+    <script src="~/js/builder-views.js" as
+    
+    p-append-version="true"></script>
     <script src="~/js/outline.js" asp-append-version="true"></script>
     <script src="~/js/board-view.js" asp-append-version="true"></script>
+    <script src="~/js/cards.js" asp-append-version="true"></script>
     <script>
             (function () {
             const modal = document.getElementById("deleteModal");
