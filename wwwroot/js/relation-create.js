@@ -1,7 +1,7 @@
-﻿// relation-create.js — Related scripts panel (only active once the script is saved)
-(function () {
+﻿(function () {
     const cfg = window.builderConfig;
-    if (!cfg.scriptId) return;   // create mode: panel shows the "save first" notice
+    // create mode: panel shows the "save first" notice
+    if (!cfg.scriptId) return;
 
     const $list = document.getElementById("relList");
     const $sub = document.getElementById("relSubtitle");
@@ -9,9 +9,10 @@
     const $results = document.getElementById("relSearchResults");
     const $pills = document.getElementById("relTypePills");
     const $add = document.getElementById("relAddBtn");
-
-    let target = null;        // chosen script {id, title}
-    let typeId = null;        // chosen relation type
+    // chosen script {id, title}
+    let target = null;
+    // chosen relation type
+    let typeId = null;
     let types = [];
 
     const tok = () => document.querySelector('input[name="__RequestVerificationToken"]')?.value || "";
@@ -139,6 +140,7 @@
         loadRelations();
     });
 
+    // !!!!!!!! LOAD EVRERYHTIHNGN
     loadRelations();
     loadTypes();
 })();

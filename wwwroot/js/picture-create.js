@@ -10,12 +10,13 @@
     const $subtitle = document.getElementById("pictureSubtitle");
     // const $saveBtn = document.getElementById("saveScriptBtn");
 
+    //get token
     function tok() {
         const el = document.querySelector('input[name="__RequestVerificationToken"]');
         return el ? el.value : "";
     }
 
-    // ---- add files (local only, no server) ----
+    // ---- add files (local only) ----
     function addFiles(fileList) {
         for (const file of fileList) {
             if (!file.type.startsWith("image/")) continue;
@@ -152,6 +153,7 @@
         } catch (e) { console.error("seed failed", e); }
     })();
 
+    //!!!! RENDER
     render();
 })();
 

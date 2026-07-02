@@ -1,7 +1,3 @@
-// builder-tree.js
-// Handles the expandable category → subcategory → script tree in the sidebar.
-// Reads endpoint URLs from window.builderConfig (set in the view).
-
 // Category → its subcategories
 function loadSubCategories(catID, containerId, btn) {
     let container = document.getElementById(containerId);
