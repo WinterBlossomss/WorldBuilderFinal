@@ -54,6 +54,12 @@
         //totalCats
         //cats = tree
         meta.textContent = `${data.totalScripts} scripts · ${data.totalCats} categories · drag rows to reorder, drop on a parent to re-nest`;
+
+        if (data.totalCats === 0) {
+            tree.innerHTML = emptyStateHtml();
+            return;
+        }
+
         tree.innerHTML = data.cats.map(c => `
         <div class="outline-cat border-b" data-id="${c.id}" data-name="${c.name.toLowerCase()}">
             <div class="flex flex-row items-center justify-between py-2 px-2">
@@ -91,9 +97,39 @@
                                 🗑️
                             </button>
                         </div>
+                        <div class="sub-body">
+                            ${sub.scripts.length ? sub.scripts.map(scriptRow).join("") : emptyRowHtml()}
+                        </div>
                     </div>`).join("")}
+                ${(!c.directScripts.length && !c.subs.length) ? emptyRowHtml() : ""}
             </div>
         </div>`).join("");
+    }
+
+    function emptyRowHtml() {
+        return `<div class="text-sm text-gray-400 italic py-2 ms-6">no scripts here yet</div>`;
+    }
+
+    function emptyStateHtml() {
+        return `
+    <div class="flex flex-col items-center text-center py-16 px-8">
+        <div class="flex flex-col items-center gap-2 mb-6 text-gray-300">
+            <div class="w-40 border-t border-dashed"></div>
+            <div class="w-32 border-t border-dashed ms-6"></div>
+            <div class="flex flex-row items-center gap-2 ms-10">
+                <div class="w-20 border-t border-dashed"></div>
+                <div class="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-sm">+</div>
+            </div>
+        </div>
+        <h2 class="text-3xl italic mb-2">Nothing to outline yet</h2>
+        <p class="text-gray-400 italic mb-6 max-w-md">
+            Add a category, then nest sub-categories and scripts under it. Drag to reorder anytime.
+        </p>
+        <div class="flex flex-row gap-3">
+            <button type="button" onclick="showCategoryModal()" class="bg-black text-white px-5 py-2.5 rounded-lg">+ Add a category</button>
+            <button type="button" onclick="openImportWorldModal()" class="border px-5 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50">Import from another world</button>
+        </div>
+    </div>`;
     }
 
     // loads outline - gives render the json from db
@@ -169,8 +205,15 @@
             cat.style.display = anyRow ? "" : "none";
         });
 
-        //TODO: Add a "No Script found section"
-
+        // for no results
+        const noResults = document.getElementById("outlineNoResults");
+        if (!q) {
+            noResults.classList.add("hidden");
+            return;
+        }
+        const anyCatVisible = [...tree.querySelectorAll(".outline-cat")].some(c => c.style.display !== "none");
+        noResults.classList.toggle("hidden", anyCatVisible);
+        noResults.textContent = anyCatVisible ? "" : `No scripts match "${e.target.value}"`;
 
         // auto-expand groups that survived the filter so matches are visible
         tree.querySelectorAll(".outline-cat, .outline-sub").forEach(g => {
