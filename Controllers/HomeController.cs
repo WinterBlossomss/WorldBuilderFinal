@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using WorldBuilder.Models;
 
@@ -11,16 +9,16 @@ namespace WorldBuilder.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly WorldBuilderDBContext _context;
 
-
         public HomeController(ILogger<HomeController> logger, WorldBuilderDBContext context)
         {
             _logger = logger;
             _context = context;
         }
+
         public IActionResult Index()
         {
             ViewData["Genres"] = _context.Genres
-                .Select(g => g.GenreName)   
+                .Select(g => g.GenreName)
                 .ToList();
             return View();
         }

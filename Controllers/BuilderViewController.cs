@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +17,7 @@ namespace WorldBuilder.Controllers
             _context = context;
             _userManager = userManager;
         }
+
         // GET: BuilderViewController
         public async Task<ActionResult> Index(int id)
         {
@@ -47,16 +47,13 @@ namespace WorldBuilder.Controllers
                     .Where(sc => sc.SubCatFK == cat.CatIDPK)
                     .ToListAsync();
                 cat.SubCategoryCount = sub.Count;
-                foreach(var s in sub)
+                foreach (var s in sub)
                 {
                     var scriptCount = await _context.Scripts
                         .Where(s => s.ScriptSubFK == s.ScriptSubFK)
                         .CountAsync();
                 }
             }
-            
-
-
 
             var scripts = await _context.Scripts
                 .Where(s => categoryIds.Contains(s.ScriptCatFK))
@@ -65,7 +62,7 @@ namespace WorldBuilder.Controllers
             builderView.SelectedWorld = world;
             builderView.Categories = world.Categories;
             builderView.Tags = world.Tags;
-            builderView.Scripts = scripts;               
+            builderView.Scripts = scripts;
 
             builderView.WorldGenre = world.WorldGenFKNavigation;
             builderView.TotalScripts = scripts.Count;       // use the queried list
@@ -75,6 +72,7 @@ namespace WorldBuilder.Controllers
 
             return View(builderView);
         }
+
         [HttpGet]
         public async Task<ActionResult> getSubFromCat(int catID)
         {
@@ -94,7 +92,7 @@ namespace WorldBuilder.Controllers
         public async Task<IActionResult> OutlineData(int worldId)
         {
             var cats = await _context.Categories
-                .Where(c => c.CatWorldFK == worldId)        
+                .Where(c => c.CatWorldFK == worldId)
                 .OrderBy(c => c.CatName).ToListAsync();
             var catIds = cats.Select(c => c.CatIDPK).ToList();
 
@@ -104,7 +102,8 @@ namespace WorldBuilder.Controllers
 
             var scripts = await _context.Scripts
                 .Where(s => catIds.Contains(s.ScriptCatFK))
-                .Select(s => new {
+                .Select(s => new
+                {
                     id = s.ScriptIDPK,
                     title = s.ScriptTitle,
                     catFk = s.ScriptCatFK,
@@ -115,13 +114,15 @@ namespace WorldBuilder.Controllers
                     tags = s.ScriptTagTagFKs.Select(t => new { name = t.TagName, color = t.TagColor }).ToList()
                 }).ToListAsync();
 
-            var tree = cats.Select(c => new {
+            var tree = cats.Select(c => new
+            {
                 id = c.CatIDPK,
                 name = c.CatName,
                 color = c.CatColor,
                 scriptCount = scripts.Count(s => s.catFk == c.CatIDPK),
                 directScripts = scripts.Where(s => s.catFk == c.CatIDPK && s.subFk == 0).ToList(),
-                subs = subs.Where(su => su.SubCatFK == c.CatIDPK).Select(su => new {
+                subs = subs.Where(su => su.SubCatFK == c.CatIDPK).Select(su => new
+                {
                     id = su.SubIDPK,
                     name = su.SubName,
                     scripts = scripts.Where(s => s.subFk == su.SubIDPK).ToList()
@@ -147,7 +148,8 @@ namespace WorldBuilder.Controllers
 
             var scripts = await _context.Scripts
                 .Where(s => catIds.Contains(s.ScriptCatFK))
-                .Select(s => new {
+                .Select(s => new
+                {
                     id = s.ScriptIDPK,
                     title = s.ScriptTitle,
                     content = s.ScriptContent,
@@ -159,12 +161,14 @@ namespace WorldBuilder.Controllers
                 })
                 .ToListAsync();
 
-            var cardCats = cats.Select(c => new {
+            var cardCats = cats.Select(c => new
+            {
                 id = c.CatIDPK,
                 name = c.CatName,
                 color = c.CatColor,
                 scripts = scripts.Where(s => s.catFk == c.CatIDPK)
-                    .Select(s => new {
+                    .Select(s => new
+                    {
                         s.id,
                         s.title,
                         snippet = string.IsNullOrEmpty(s.content) ? "" :
@@ -200,7 +204,7 @@ namespace WorldBuilder.Controllers
                     oneId = ss.ScriptScriptOneFK,
                     twoId = ss.ScriptScriptTwoFK,
                     label = ss.ScriptScriptConnFKNavigation.ConnDescr,
-                    loose = false   
+                    loose = false
                 })
                 .ToListAsync();
 
@@ -232,6 +236,7 @@ namespace WorldBuilder.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+
         // GET: BuilderViewController/Details/5
         public ActionResult Details(int id)
         {
@@ -239,7 +244,6 @@ namespace WorldBuilder.Controllers
         }
 
         // GET: BuilderViewController/Create
-        
 
         // POST: BuilderViewController/Create
         [HttpPost]

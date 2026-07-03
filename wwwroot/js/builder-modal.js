@@ -1,7 +1,3 @@
-// builder-modal.js
-// Category/subcategory modals, the color picker swatches, name preview,
-// and saving a new category. Reads endpoints + worldId from window.builderConfig.
-
 let currentSubCatParentId = null;
 const subCategoryContainer = document.getElementById('subCategoryContainer');
 
@@ -173,7 +169,7 @@ function saveCategory() {
         `;
 
         document.getElementById('categoryList').insertAdjacentHTML('beforeend', html);
-        scriptModalCatList.insertAdjacentHTML('beforeend',listCat)
+        scriptModalCatList.insertAdjacentHTML('beforeend', listCat)
         nameInput.value = "";
         namePreview.textContent = "Name...";
         hideCategoryModal();
@@ -189,7 +185,7 @@ function saveSubCategory() {
         url: window.builderConfig.urls.createSubCategory,
         type: "POST",
         data: {
-            subName: subName.value.trim(), 
+            subName: subName.value.trim(),
             catID: currentSubCatParentId,
             __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
         }
@@ -213,7 +209,7 @@ function saveSubCategory() {
             </div>
         `;
         document.getElementById(containerId).insertAdjacentHTML('beforeend', html);
-        
+
         const countEl = document.getElementById(`subCatCount-${currentSubCatParentId}`);
         if (countEl) {
             countEl.textContent = (parseInt(countEl.textContent, 10) || 0) + 1;
@@ -286,7 +282,6 @@ function selectCategoryForScript(catID, catName) {
                     </div>
         `;
         subCategoryContainer.appendChild(newSubBtn);
-
     }).fail(function (xhr) {
         alert("Could not load subcategories: " + xhr.statusText);
     });

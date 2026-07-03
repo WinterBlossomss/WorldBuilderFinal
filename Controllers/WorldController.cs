@@ -1,17 +1,14 @@
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using WorldBuilder.Models;
 
 public class WorldController : Controller
 {
     private readonly WorldBuilderDBContext _context;
     private readonly UserManager<IdentityUser> _userManager;
-
 
     public WorldController(UserManager<IdentityUser> userManager, WorldBuilderDBContext context)
     {
@@ -159,8 +156,7 @@ public class WorldController : Controller
             .FirstOrDefaultAsync(m => m.UserInfoUserIDFK == id);
             world.WorldUserFK = user.UserInfoIDPK;
 
-
-            if(world.UploadedPicture != null)
+            if (world.UploadedPicture != null)
             {
                 string[] fileParts = world.UploadedPicture.FileName.Split('.');
                 if (fileParts.Length != 2)
@@ -185,7 +181,6 @@ public class WorldController : Controller
                 world.Pictures.Add(newPic);
             }
 
-
             _context.Add(world);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -202,7 +197,7 @@ public class WorldController : Controller
         }
 
         var world = await _context.Worlds
-            .Include(w => w.Pictures)                  
+            .Include(w => w.Pictures)
             .FirstOrDefaultAsync(w => w.WorldIDPK == id);
 
         if (world == null)
@@ -227,7 +222,6 @@ public class WorldController : Controller
             return NotFound();
         }
 
-        
         var world = await _context.Worlds
             .Include(w => w.Pictures)
             .FirstOrDefaultAsync(w => w.WorldIDPK == id);
@@ -270,7 +264,7 @@ public class WorldController : Controller
 
                 if (cover != null)
                 {
-                    cover.PicPath = "Images/" + newName;     
+                    cover.PicPath = "Images/" + newName;
                 }
                 else
                 {
@@ -280,7 +274,7 @@ public class WorldController : Controller
         }
         else if (RemoveCover && cover != null)
         {
-            _context.Pictures.Remove(cover);                 
+            _context.Pictures.Remove(cover);
         }
 
         try

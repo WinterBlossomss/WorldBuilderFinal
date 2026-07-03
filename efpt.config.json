@@ -1,109 +1,109 @@
 ﻿{
-   "CodeGenerationMode": 5,
-   "ContextClassName": "WorldBuilderDBContext",
-   "ContextNamespace": null,
-   "FilterSchemas": false,
-   "IncludeConnectionString": true,
-   "ModelNamespace": null,
-   "OutputContextPath": null,
-   "OutputPath": "Models",
-   "PreserveCasingWithRegex": true,
-   "ProjectRootNamespace": "WorldBuilder",
-   "Schemas": null,
-   "SelectedHandlebarsLanguage": 2,
-   "SelectedToBeGenerated": 0,
-   "T4TemplatePath": null,
-   "Tables": [
-      {
-         "Name": "[dbo].[Attribute]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[Category]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[ConnectionTable]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[DetailView]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[Genre]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[Picture]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[PictureScript]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[Script]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[ScriptLikes]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[ScriptScript]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[ScriptTag]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[SubCategory]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[Tag]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[UserInfo]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[World]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[WorldLikes]",
-         "ObjectType": 0
-      }
-   ],
-   "UiHint": null,
-   "UncountableWords": null,
-   "UseAsyncStoredProcedureCalls": true,
-   "UseBoolPropertiesWithoutDefaultSql": false,
-   "UseDatabaseNames": true,
-   "UseDatabaseNamesForRoutines": true,
-   "UseDateOnlyTimeOnly": false,
-   "UseDbContextSplitting": false,
-   "UseDecimalDataAnnotationForSprocResult": true,
-   "UseFluentApiOnly": false,
-   "UseHandleBars": false,
-   "UseHierarchyId": false,
-   "UseInflector": true,
-   "UseInternalAccessModifiersForSprocsAndFunctions": false,
-   "UseLegacyPluralizer": false,
-   "UseManyToManyEntity": false,
-   "UseNoDefaultConstructor": false,
-   "UseNoNavigations": false,
-   "UseNoObjectFilter": false,
-   "UseNodaTime": false,
-   "UseNullableReferences": false,
-   "UsePrefixNavigationNaming": false,
-   "UseSchemaFolders": false,
-   "UseSchemaNamespaces": false,
-   "UseSpatial": false,
-   "UseT4": false,
-   "UseT4Split": false
+  "CodeGenerationMode": 5,
+  "ContextClassName": "WorldBuilderDBContext",
+  "ContextNamespace": null,
+  "FilterSchemas": false,
+  "IncludeConnectionString": true,
+  "ModelNamespace": null,
+  "OutputContextPath": null,
+  "OutputPath": "Models",
+  "PreserveCasingWithRegex": true,
+  "ProjectRootNamespace": "WorldBuilder",
+  "Schemas": null,
+  "SelectedHandlebarsLanguage": 2,
+  "SelectedToBeGenerated": 0,
+  "T4TemplatePath": null,
+  "Tables": [
+    {
+      "Name": "[dbo].[Attribute]",
+      "ObjectType": 0
+    },
+    {
+      "Name": "[dbo].[Category]",
+      "ObjectType": 0
+    },
+    {
+      "Name": "[dbo].[ConnectionTable]",
+      "ObjectType": 0
+    },
+    {
+      "Name": "[dbo].[DetailView]",
+      "ObjectType": 0
+    },
+    {
+      "Name": "[dbo].[Genre]",
+      "ObjectType": 0
+    },
+    {
+      "Name": "[dbo].[Picture]",
+      "ObjectType": 0
+    },
+    {
+      "Name": "[dbo].[PictureScript]",
+      "ObjectType": 0
+    },
+    {
+      "Name": "[dbo].[Script]",
+      "ObjectType": 0
+    },
+    {
+      "Name": "[dbo].[ScriptLikes]",
+      "ObjectType": 0
+    },
+    {
+      "Name": "[dbo].[ScriptScript]",
+      "ObjectType": 0
+    },
+    {
+      "Name": "[dbo].[ScriptTag]",
+      "ObjectType": 0
+    },
+    {
+      "Name": "[dbo].[SubCategory]",
+      "ObjectType": 0
+    },
+    {
+      "Name": "[dbo].[Tag]",
+      "ObjectType": 0
+    },
+    {
+      "Name": "[dbo].[UserInfo]",
+      "ObjectType": 0
+    },
+    {
+      "Name": "[dbo].[World]",
+      "ObjectType": 0
+    },
+    {
+      "Name": "[dbo].[WorldLikes]",
+      "ObjectType": 0
+    }
+  ],
+  "UiHint": null,
+  "UncountableWords": null,
+  "UseAsyncStoredProcedureCalls": true,
+  "UseBoolPropertiesWithoutDefaultSql": false,
+  "UseDatabaseNames": true,
+  "UseDatabaseNamesForRoutines": true,
+  "UseDateOnlyTimeOnly": false,
+  "UseDbContextSplitting": false,
+  "UseDecimalDataAnnotationForSprocResult": true,
+  "UseFluentApiOnly": false,
+  "UseHandleBars": false,
+  "UseHierarchyId": false,
+  "UseInflector": true,
+  "UseInternalAccessModifiersForSprocsAndFunctions": false,
+  "UseLegacyPluralizer": false,
+  "UseManyToManyEntity": false,
+  "UseNoDefaultConstructor": false,
+  "UseNoNavigations": false,
+  "UseNoObjectFilter": false,
+  "UseNodaTime": false,
+  "UseNullableReferences": false,
+  "UsePrefixNavigationNaming": false,
+  "UseSchemaFolders": false,
+  "UseSchemaNamespaces": false,
+  "UseSpatial": false,
+  "UseT4": false,
+  "UseT4Split": false
 }

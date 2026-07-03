@@ -102,7 +102,6 @@
         el.querySelector("button").onclick = () => { rows.splice(i, 1); render(); };
         return el;
     }
-    
 
     addRow.addEventListener("click", () => { rows.push({ name: "", content: "", isSection: false }); render(); });
     addSec.addEventListener("click", () => { rows.push({ name: "New section", content: "", isSection: true }); render(); });
@@ -124,7 +123,6 @@
         setPortraitPreview(URL.createObjectURL(f), null);
     });
 
-   
     async function uploadPortrait() {
         if (!portraitFile) return portraitPicId; // unchanged
         const fd = new FormData();
@@ -149,7 +147,7 @@
                 scriptId: cfg.scriptId,
                 title: title.value,
                 picId: picId,
-                enabled: enabled.checked,   
+                enabled: enabled.checked,
                 rows: rows.filter(r => r.isSection || r.name || r.content)
             })
         });

@@ -6,6 +6,7 @@ namespace WorldBuilder.Models
     {
         [NotMapped]
         public int? SubCategoryCount { get; set; }
+
         [NotMapped]
         public int? ScriptCount { get; set; }
     }

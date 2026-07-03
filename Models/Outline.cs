@@ -9,6 +9,7 @@ namespace WorldBuilder.Models
         public int TotalScripts { get; set; }
         public List<OutlineCat> Categories { get; set; } = new();
     }
+
     public class OutlineCat
     {
         public int Id { get; set; }
@@ -18,12 +19,14 @@ namespace WorldBuilder.Models
         public List<OutlineSub> Subs { get; set; } = new();
         public List<OutlineScript> DirectScripts { get; set; } = new();   // no sub-category
     }
+
     public class OutlineSub
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public List<OutlineScript> Scripts { get; set; } = new();
     }
+
     public class OutlineScript
     {
         public int Id { get; set; }

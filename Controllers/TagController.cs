@@ -52,7 +52,7 @@ public class TagController : Controller
                 name = t.TagName,
                 color = t.TagColor,
                 allWorlds = t.TagUserFK != null,
-                count = t.ScriptTagScriptFKs.Count  
+                count = t.ScriptTagScriptFKs.Count
             })
             .ToListAsync();
 

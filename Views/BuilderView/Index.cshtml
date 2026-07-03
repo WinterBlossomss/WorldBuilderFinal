@@ -349,69 +349,78 @@
     <script src="~/js/board-view.js" asp-append-version="true"></script>
     <script src="~/js/cards.js" asp-append-version="true"></script>
     <script>
-            (function () {
+        (function () {
             const modal = document.getElementById("deleteModal");
             const text = document.getElementById("deleteModalText");
             const confirmBtn = document.getElementById("deleteConfirmBtn");
             let action = null; // async fn run on confirm
 
             window.openDeleteModal = function (message, onConfirm) {
-            text.textContent = message;
-            action = onConfirm;
-            modal.classList.remove("hidden");
-            modal.classList.add("flex");
+                text.textContent = message;
+                action = onConfirm;
+                modal.classList.remove("hidden");
+                modal.classList.add("flex");
             };
 
             window.hideDeleteModal = function () {
-            modal.classList.add("hidden");
-            modal.classList.remove("flex");
-            action = null;
+                modal.classList.add("hidden");
+                modal.classList.remove("flex");
+                action = null;
             };
 
             // click the dark backdrop to cancel
             modal.addEventListener("click", e => { if (e.target === modal) hideDeleteModal(); });
 
             confirmBtn.addEventListener("click", async () => {
-            if (!action) return;
-            confirmBtn.disabled = true;
-            try { await action(); }
-            finally { confirmBtn.disabled = false; hideDeleteModal(); }
+                if (!action) 
+                    return;
+                confirmBtn.disabled = true;
+                try 
+                { 
+                    await action(); 
+                }
+                finally 
+                { 
+                    confirmBtn.disabled = false; hideDeleteModal(); 
+                }
             });
 
             function token() {
-            const el = document.querySelector('input[name="__RequestVerificationToken"]');
-            return el ? el.value : "";
+                const el = document.querySelector('input[name="__RequestVerificationToken"]');
+                return el ? el.value : "";
             }
 
             async function postDelete(url, key, id) {
-            return fetch(url, {
-            method: "POST",
-            headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "RequestVerificationToken": token()
-            },
-            body: `${key}=${encodeURIComponent(id)}`
-            });
+                return fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "RequestVerificationToken": token()
+                    },
+                    body: `${key}=${encodeURIComponent(id)}`
+                });
             }
 
             window.deleteCategory = function (id) {
-            openDeleteModal("Delete this category? Its sub-categories and scripts go with it.", async () => {
-            const res = await postDelete(window.builderConfig.urls.catDeleteAjax, "catidpk", id);
-            if (res.ok) document.querySelector(`.outline-cat[data-id="${id}"]`)?.remove();
-            else alert(await res.text() || "Couldn't delete this category.");
-            });
+                openDeleteModal("Delete this category? Its sub-categories and scripts go with it.", async () => {
+                    const res = await postDelete(window.builderConfig.urls.catDeleteAjax, "catidpk", id);
+                    if 
+                        (res.ok) document.querySelector(`.outline-cat[data-id="${id}"]`)?.remove();
+                    else 
+                        alert(await res.text() || "Couldn't delete this category.");
+                });
             };
 
             window.deleteSubCategory = function (id) {
             openDeleteModal("Delete this sub-category and its scripts?", async () => {
-            const res = await postDelete(window.builderConfig.urls.subDeleteAjax, "subidpk", id);
-            if (res.ok) document.querySelector(`.outline-sub[data-id="${id}"]`)?.remove();
-            else alert(await res.text() || "Couldn't delete this sub-category.");
-            });
-            };
+                const res = await postDelete(window.builderConfig.urls.subDeleteAjax, "subidpk", id);
+                if (res.ok) 
+                    document.querySelector(`.outline-sub[data-id="${id}"]`)?.remove();
+                else 
+                    alert(await res.text() || "Couldn't delete this sub-category.");
+                    });
+                };
             })();
-            
-
     </script>
 }
 

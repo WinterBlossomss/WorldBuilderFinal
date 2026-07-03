@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-
-namespace WorldBuilder.Models
+﻿namespace WorldBuilder.Models
 {
     public class WorldTocNode
     {
         public int CatId { get; set; }
         public string CatName { get; set; }
         public string CatColor { get; set; }
-        public int Count { get; set; }                  
+        public int Count { get; set; }
         public List<WorldTocSub> Subs { get; set; } = new();
     }
 

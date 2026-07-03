@@ -1,4 +1,3 @@
-// builder-views.js
 // Switches between the Board / Cards / Outline panels at the top of the builder.
 
 const viewButtons = document.querySelectorAll('.view-btn');

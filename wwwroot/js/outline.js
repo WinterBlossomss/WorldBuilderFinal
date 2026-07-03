@@ -29,7 +29,7 @@
         }
     };
 
-    // loads rows of categories 
+    // loads rows of categories
     function scriptRow(s) {
         const tags = (s.tags || []).map(t =>
             `<span class="text-xs px-2 py-0.5 rounded-full border" style="border-color:${t.color}">${t.name}</span>`).join("");
@@ -65,7 +65,7 @@
             <div class="flex flex-row items-center justify-between py-2 px-2">
                 <button class="cat-toggle flex flex-row items-center gap-2 cursor-pointer">
                     <span class="chev text-gray-500">▾</span>
-                    
+
                     <span class="w-3 h-3 rounded-sm border" style="background:${c.color}"></span>
                     <span class="font-semibold italic">${c.name}</span>
                 </button>
@@ -151,7 +151,6 @@
     if (host) {
         //watches host for changes
         new MutationObserver(() => {
-
             if (!host.classList.contains("hidden")) load();
         })
             .observe(host, { attributes: true, attributeFilter: ["class"] });

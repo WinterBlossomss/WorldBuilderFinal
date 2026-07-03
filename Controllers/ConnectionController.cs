@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +12,6 @@ public class ConnectionController : Controller
     {
         _context = context;
         _userManager = userManager;
-
     }
 
     private async Task<int?> CurrentUserInfoIdAsync()
@@ -38,7 +36,8 @@ public class ConnectionController : Controller
         return Json(types);
     }
 
-    public class CreateTypeDto { public string Descr { get; set; } }
+    public class CreateTypeDto
+    { public string Descr { get; set; } }
 
     // POST /Connection/CreateTypeAjax
     [HttpPost]

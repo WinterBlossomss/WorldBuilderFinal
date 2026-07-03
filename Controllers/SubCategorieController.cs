@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorldBuilder.Models;
@@ -77,8 +76,9 @@ public class SubCategorieController : Controller
 
         _context.SubCategories.Add(subCat);
         await _context.SaveChangesAsync();
-        return Json(new {subCat.SubName,subCat.SubCatFK});
+        return Json(new { subCat.SubName, subCat.SubCatFK });
     }
+
     // POST: SubCategorie/DeleteAjax/5
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -106,6 +106,7 @@ public class SubCategorieController : Controller
 
         return Json(new { success = true, id = subidpk });
     }
+
     // GET: SUBCATEGORYS/Edit/5
     public async Task<IActionResult> Edit(int? subidpk)
     {

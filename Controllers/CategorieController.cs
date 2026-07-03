@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorldBuilder.Models;
@@ -13,7 +12,7 @@ public class CategorieController : Controller
     }
 
     // GET: CATEGORYS
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index()
     {
         return View(await _context.Categories.ToListAsync());
     }
@@ -115,6 +114,7 @@ public class CategorieController : Controller
         }
         return View(category);
     }
+
     // POST: Categorie/DeleteAjax/5
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -131,12 +131,12 @@ public class CategorieController : Controller
         }
         catch (DbUpdateException)
         {
-            // FK constraint: children aren't set to cascade-delete in the DB
             return BadRequest("Category still has sub-categories or scripts attached.");
         }
 
         return Json(new { success = true, id = catidpk });
     }
+
     // GET: CATEGORYS/Delete/5
     public async Task<IActionResult> Delete(int? catidpk)
     {

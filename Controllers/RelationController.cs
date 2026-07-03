@@ -5,6 +5,7 @@ using WorldBuilder.Models;
 public class RelationController : Controller
 {
     private readonly WorldBuilderDBContext _context;
+
     public RelationController(WorldBuilderDBContext context) => _context = context;
 
     [HttpGet]
@@ -43,11 +44,11 @@ public class RelationController : Controller
         return Json(results);
     }
 
-    public class LinkDto 
-    { 
-        public int FromId { get; set; } 
-        public int ToId { get; set; } 
-        public int ConnId { get; set; } 
+    public class LinkDto
+    {
+        public int FromId { get; set; }
+        public int ToId { get; set; }
+        public int ConnId { get; set; }
     }
 
     [HttpPost]
@@ -85,10 +86,10 @@ public class RelationController : Controller
         });
     }
 
-    public class UnlinkDto 
-    { 
-        public int OneId { get; set; } 
-        public int TwoId { get; set; } 
+    public class UnlinkDto
+    {
+        public int OneId { get; set; }
+        public int TwoId { get; set; }
     }
 
     [HttpPost]

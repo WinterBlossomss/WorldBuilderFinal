@@ -5,7 +5,6 @@ const cfg = window.builderConfig;
 
 let selectedTagIds = new Set(); // tag ids applied to this script
 
-
 const $search = document.getElementById("tagSearchInput");
 const $count = document.getElementById("tagMatchCount");
 const $match = document.getElementById("tagMatchContainer");
@@ -82,7 +81,6 @@ function renderMatching(tags) {
     tags.forEach(t => $match.appendChild(tagChip(t)));
 }
 
-
 const tagCache = new Map();
 function renderSelected(tags) {
     tags.forEach(t => tagCache.set(t.id, t));
@@ -114,14 +112,14 @@ function toggleTag(tag) {
     tagCache.set(tag.id, tag);
     if (selectedTagIds.has(tag.id)) selectedTagIds.delete(tag.id);
     else selectedTagIds.add(tag.id);
-    loadTags($search.value);   
+    loadTags($search.value);
 }
 
 // ---- Tag color picker  ----
 const TAG_PALETTE = ["#4f7a52", "#7a2f3a", "#8a7a3a", "#3f6079",
     "#7a5a3f", "#6b4a7a", "#000000"];
 
-let newTagColor = TAG_PALETTE[0];   
+let newTagColor = TAG_PALETTE[0];
 
 const $colors = document.getElementById("tagColorContainer");
 const $preview = document.getElementById("tagColorPreview");
@@ -201,7 +199,7 @@ async function createTag() {
     });
     if (!res.ok) { console.error(await res.text()); return; }
     const tag = await res.json();
-    selectedTagIds.add(tag.id);   
+    selectedTagIds.add(tag.id);
     tagCache.set(tag.id, tag);
     $nameIn.value = "";
     loadTags($search.value);
@@ -237,7 +235,7 @@ function saveTag() {
 //     colorDiv.addEventListener('mouseleave', () => colorDiv.style.opacity = '1');
 
 //     const darkBorder = darken(borders[i], 60);
-    
+
 //     colorDiv.addEventListener('focus', () => {
 //         colorPreview.style.backgroundColor = color;
 //     });
@@ -272,16 +270,11 @@ const quill = new Quill('#editor', {
             maxStack: 100,
             userOnly: true
         }
-
     }
 });
 
-
-
 // const toolbar = quill.getModule('toolbar');
 // const html = quill.getSemanticHTML(0);
-
-
 
 // expose for the save
 window.editorGetHtml = () => quill.getSemanticHTML(0);

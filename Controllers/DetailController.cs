@@ -5,6 +5,7 @@ using WorldBuilder.Models;
 public class DetailController : Controller
 {
     private readonly WorldBuilderDBContext _context;
+
     public DetailController(WorldBuilderDBContext context) => _context = context;
 
     private const string HeaderName = "__HEADER__";
@@ -50,6 +51,7 @@ public class DetailController : Controller
         public string Content { get; set; }
         public bool IsSection { get; set; }
     }
+
     public class SaveDetailDto
     {
         public int ScriptId { get; set; }
@@ -78,7 +80,7 @@ public class DetailController : Controller
         int order = 0;
 
         // 2) header row carries the box title + portrait
-        var headerAtt = new WorldBuilder.Models.Attribute 
+        var headerAtt = new WorldBuilder.Models.Attribute
         {
             AttName = HeaderName,
             AttContent = null,

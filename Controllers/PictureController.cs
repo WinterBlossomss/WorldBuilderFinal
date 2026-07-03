@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorldBuilder.Models;
@@ -14,11 +12,13 @@ public class PictureController : Controller
         _context = context;
         _env = env;
     }
+
     public class CaptionDto
     {
         public int Id { get; set; }
         public string Caption { get; set; }
     }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UploadAjax(IFormFile file, int worldId, string caption)
@@ -52,8 +52,6 @@ public class PictureController : Controller
         return Json(new { id = picture.PicIDPK, path = picture.PicPath, caption = picture.PicCaption ?? "" });
     }
 
-   
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateCaptionAjax([FromBody] CaptionDto dto)
@@ -65,7 +63,8 @@ public class PictureController : Controller
         return Ok();
     }
 
-    public class IdDto { public int Id { get; set; } }
+    public class IdDto
+    { public int Id { get; set; } }
 
     // POST: /Picture/DeleteAjax
     [HttpPost]

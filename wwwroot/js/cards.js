@@ -25,7 +25,7 @@
         }
     };
 
-    function scriptCard(catColor,s, catName) {
+    function scriptCard(catColor, s, catName) {
         const label = s.subName ? `${catName} · ${s.subName}` : catName;
         return `
         <a href="/Script/Edit?id=${s.id}" class="border rounded-lg pb-4 flex flex-col justify-between hover:shadow-sm bg-white h-full">
@@ -75,7 +75,7 @@
                 </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
-                ${c.scripts.map(s => scriptCard(c.color,s, c.name)).join("")}
+                ${c.scripts.map(s => scriptCard(c.color, s, c.name)).join("")}
                 ${newScriptCard(c.id, c.name)}
             </div>
         </div>`;

@@ -55,7 +55,6 @@ function loadSubCategories(catID, containerId, btn) {
         `;
         container.appendChild(addDiv);
 
-
         container.dataset.loaded = 'true';
         container.classList.remove('hidden');
         toggleChevrons();   // flip to "down" on first open

@@ -37,7 +37,7 @@
         if (!p || !file) return;
         if (p.url && p.url.startsWith("blob:")) URL.revokeObjectURL(p.url);
         p.file = file;
-        p.id = null;                     
+        p.id = null;
         p.url = URL.createObjectURL(file);
         render();
     }
@@ -156,4 +156,3 @@
     //!!!! RENDER
     render();
 })();
-

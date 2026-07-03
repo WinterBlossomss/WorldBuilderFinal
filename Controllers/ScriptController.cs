@@ -1,6 +1,4 @@
-
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
 using WorldBuilder.Models;
 
@@ -14,9 +12,8 @@ public class ScriptController : Controller
     }
 
     // GET: SCRIPTS
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index()
     {
-
         return View();
     }
 
@@ -142,7 +139,7 @@ public class ScriptController : Controller
         if (script.ScriptSubFK > 0)
         {
             var sub = await _context.SubCategories.FirstOrDefaultAsync(s => s.SubIDPK == script.ScriptSubFK);
-            ViewData["SubName"] = sub?.SubName; 
+            ViewData["SubName"] = sub?.SubName;
         }
 
         return View("Create", new BuilderView
@@ -228,5 +225,4 @@ public class ScriptController : Controller
     {
         return _context.Scripts.Any(e => e.ScriptIDPK == scriptidpk);
     }
-
 }
