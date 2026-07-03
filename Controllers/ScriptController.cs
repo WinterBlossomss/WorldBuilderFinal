@@ -20,19 +20,96 @@ public class ScriptController : Controller
     // GET: SCRIPTS/Details/5
     public async Task<IActionResult> Details(int? scriptidpk)
     {
-        if (scriptidpk == null)
-        {
-            return NotFound();
-        }
+        if (scriptidpk == null) return NotFound();
 
         var script = await _context.Scripts
+            .Include(s => s.ScriptTagTagFKs)
+            .Include(s => s.PicScriptPicFKs)
+            .Include(s => s.DetailViews).ThenInclude(dv => dv.DVAttFKNavigation)
+            .Include(s => s.DetailViews).ThenInclude(dv => dv.DVPicFKNavigation)
             .FirstOrDefaultAsync(m => m.ScriptIDPK == scriptidpk);
-        if (script == null)
+        if (script == null) return NotFound();
+
+        var cat = await _context.Categories
+            .FirstOrDefaultAsync(c => c.CatIDPK == script.ScriptCatFK);
+
+        var sub = script.ScriptSubFK > 0
+            ? await _context.SubCategories.FirstOrDefaultAsync(s => s.SubIDPK == script.ScriptSubFK)
+            : null;
+
+        var world = cat == null ? null
+            : await _context.Worlds
+                .Include(w => w.WorldUserFKNavigation)
+                .FirstOrDefaultAsync(w => w.WorldIDPK == cat.CatWorldFK);
+
+        ViewData["World"] = world;                                    // World
+        ViewData["CatId"] = cat?.CatIDPK;                             // int?
+        ViewData["CatName"] = cat?.CatName;                             // string
+        ViewData["SubName"] = sub?.SubName;                             // string
+        ViewData["AuthorHandle"] = world?.WorldUserFKNavigation?.UserInfoProN; // string
+
+        // ---- infobox: the DetailView rows, ordered by AttOrder ----
+        var dvs = script.DetailViews
+            .OrderBy(dv => dv.DVAttFKNavigation?.AttOrder ?? 0)
+            .ToList();
+
+        // header row is the only one carrying a title / portrait (see DetailController.SaveAjax)
+        var header = dvs.FirstOrDefault(dv => dv.DVTitle != null || dv.DVPicFK != null)
+                     ?? dvs.FirstOrDefault();
+
+        var infoRows = new List<WorldBuilder.Models.Attribute>();            // reuse the Attribute entity
+        if (header != null)
         {
-            return NotFound();
+            ViewData["InfoEnabled"] = header.DVAttFKNavigation?.AttIsSection ?? true;
+            ViewData["InfoTitle"] = header.DVTitle;                       // string
+            ViewData["PortraitPath"] = header.DVPicFKNavigation?.PicPath;    // string
+
+            foreach (var dv in dvs)
+            {
+                if (dv == header) continue;
+                if (dv.DVAttFKNavigation != null) infoRows.Add(dv.DVAttFKNavigation);
+            }
+        }
+        else
+        {
+            ViewData["InfoEnabled"] = false;
+        }
+        ViewData["InfoRows"] = infoRows;   // List<Attribute>
+
+        // ---- linked scripts, grouped by relation type ----
+        var edges = await _context.ScriptScripts
+            .Include(e => e.ScriptScriptConnFKNavigation)
+            .Include(e => e.ScriptScriptOneFKNavigation)
+            .Include(e => e.ScriptScriptTwoFKNavigation)
+            .Where(e => e.ScriptScriptOneFK == script.ScriptIDPK
+                     || e.ScriptScriptTwoFK == script.ScriptIDPK)
+            .ToListAsync();
+
+        // label -> the "other" Script entities (reusing Script, no wrapper type)
+        var groups = new Dictionary<string, List<Script>>();
+        foreach (var e in edges)
+        {
+            var other = e.ScriptScriptOneFK == script.ScriptIDPK
+                ? e.ScriptScriptTwoFKNavigation
+                : e.ScriptScriptOneFKNavigation;
+            if (other == null) continue;
+
+            var label = e.ScriptScriptConnFKNavigation?.ConnDescr ?? "Related";
+            if (!groups.TryGetValue(label, out var list))
+                groups[label] = list = new List<Script>();
+            list.Add(other);
         }
 
-        return View(script);
+        var linkCatIds = groups.Values.SelectMany(v => v)
+            .Select(s => s.ScriptCatFK).Distinct().ToList();
+        var linkCatNames = await _context.Categories
+            .Where(c => linkCatIds.Contains(c.CatIDPK))
+            .ToDictionaryAsync(c => c.CatIDPK, c => c.CatName);
+
+        ViewData["LinkGroups"] = groups;         // Dictionary<string, List<Script>>
+        ViewData["LinkCatNames"] = linkCatNames;   // Dictionary<int, string>
+
+        return View(script);   // Views/Script/Details.cshtml — model is the Script entity
     }
 
     // GET: SCRIPTS/Create

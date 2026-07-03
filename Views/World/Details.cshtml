@@ -5,6 +5,7 @@
     ViewData["Title"] = Model?.WorldName ?? "World";
 
     var isOwner = ViewData["IsOwner"] as bool? ?? false;
+    var hasLiked = ViewData["HasLiked"] as bool? ?? false;
     var moreByAuthor = (ViewData["MoreByAuthor"] as List<World>) ?? new List<World>();
     var moreInGenre = (ViewData["MoreInGenre"] as List<World>) ?? new List<World>();
     var genreCount = ViewData["GenreCount"] is int gc ? gc : moreInGenre.Count;
@@ -30,6 +31,7 @@
     }
 }
 <div class="m-5">
+    @Html.AntiForgeryToken()
     <div class="font-['Kalam'] text-[#1a1a1a] -mx-4 -my-3 px-[30px] pt-5 pb-16 ">
 
         <!-- Breadcrumb -->
@@ -52,7 +54,7 @@
                 }
                 else
                 {
-                    <span class="bg-[#f7f3ea] px-2 py-0.5 text-[12px] text-[#a89f8e]">cover banner — 16:9</span>
+                    <span class="text-[13px] text-[#a89f8e]">No cover yet</span>
                 }
             </div>
 
@@ -78,7 +80,7 @@
                 <div class="flex items-center gap-2 text-[12.5px] text-[#444444] mb-1">
                     <span class="inline-flex items-center gap-1">
                         <svg width="12" height="11" viewBox="0 0 24 22" fill="none"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="#1a1a1a" stroke-width="1.8" fill="none" /></svg>
-                        @Kfmt(Model?.WorldLikes ?? 0)
+                        <span id="worldLikeCountStat">@Kfmt(Model?.WorldLikes ?? 0)</span>
                     </span>
                     <span class="text-[#a89f8e]">·</span>
                     <span>@categories.Count categories</span>
@@ -111,14 +113,17 @@
                     }
                     else
                     {
-                        <a href="#"
+                        <a asp-action="Read" asp-route-id="@Model?.WorldIDPK"
                            class="inline-flex items-center bg-[#1a1a1a] text-[#f7f3ea] px-5 py-2.5 rounded-md text-[14px] font-bold no-underline">Enter the world →</a>
-                        <button type="button"
-                                class="inline-flex items-center gap-1.5 border-[1.5px] border-[#1a1a1a] px-4 py-2.5 rounded-md text-[14px] font-bold cursor-pointer hover:bg-[#1a1a1a] hover:text-[#f7f3ea] transition-colors">
-                            <svg width="13" height="12" viewBox="0 0 24 22" fill="none"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="currentColor" stroke-width="1.8" fill="none" /></svg>
-                            Save
-                        </button>
                     }
+
+                    <!-- Like button — works for anyone signed in, owner or not -->
+                    <button type="button" id="worldLikeBtn" data-id="@Model?.WorldIDPK"
+                            class="inline-flex items-center gap-1.5 border-[1.5px] border-[#1a1a1a] px-4 py-2.5 rounded-md text-[14px] font-bold cursor-pointer transition-colors @(hasLiked ? "bg-[#1a1a1a] text-[#f7f3ea]" : "hover:bg-[#1a1a1a] hover:text-[#f7f3ea]")">
+                        <svg width="13" height="12" viewBox="0 0 24 22" fill="none"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="currentColor" stroke-width="1.8" fill="@(hasLiked ? "currentColor" : "none")" /></svg>
+                        <span>Like</span><span class="opacity-70">·</span><span id="worldLikeCount">@(Model?.WorldLikes ?? 0)</span>
+                    </button>
+
                     <button type="button" title="Share"
                             class="inline-flex items-center justify-center w-10 h-10 border-[1.5px] border-[#1a1a1a] rounded-md cursor-pointer hover:bg-[#1a1a1a] hover:text-[#f7f3ea] transition-colors">
                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="4" cy="8" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="3.5" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="12.5" r="2" stroke="currentColor" stroke-width="1.4" /><line x1="5.7" y1="7" x2="10.3" y2="4.4" stroke="currentColor" stroke-width="1.2" /><line x1="5.7" y1="9" x2="10.3" y2="11.6" stroke="currentColor" stroke-width="1.2" /></svg>
@@ -266,4 +271,38 @@
             });
         })();
     </script>
+    <script>
+    (function () {
+        var btn = document.getElementById('worldLikeBtn');
+        if (!btn) return;
+        var tokenEl = document.querySelector('input[name="__RequestVerificationToken"]');
+        btn.addEventListener('click', async function () {
+            var id = btn.getAttribute('data-id');
+            btn.disabled = true;
+            try {
+                var res = await fetch('@Url.Action("ToggleLike", "World")/' + id, {
+                    method: 'POST',
+                    headers: { 'RequestVerificationToken': tokenEl ? tokenEl.value : '' }
+                });
+                if (res.status === 401) { window.location.href = '/Identity/Account/Login'; return; }
+                if (!res.ok) throw new Error('failed');
+                var data = await res.json();
+                var pretty = data.count >= 1000 ? (data.count / 1000).toFixed(1) + 'k' : data.count;
+                var cEl = document.getElementById('worldLikeCount');
+                if (cEl) cEl.textContent = data.count;          // button count (raw)
+                var sEl = document.getElementById('worldLikeCountStat');
+                if (sEl) sEl.textContent = pretty;              // stats line (compact)
+                var heart = btn.querySelector('path');
+                if (data.liked) {
+                    btn.classList.add('bg-[#1a1a1a]', 'text-[#f7f3ea]');
+                    if (heart) heart.setAttribute('fill', 'currentColor');
+                } else {
+                    btn.classList.remove('bg-[#1a1a1a]', 'text-[#f7f3ea]');
+                    if (heart) heart.setAttribute('fill', 'none');
+                }
+            } catch (e) { console.error(e); }
+            finally { btn.disabled = false; }
+        });
+    })();
+</script>
 }

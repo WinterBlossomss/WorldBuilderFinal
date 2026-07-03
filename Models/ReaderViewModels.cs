@@ -72,10 +72,6 @@
 
         public List<WorldTocNode> Contents { get; set; } = new();
     }
-
-    // ---------------------------------------------------------------------
-    // Category browse page (Image 3)
-    // ---------------------------------------------------------------------
     public class WorldCategoryVM
     {
         public World World { get; set; }
