@@ -25,9 +25,9 @@
             <div class="flex flex row pt-2">
                 <div class="flex flex-row flex-auto items-center">
                     <div class=" flex items-center flex-row gap-2 mr-8 shrink-0">
-                        <a class="material-symbols-outlined cursor-pointer">
+                        <button class="material-symbols-outlined cursor-pointer" onclick="showDrawer()">
                             menu
-                        </a>
+                        </button>
                     </div>
                     <div class=" flex items-center flex-row gap-2 mr-8 shrink-0">
                         <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -73,10 +73,86 @@
             
         </nav>
     </header>
+    <!-- Drawer -->
+    <div id="drawer"
+         class="hidden fixed inset-0 z-[100] flex justify-start bg-black/30 opacity-0 transition-opacity duration-200"
+         onclick="hideDrawer()">
+        <aside id="drawerPanel"
+               class="flex h-full w-[360px] max-w-[86vw] -translate-x-full flex-col overflow-y-auto bg-[#f4f1e8] text-[#2b2825] shadow-2xl transition-transform duration-300 ease-out"
+               onclick="event.stopPropagation()">
+
+            <!-- header -->
+            <div class="flex items-center gap-3 px-5 pb-4 pt-5">
+                <button type="button" onclick="hideDrawer()" aria-label="Close menu"
+                        class="flex h-11 w-11 flex-none items-center justify-center rounded-full border-2 border-[#2b2825] transition-colors hover:bg-black/5">
+                    <span class="material-symbols-outlined text-[22px]">close</span>
+                </button>
+                <span class="material-symbols-outlined text-[26px]">public</span>
+                <span class="text-[26px] font-bold italic tracking-tight">World Builder</span>
+            </div>
+
+            <div class="mx-5 border-t border-[#d8d3c6]"></div>
+
+            <!-- user -->
+            <div class="flex items-center gap-4 px-5 py-4">
+                <div class="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-[#1c1a17] text-[22px] font-bold text-[#f4f1e8]">R</div>
+                <div>
+                    <div class="text-[19px] font-bold italic leading-tight">@@runeforge</div>
+                    <div class="text-[14px] text-[#a39c8e]">3 worlds · 412 scripts</div>
+                </div>
+                <span class="material-symbols-outlined ml-auto text-[#8f887a]">expand_more</span>
+            </div>
+
+            <div class="mx-5 border-t border-dashed border-[#cbc4b3]"></div>
+
+            <!-- browse -->
+            <div class="px-6 pb-1.5 pt-5 text-[12px] italic uppercase tracking-[0.16em] text-[#b0a999]">Browse</div>
+            <nav class="px-3">
+                <a href="#" class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] transition-colors hover:bg-black/5">
+                    <span class="material-symbols-outlined text-[22px]">explore</span>
+                    <span class="flex-1">Explore</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 rounded-[11px] bg-[#e7e2d4] px-3 py-2.5 text-[19px]">
+                    <span class="material-symbols-outlined text-[22px]">public</span>
+                    <span class="flex-1 font-bold">All Worlds</span>
+                    <span class="text-[15px] italic text-[#b0a999]">12,488</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] transition-colors hover:bg-black/5">
+                    <span class="material-symbols-outlined text-[22px]">groups</span>
+                    <span class="flex-1">Community</span>
+                </a>
+            </nav>
+
+            <!-- yours -->
+            <div class="px-6 pb-1.5 pt-5 text-[12px] italic uppercase tracking-[0.16em] text-[#b0a999]">Yours</div>
+            <nav class="px-3 pb-6">
+                <a href="#" class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] transition-colors hover:bg-black/5">
+                    <span class="material-symbols-outlined text-[22px]">folder</span>
+                    <span class="flex-1">My worlds</span>
+                    <span class="text-[15px] italic text-[#b0a999]">3</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] transition-colors hover:bg-black/5">
+                    <span class="material-symbols-outlined text-[22px]">description</span>
+                    <span class="flex-1">Drafts</span>
+                    <span class="text-[15px] italic text-[#b0a999]">1</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] transition-colors hover:bg-black/5">
+                    <span class="material-symbols-outlined text-[22px]">favorite</span>
+                    <span class="flex-1">Liked worlds</span>
+                    <span class="text-[15px] italic text-[#b0a999]">42</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] transition-colors hover:bg-black/5">
+                    <span class="material-symbols-outlined text-[22px]">menu_book</span>
+                    <span class="flex-1">Novels</span>
+                    <span class="text-[15px] italic text-[#b0a999]">2</span>
+                </a>
+            </nav>
+
+        </aside>
+    </div>
 
     <main class="flex-1 w-full mx-auto">
         @RenderBody()
-        
     </main>
 
     <footer class="border-t border-gray-200 bg-white">
