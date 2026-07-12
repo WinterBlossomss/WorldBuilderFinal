@@ -1,0 +1,33 @@
+@model List<WorldBuilder.Controllers.BuilderRow>
+@{
+    ViewData["Title"] = "Community";
+}
+
+<div class="font-['Kalam'] text-[#1a1a1a] px-[30px] pt-6 pb-16 max-w-5xl mx-auto">
+    <h1 class="font-['Caveat'] text-[40px] font-bold leading-none mb-1">Community</h1>
+    <p class="text-[13px] text-[#a89f8e] mb-6">@Model.Count builders · sorted by worlds published</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        @foreach (var b in Model)
+        {
+            var handle = string.IsNullOrWhiteSpace(b.Handle) ? "builder" : b.Handle;
+            <a asp-controller="Author" asp-action="Index" asp-route-id="@b.UserInfoId"
+               class="flex items-center gap-4 border-[1.5px] border-[#1a1a1a] rounded-md p-4 no-underline text-[#1a1a1a] hover:bg-[#1a1a1a]/[0.03] transition-colors">
+                <div class="flex h-12 w-12 flex-none items-center justify-center rounded-full border-[1.5px] border-[#1a1a1a] font-['Caveat'] text-[22px] font-bold">
+                    @handle.Substring(0, 1).ToUpper()
+                </div>
+                <div class="min-w-0 flex-1">
+                    <div class="font-bold text-[16px] leading-tight">@@@handle</div>
+                    @if (!string.IsNullOrWhiteSpace(b.Bio))
+                    {
+                        <div class="text-[12px] text-[#666] line-clamp-1">@b.Bio</div>
+                    }
+                </div>
+                <div class="text-right text-[12px] text-[#a89f8e] shrink-0">
+                    <div>@b.Worlds worlds</div>
+                    <div>♥ @b.Likes</div>
+                </div>
+            </a>
+        }
+    </div>
+</div>

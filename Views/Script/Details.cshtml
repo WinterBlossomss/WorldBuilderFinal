@@ -148,7 +148,14 @@
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mt-3">
                             @foreach (var p in pictures)
                             {
-                                <figure class="m-0">
+                                <figure class="m-0 @(string.IsNullOrEmpty(p.PicPath) ? "" : "js-lightbox cursor-zoom-in")"
+                                        data-gallery="script-@s.ScriptIDPK"
+                                        data-full="@Pic(p.PicPath)"
+                                        data-caption="@p.PicCaption"
+                                        data-title="@(string.IsNullOrEmpty(p.PicCaption) ? s?.ScriptTitle : p.PicCaption)"
+                                        data-crumb="@world?.WorldName@(string.IsNullOrEmpty(catName) ? "" : " › " + catName)@(string.IsNullOrEmpty(subName) ? "" : " › " + subName)"
+                                        data-meta="From @s?.ScriptTitle@(string.IsNullOrEmpty(author) ? "" : " · by @" + author)"
+                                        data-back="@Url.Action("Details", "Script", new { scriptidpk = s?.ScriptIDPK })">
                                     <div class="aspect-square border-[1.5px] border-dashed border-[#1a1a1a] bg-[repeating-linear-gradient(135deg,transparent_0_10px,rgba(26,26,26,0.08)_10px_11px)] overflow-hidden flex items-center justify-center">
                                         @if (!string.IsNullOrEmpty(p.PicPath))
                                         {
@@ -215,7 +222,13 @@
 
                         <!-- portrait -->
                         <div class="p-3">
-                            <div class="aspect-[4/5] w-full border-[1.5px] border-dashed border-[#1a1a1a] bg-[repeating-linear-gradient(135deg,transparent_0_10px,rgba(26,26,26,0.08)_10px_11px)] flex items-center justify-center overflow-hidden">
+                            <div class="aspect-[4/5] w-full border-[1.5px] border-dashed border-[#1a1a1a] bg-[repeating-linear-gradient(135deg,transparent_0_10px,rgba(26,26,26,0.08)_10px_11px)] flex items-center justify-center overflow-hidden @(string.IsNullOrEmpty(portraitPath) ? "" : "js-lightbox cursor-zoom-in")"
+                                 data-gallery="script-@s.ScriptIDPK"
+                                 data-full="@Pic(portraitPath)"
+                                 data-caption="@(infoTitle ?? s?.ScriptTitle), the only known portrait"
+                                 data-title="@(infoTitle ?? s?.ScriptTitle)"
+                                 data-crumb="@world?.WorldName@(string.IsNullOrEmpty(catName) ? "" : " › " + catName)"
+                                 data-meta="From @s?.ScriptTitle@(string.IsNullOrEmpty(author) ? "" : " · by @" + author)">
                                 @if (!string.IsNullOrEmpty(portraitPath))
                                 {
                                     <img src="@Pic(portraitPath)" alt="portrait" class="w-full h-full object-cover" />

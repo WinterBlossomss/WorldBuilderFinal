@@ -510,6 +510,67 @@ public class WorldController : Controller
 
         return Json(new { liked, count = world.WorldLikes ?? 0 });
     }
+
+    [HttpPost]
+    [Microsoft.AspNetCore.Authorization.Authorize]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RequestGenre(string GenreReqName, string GenreReqReason)
+    {
+        if (string.IsNullOrWhiteSpace(GenreReqName))
+        {
+            TempData["GenreReqError"] = "Please enter a genre name.";
+            return RedirectToAction(nameof(Create));
+        }
+
+        var me = await CurrentUserInfoAsync();
+
+        // Skip duplicates (already a genre, or already pending)
+        bool exists = await _context.Genres.AnyAsync(g => g.GenreName == GenreReqName)
+            || await _context.Set<WorldBuilder.Models.GenreRequest>()
+                     .AnyAsync(r => r.GenreReqName == GenreReqName && r.GenreReqStatus == "pending");
+
+        if (!exists)
+        {
+            _context.Add(new WorldBuilder.Models.GenreRequest
+            {
+                GenreReqName = GenreReqName.Trim(),
+                GenreReqReason = GenreReqReason,
+                GenreReqUserFK = me?.UserInfoIDPK,
+                GenreReqStatus = "pending",
+                GenreReqCreatedAt = DateTime.Today
+            });
+            await _context.SaveChangesAsync();
+        }
+
+        TempData["GenreReqSent"] = GenreReqName.Trim();
+        return RedirectToAction(nameof(Create));
+    }
+
+    // GET: /World/Liked — worlds the signed-in user has liked (drawer "Liked worlds")
+    [Microsoft.AspNetCore.Authorization.Authorize]
+    public async Task<IActionResult> Liked(string sort)
+    {
+        var me = await CurrentUserInfoAsync();
+        var worlds = new List<World>();
+        if (me != null)
+        {
+            worlds = await _context.Worlds
+                .Include(w => w.WorldGenFKNavigation)
+                .Include(w => w.WorldUserFKNavigation)
+                .Include(w => w.Categories)
+                .Where(w => w.WorldLikUserFKs.Any(u => u.UserInfoIDPK == me.UserInfoIDPK))
+                .OrderByDescending(w => w.WorldLikes ?? 0)
+                .ToListAsync();
+        }
+
+        ViewData["Genres"] = _context.Genres.Select(g => g.GenreName).ToList();
+        ViewData["Pictures"] = _context.Pictures.ToList();
+        ViewData["Query"] = null; ViewData["Genre"] = null; ViewData["Sort"] = sort;
+        ViewData["TotalAll"] = worlds.Count;
+        ViewData["Title"] = "Liked worlds";
+        // Reuses the existing Views/World/Index.cshtml grid
+        return View("Index", worlds);
+    }
     private bool WorldExists(int? worldidpk)
     {
         return _context.Worlds.Any(e => e.WorldIDPK == worldidpk);

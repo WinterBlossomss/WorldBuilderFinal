@@ -23,10 +23,6 @@
 	<ItemGroup>
 		<UpToDateCheckBuilt Include="wwwroot/css/input.css" Set="css" />
 	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Views\Admin\" />
-	  <Folder Include="Views\Admin\" />
-	</ItemGroup>
 	<Target Name="Tailwind" BeforeTargets="Build;PrepareForPublish">
 
 		<Exec Command="npx tailwindcss -i wwwroot/css/input.css -o wwwroot/css/output.css --minify" />

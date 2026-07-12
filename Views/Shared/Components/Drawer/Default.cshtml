@@ -1,0 +1,124 @@
+@model WorldBuilder.ViewComponents.DrawerViewModel
+
+<aside id="drawerPanel"
+       class="flex h-full w-[360px] max-w-[86vw] -translate-x-full flex-col overflow-y-auto bg-[#f4f1e8] text-[#2b2825] shadow-2xl transition-transform duration-300 ease-out"
+       onclick="event.stopPropagation()">
+
+    <!-- header -->
+    <div class="flex items-center gap-3 px-5 pb-4 pt-5">
+        <button type="button" onclick="hideDrawer()" aria-label="Close menu"
+                class="flex h-11 w-11 flex-none items-center justify-center rounded-full border-2 border-[#2b2825] transition-colors hover:bg-black/5">
+            <span class="material-symbols-outlined text-[22px]">close</span>
+        </button>
+        <span class="material-symbols-outlined text-[26px]">public</span>
+        <a asp-controller="Home" asp-action="Index" class="text-[26px] font-bold italic tracking-tight no-underline text-[#2b2825]">World Builder</a>
+    </div>
+
+    <div class="mx-5 border-t border-[#d8d3c6]"></div>
+
+    <!-- user -->
+    @if (Model.IsAuthenticated)
+    {
+        <a asp-controller="Author" asp-action="Index" asp-route-id="@Model.UserInfoId"
+           class="flex items-center gap-4 px-5 py-4 no-underline text-[#2b2825] hover:bg-black/5 transition-colors">
+            <div class="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-[#1c1a17] text-[22px] font-bold text-[#f4f1e8]">@Model.Initial</div>
+            <div>
+                <div class="text-[19px] font-bold italic leading-tight">@@@(Model.Handle?.TrimStart('@'))</div>
+                <div class="text-[14px] text-[#a39c8e]">@Model.MyWorlds worlds · @Model.MyScripts scripts</div>
+            </div>
+            <span class="material-symbols-outlined ml-auto text-[#8f887a]">chevron_right</span>
+        </a>
+    }
+    else
+    {
+        <div class="flex items-center gap-4 px-5 py-4">
+            <div class="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-[#1c1a17] text-[22px] font-bold text-[#f4f1e8]">?</div>
+            <div>
+                <div class="text-[19px] font-bold italic leading-tight">Guest</div>
+                <a asp-area="Identity" asp-page="/Account/Login" class="text-[14px] text-[#7a6f5c] underline">Sign in to build</a>
+            </div>
+        </div>
+    }
+
+    <div class="mx-5 border-t border-dashed border-[#cbc4b3]"></div>
+
+    <!-- browse -->
+    <div class="px-6 pb-1.5 pt-5 text-[12px] italic uppercase tracking-[0.16em] text-[#b0a999]">Browse</div>
+    <nav class="px-3">
+        <a asp-controller="World" asp-action="Index" onclick="hideDrawer()"
+           class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] no-underline text-[#2b2825] transition-colors hover:bg-black/5">
+            <span class="material-symbols-outlined text-[22px]">explore</span>
+            <span class="flex-1">Explore</span>
+        </a>
+        <a asp-controller="World" asp-action="Index" onclick="hideDrawer()"
+           class="flex items-center gap-4 rounded-[11px] bg-[#e7e2d4] px-3 py-2.5 text-[19px] no-underline text-[#2b2825]">
+            <span class="material-symbols-outlined text-[22px]">public</span>
+            <span class="flex-1 font-bold">All Worlds</span>
+            <span class="text-[15px] italic text-[#b0a999]">@Model.TotalWorlds.ToString("N0")</span>
+        </a>
+        <a asp-controller="Author" asp-action="Browse" onclick="hideDrawer()"
+           class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] no-underline text-[#2b2825] transition-colors hover:bg-black/5">
+            <span class="material-symbols-outlined text-[22px]">groups</span>
+            <span class="flex-1">Community</span>
+        </a>
+        @if (Model.IsAdmin)
+        {
+            <a asp-controller="Admin" asp-action="Index" onclick="hideDrawer()"
+               class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] no-underline text-[#2b2825] transition-colors hover:bg-black/5">
+                <span class="material-symbols-outlined text-[22px]">shield_person</span>
+                <span class="flex-1">Admin</span>
+                <span class="text-[12px] italic text-[#b0a999]">panel</span>
+            </a>
+        }
+    </nav>
+
+    @if (Model.IsAuthenticated)
+    {
+        <!-- yours -->
+        <div class="px-6 pb-1.5 pt-5 text-[12px] italic uppercase tracking-[0.16em] text-[#b0a999]">Yours</div>
+        <nav class="px-3 pb-2">
+            <a asp-controller="Author" asp-action="Index" asp-route-id="@Model.UserInfoId" onclick="hideDrawer()"
+               class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] no-underline text-[#2b2825] transition-colors hover:bg-black/5">
+                <span class="material-symbols-outlined text-[22px]">folder</span>
+                <span class="flex-1">My worlds</span>
+                <span class="text-[15px] italic text-[#b0a999]">@Model.MyWorlds</span>
+            </a>
+            <a asp-controller="World" asp-action="Create" onclick="hideDrawer()"
+               class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] no-underline text-[#2b2825] transition-colors hover:bg-black/5">
+                <span class="material-symbols-outlined text-[22px]">add_circle</span>
+                <span class="flex-1">New world</span>
+            </a>
+            <a asp-controller="World" asp-action="Liked" onclick="hideDrawer()"
+               class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] no-underline text-[#2b2825] transition-colors hover:bg-black/5">
+                <span class="material-symbols-outlined text-[22px]">favorite</span>
+                <span class="flex-1">Liked worlds</span>
+                <span class="text-[15px] italic text-[#b0a999]">@Model.LikedWorlds</span>
+            </a>
+        </nav>
+
+        <div class="mx-5 border-t border-dashed border-[#cbc4b3]"></div>
+        <nav class="px-3 py-3">
+            <a asp-area="Identity" asp-page="/Account/Manage/Index" onclick="hideDrawer()"
+               class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[17px] no-underline text-[#2b2825] transition-colors hover:bg-black/5">
+                <span class="material-symbols-outlined text-[20px]">settings</span>
+                <span class="flex-1">Settings</span>
+            </a>
+            <form asp-area="Identity" asp-page="/Account/Logout"
+                  asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" class="m-0">
+                <button type="submit"
+                        class="w-full flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[17px] text-left text-[#7a2f2f] transition-colors hover:bg-black/5">
+                    <span class="material-symbols-outlined text-[20px]">logout</span>
+                    <span class="flex-1">Sign out</span>
+                </button>
+            </form>
+        </nav>
+    }
+    else
+    {
+        <div class="px-5 py-4">
+            <a asp-area="Identity" asp-page="/Account/Login"
+               class="block w-full text-center rounded-[11px] bg-[#1c1a17] text-[#f4f1e8] px-3 py-2.5 no-underline">Sign in</a>
+        </div>
+    }
+
+</aside>

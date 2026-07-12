@@ -18,6 +18,10 @@ public partial class Genre
     [StringLength(500)]
     public string GenreDescription { get; set; }
 
+    [StringLength(7)]
+    public string GenreColor { get; set; }
+
+
     [InverseProperty("WorldGenFKNavigation")]
     public virtual ICollection<World> Worlds { get; set; } = new List<World>();
 }

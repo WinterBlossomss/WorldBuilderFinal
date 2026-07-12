@@ -11,7 +11,7 @@
     <div class="aspect-[16/9] w-full border-[1.5px] border-dashed border-[#1a1a1a] bg-[repeating-linear-gradient(135deg,transparent_0_10px,rgba(26,26,26,0.08)_10px_11px)] flex items-center justify-center overflow-hidden">
         @if (cover != null && !string.IsNullOrEmpty(cover.PicPath))
         {
-            <img src="@cover.PicPath" alt="@cover.PicCaption" class="w-full h-full object-cover" />
+            <img src="~/@cover.PicPath" alt="@cover.PicCaption" class="w-full h-full object-cover" />
         }
         else
         {
