@@ -26,8 +26,19 @@ public partial class Genre
     public virtual ICollection<World> Worlds { get; set; } = new List<World>();
 }
 
+// View model for the home-page registry index.
 public class GenreViewModel
 {
     public string Name { get; set; }
-    public List<string> Worlds { get; set; } = new();
+    public string Color { get; set; }
+    public List<GenreWorldItem> Worlds { get; set; } = new();
+}
+
+// A single world entry inside a genre column — enough to render the row and
+// link straight to its detail page.
+public class GenreWorldItem
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Likes { get; set; }
 }

@@ -1,41 +1,52 @@
 @model IEnumerable<WorldBuilder.Models.Genre>
-
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Genres";
 }
 
-<h1>Index</h1>
+<div class="max-w-6xl mx-auto px-6 py-10">
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+        <div>
+            <span class="font-sans text-xs tracking-[.2em] uppercase text-teal-900">Browse the registry</span>
+            <h1 class="font-serif font-semibold text-4xl tracking-tight mt-2">Genres</h1>
+        </div>
+        <a asp-action="Create" class="inline-flex items-center gap-2 font-sans text-sm px-6 py-3 bg-stone-900 text-stone-50 no-underline hover:bg-teal-900 transition-colors">New genre <span class="text-base leading-none">→</span></a>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.GenreDescription)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Worlds)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.GenreDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Worlds)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.GenreName">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.GenreName">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.GenreName">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="overflow-x-auto">
+        <table class="w-full border-collapse bg-stone-100 border border-stone-300">
+            <thead>
+                <tr class="bg-stone-50">
+                    <th class="font-sans text-xs tracking-wider uppercase text-stone-500 font-semibold text-left px-4 py-3 border-b border-stone-300">Genre</th>
+                    <th class="font-sans text-xs tracking-wider uppercase text-stone-500 font-semibold text-left px-4 py-3 border-b border-stone-300">Description</th>
+                    <th class="font-sans text-xs tracking-wider uppercase text-stone-500 font-semibold text-left px-4 py-3 border-b border-stone-300">Colour</th>
+                    <th class="font-sans text-xs tracking-wider uppercase text-stone-500 font-semibold text-left px-4 py-3 border-b border-stone-300">Worlds</th>
+                    <th class="font-sans text-xs tracking-wider uppercase text-stone-500 font-semibold text-right px-4 py-3 border-b border-stone-300">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="hover:bg-stone-50 transition-colors">
+                        <td class="px-4 py-3 border-b border-dotted border-stone-200 font-serif font-semibold">@item.GenreName</td>
+                        <td class="px-4 py-3 border-b border-dotted border-stone-200 text-sm text-stone-600">@item.GenreDescription</td>
+                        <td class="px-4 py-3 border-b border-dotted border-stone-200">
+                            @if (!string.IsNullOrEmpty(item.GenreColor))
+                            {
+                                <span class="inline-block w-3.5 h-3.5 border border-stone-300 align-middle" style="background-color:@item.GenreColor"></span>
+                                <span class="ml-2 font-sans text-xs text-stone-500">@item.GenreColor</span>
+                            }
+                        </td>
+                        <td class="px-4 py-3 border-b border-dotted border-stone-200 font-sans text-sm">@(item.Worlds?.Count ?? 0)</td>
+                        <td class="px-4 py-3 border-b border-dotted border-stone-200">
+                            <div class="flex justify-end gap-3 font-sans text-sm">
+                                <a asp-action="Edit" asp-route-id="@item.GenreName" class="text-teal-900 no-underline hover:underline">Edit</a>
+                                <a asp-action="Details" asp-route-id="@item.GenreName" class="text-teal-900 no-underline hover:underline">Details</a>
+                                <a asp-action="Delete" asp-route-id="@item.GenreName" class="text-red-700 no-underline hover:underline">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

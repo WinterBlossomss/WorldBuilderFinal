@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿@model int?
+@using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
@@ -6,7 +7,7 @@
     @if (SignInManager.IsSignedIn(User))
     {
         <li>
-            <a 
+            <a asp-controller="Author" asp-action="Index" asp-route-id="@Model"
                class="text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-100 px-3 py-1.5 rounded-md transition-colors duration-150"
                title="Manage">
                 Hello, @User.Identity?.Name!

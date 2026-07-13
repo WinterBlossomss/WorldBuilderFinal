@@ -5,74 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - WorldBuilder</title>
     <script type="importmap"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;700&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet" />
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/output.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/WorldBuilder.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;700&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet">
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css"
-          rel="stylesheet">
 </head>
-<body class="min-h-screen flex flex-col bg-gray-50 text-gray-900 font-crimson">
+@{
+    var userInfoId = ViewData["UserInfoId"] as int?;
+}
+<body class="min-h-screen flex flex-col bg-stone-200 text-stone-900 antialiased">
 
-    <header class="bg-white border-b border-gray-200">
-        <nav class="sticky top-0 z-50 h-15 bg-wb-bg/90 backdrop-blur-mdx border-b border-white/[0.07] px-7 ">
-            <div class="flex flex row pt-2">
-                <div class="flex flex-row flex-auto items-center">
-                    <div class=" flex items-center flex-row gap-2 mr-8 shrink-0">
-                        <button class="material-symbols-outlined cursor-pointer" onclick="showDrawer()">
-                            menu
-                        </button>
-                    </div>
-                    <div class=" flex items-center flex-row gap-2 mr-8 shrink-0">
-                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                            <circle cx="11" cy="11" r="9" stroke="#4f79f0" strokeWidth="1.8" />
-                            <path d="M2 11Q11 4 20 11Q11 18 2 11Z" stroke="#4f79f0" strokeWidth="1.1" fill="none" />
-                            <line x1="11" y1="2" x2="11" y2="20" stroke="#4f79f0" strokeWidth="1.1" />
-                        </svg>
-                        <a href="/" class="font-extrabold text-[20px] tracking-tight whitespace-nowrap">
-                            World Builder
-                        </a>
-                    </div>
-                    <ul class="flex flex-row gap-1 list-none m-0 p-0">
-                        <li>
-                            <a asp-controller="Home" asp-action="Index"
-                               class="text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-100 px-3 py-1.5 rounded-md transition-colors duration-150">
-                                Home
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-controller="World" asp-action="Index"
-                               class="text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-100 px-3 py-1.5 rounded-md transition-colors duration-150">
-                                Worlds
-                            </a>
-                        </li>
-                        <li>
+    <!-- top bar -->
+    <header class="sticky top-0 z-50 bg-stone-200 backdrop-blur border-b border-stone-300">
+        <div class="flex items-center justify-between max-w-7xl mx-auto px-6 py-3.5 gap-4">
 
-                        </li>
-                    </ul>
-                </div>
-                <div class="flex flex-row  justify-items-end">
-                    <div class="flex items-center justify-items-end">
-                        <div class="flex items-center gap-2 bg-wb-surf border border-white/[0.08] rounded-lg px-3 py-1.5 text-wb-muted">
-                            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                                <circle cx="5.5" cy="5.5" r="4" stroke="currentColor" strokeWidth="1.4" />
-                                <line x1="8.5" y1="8.5" x2="12" y2="12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-                            </svg>
-                            <input class="text-[12.5px] p-1" placeholder="Search Worlds...">
-                        </div>
-                    </div>
-                    <partial name="_LoginPartial" />
-                </div>
+            <div class="flex items-center gap-3 min-w-0">
+                <button type="button" onclick="showDrawer()"
+                        class="material-symbols-outlined cursor-pointer text-stone-600 hover:text-stone-900 transition-colors sm:hidden">
+                    menu
+                </button>
+                <a asp-controller="Home" asp-action="Index" class="flex items-baseline gap-3 no-underline shrink-0">
+                    <span class="font-serif font-semibold text-[20px] tracking-[.14em] text-stone-900">WORLD BUILDER</span>
+                    <span class="hidden md:inline font-sans text-xs tracking-[.2em] uppercase text-stone-600">the world registry</span>
+                </a>
             </div>
-            
-        </nav>
+
+            <nav aria-label="Primary" class="hidden sm:flex items-center gap-6 font-sans text-xs tracking-[.04em]">
+                <a asp-controller="Home" asp-action="Index" class="no-underline text-stone-600 hover:text-stone-900 transition-colors">Home</a>
+                <a asp-controller="World" asp-action="Index" class="no-underline text-stone-600 hover:text-stone-900 transition-colors">Worlds</a>
+                <a asp-controller="Author" asp-action="Browse" class="no-underline text-stone-600 hover:text-stone-900 transition-colors">Community</a>
+
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <form asp-controller="World" asp-action="Index" method="get"
+                      class="hidden md:flex items-center gap-2 border border-stone-300 bg-stone-100 px-3 py-1.5">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                        <circle cx="5.5" cy="5.5" r="4" stroke="#57534e" stroke-width="1.4" />
+                        <line x1="8.5" y1="8.5" x2="12" y2="12" stroke="#57534e" stroke-width="1.4" stroke-linecap="round" />
+                    </svg>
+                    <input name="q" class="font-sans text-xs bg-transparent outline-none w-40 placeholder-stone-400" placeholder="Search worlds…" />
+                </form>
+                <partial name="_LoginPartial" model="userInfoId" />
+            </div>
+        </div>
     </header>
+
     <!-- Drawer -->
     <div id="drawer"
          class="hidden fixed inset-0 z-[100] flex justify-start bg-black/30 opacity-0 transition-opacity duration-200"
@@ -80,18 +68,25 @@
         @await Component.InvokeAsync("Drawer")
     </div>
 
-    <main class="flex-1 w-full mx-auto">
+    <main class="flex-1 w-full">
         @RenderBody()
     </main>
 
-    <footer class="border-t border-gray-200 bg-white">
-        <div class="max-w-7xl mx-auto px-6 py-4 text-sm text-gray-400">
-            &copy; 2026 - WorldBuilder -
-            <a asp-area="" asp-controller="Home" asp-action="Privacy"
-               class="hover:text-gray-600 transition-colors duration-150">Privacy</a>
+    <!-- footer -->
+    <footer class="border-t border-stone-300 bg-stone-100/60">
+        <div class="max-w-7xl mx-auto px-6 py-7 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div class="flex items-baseline gap-3">
+                <span class="font-serif font-semibold tracking-[.14em] text-stone-900">WORLD BUILDER</span>
+                <span class="font-sans text-xs tracking-[.2em] uppercase text-stone-500">the world registry</span>
+            </div>
+            <div class="font-sans text-xs text-stone-500 flex items-center gap-4">
+                <span>© 2026 WorldBuilder</span>
+                <a asp-area="" asp-controller="Home" asp-action="Privacy"
+                   class="no-underline text-stone-500 hover:text-teal-900 transition-colors">Privacy</a>
+            </div>
         </div>
     </footer>
-    <script src="../path/to/flowbite/dist/flowbite.min.js"></script>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/lightbox.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>

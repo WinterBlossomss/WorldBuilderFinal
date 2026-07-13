@@ -7,8 +7,8 @@
 }
 
 <a asp-action="Details" asp-route-id="@Model.WorldIDPK"
-   class="block w-[240px] shrink-0 font-['Kalam'] text-[#1a1a1a] no-underline group">
-    <div class="aspect-[16/9] w-full border-[1.5px] border-dashed border-[#1a1a1a] bg-[repeating-linear-gradient(135deg,transparent_0_10px,rgba(26,26,26,0.08)_10px_11px)] flex items-center justify-center overflow-hidden">
+   class="bg-stone-100 border border-stone-300 block w-[240px] shrink-0 text-stone-900 no-underline group">
+    <div class="aspect-[16/9] w-full border-b border-stone-300 bg-[repeating-linear-gradient(135deg,transparent_0_10px,rgba(26,26,26,0.08)_10px_11px)] flex items-center justify-center overflow-hidden">
         @if (cover != null && !string.IsNullOrEmpty(cover.PicPath))
         {
             <img src="~/@cover.PicPath" alt="@cover.PicCaption" class="w-full h-full object-cover" />
@@ -18,8 +18,8 @@
             <span class="bg-[#f7f3ea] px-1.5 py-px text-[12px] text-[#a89f8e] relative z-10">@Model.WorldName</span>
         }
     </div>
-    <div class="pt-1.5 flex flex-col gap-0.5">
-        <div class="font-bold text-[14px] text-truncate leading-tight group-hover:underline">@Model.WorldName</div>
+    <div class="p-[15px] pb-[17px] flex flex-col flex-1">
+        <div class="text-lg font-semibold text-truncate leading-tight group-hover:underline">@Model.WorldName</div>
         <div class="text-[11px] text-[#a89f8e]">by @@@(author ?? "creator")</div>
         @if (!string.IsNullOrEmpty(Model.WorldDesc))
         {

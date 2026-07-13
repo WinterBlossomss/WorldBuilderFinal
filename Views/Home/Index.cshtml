@@ -1,355 +1,204 @@
-﻿@model WorldBuilder.Models.HomeViewModel
+@model WorldBuilder.Models.HomeViewModel
 @{
     ViewData["Title"] = "Home Page";
 
     var genres = (ViewData["Genres"] as List<GenreViewModel>) ?? new List<GenreViewModel>();
+    var latest = (ViewData["LatestWorlds"] as List<WorldBuilder.Models.World>) ?? new List<WorldBuilder.Models.World>();
+
+    // Compact like/count formatter: 2400 -> "2.4k"
+    string Kfmt(int n) => n >= 1000 ? (n / 1000.0).ToString("0.#") + "k" : n.ToString();
 }
 
-<body class="bg-stone-200 text-stone-900 text-base leading-normal antialiased scroll-smooth">
- 
-<!-- top bar -->
-<div class="flex items-center justify-between max-w-7xl mx-auto px-6 py-[22px]">
-  <a href="#top" class="flex items-baseline gap-3 no-underline">
-    <span class="font-serif font-semibold text-[22px] tracking-[.14em]">WORLD BUILDER</span>
-    <span class="font-sans text-xs tracking-[.2em] uppercase text-stone-600">the world registry</span>
-  </a>
-  <nav aria-label="Primary" class="hidden sm:flex items-center gap-7 font-sans text-xs tracking-[.04em]">
-    <a href="#worlds" class="no-underline text-stone-600 hover:text-stone-900 transition-colors">Worlds</a>
-    <a href="#index"  class="no-underline text-stone-600 hover:text-stone-900 transition-colors">Genres</a>
-  </nav>
-</div>
-<hr class="border-none border-t border-stone-300 max-w-7xl mx-auto" aria-hidden="true">
- 
-<!-- hero -->
-<header id="top" class="relative text-center px-6 pt-20 pb-16 overflow-hidden">
-  <svg class="hidden sm:block absolute top-8 right-[max(28px,calc((100vw-1160px)/2+6px))] opacity-50 pointer-events-none" width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden="true">
-    <circle cx="60" cy="60" r="52" stroke="#1c4551" stroke-width="1"/>
-    <circle cx="60" cy="60" r="40" stroke="#1c4551" stroke-width=".6" stroke-dasharray="2 4"/>
-    <path d="M60 12 L67 60 L60 108 L53 60 Z" fill="#1c4551" opacity=".85"/>
-    <path d="M12 60 L60 53 L108 60 L60 67 Z" fill="#a3712a" opacity=".7"/>
-    <circle cx="60" cy="60" r="3" fill="#211c14"/>
-    <text x="60" y="9" font-family="IBM Plex Mono" font-size="8" fill="#5a5142" text-anchor="middle">N</text>
-  </svg>
-  <div class="relative z-10 max-w-3xl mx-auto">
-    <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Est. 2019 · 12,480 worlds on record</span>
-    <h1 class="font-serif font-semibold text-[clamp(52px,9vw,104px)] leading-[.94] tracking-[-.02em] mt-5">Build your <span class="italic font-medium text-teal-900">world.</span></h1>
-    <p class="text-[clamp(16px,2vw,19px)] text-stone-600 max-w-xl mx-auto mt-[22px] leading-[1.55]">Create, catalogue, and explore invented worlds and the characters who live in them — fantasy, sci-fi, modern, and everything past the edge of the map.</p>
-    <div class="flex gap-4 justify-center flex-wrap mt-[34px]">
-      <a class="inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-[#211c14] bg-[#211c14] text-[#f0ebdf] no-underline cursor-pointer transition-all duration-150 hover:bg-[#1c4551] hover:border-[#1c4551] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(33,28,20,0.10)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-[3px]" asp-controller="World" asp-action="Create">Start building <span class="text-base leading-none">→</span></a>
-      <a class="inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-[#211c14] no-underline cursor-pointer transition-all duration-150 hover:bg-[#211c14] hover:text-[#f0ebdf] hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-[3px]" a asp-controller="World" asp-action="Index">Explore worlds</a>
+<div class="bg-stone-200 text-stone-900 text-base leading-normal antialiased scroll-smooth">
+
+    <!-- top bar -->
+    <div class="flex items-center justify-between max-w-7xl mx-auto px-6 py-[22px]">
+        <a href="#top" class="flex items-baseline gap-3 no-underline">
+            <span class="font-serif font-semibold text-[22px] tracking-[.14em]">WORLD BUILDER</span>
+            <span class="font-sans text-xs tracking-[.2em] uppercase text-stone-600">the world registry</span>
+        </a>
+        <nav aria-label="Primary" class="hidden sm:flex items-center gap-7 font-sans text-xs tracking-[.04em]">
+            <a href="#worlds" class="no-underline text-stone-600 hover:text-stone-900 transition-colors">Worlds</a>
+            <a href="#index" class="no-underline text-stone-600 hover:text-stone-900 transition-colors">Genres</a>
+        </nav>
     </div>
-  </div>
-</header>
- 
-<!-- stats -->
-<div class="border-y border-stone-300 bg-stone-100/50">
-  <div class="grid grid-cols-2 sm:grid-cols-4 max-w-7xl mx-auto">
-    <div class="text-center px-6 py-[34px] border-b sm:border-b-0 border-r border-stone-200">
-      <div class="font-serif font-medium text-[clamp(30px,4vw,44px)] leading-none tracking-[-.01em] num" data-count="@Model.TotalWorlds">0</div>
-      <div class="font-sans text-xs tracking-[.16em] uppercase text-stone-600 mt-3">Worlds on record</div>
-    </div>
-    <div class="text-center px-6 py-[34px] border-b sm:border-b-0 sm:border-r border-stone-200">
-      <div class="font-serif font-medium text-[clamp(30px,4vw,44px)] leading-none tracking-[-.01em] num" data-count="@Model.TotalUsers">0</div>
-      <div class="font-sans text-xs tracking-[.16em] uppercase text-stone-600 mt-3">Active users</div>
-    </div>
-    <div class="text-center px-6 py-[34px] border-r border-stone-200">
-      <div class="font-serif font-medium text-[clamp(30px,4vw,44px)] leading-none tracking-[-.01em] num" data-count="@Model.TotalTags">0</div>
-      <div class="font-sans text-xs tracking-[.16em] uppercase text-stone-600 mt-3">Tags</div>
-    </div>
-    <div class="text-center px-6 py-[34px]">
-      <div class="font-serif font-medium text-[clamp(30px,4vw,44px)] leading-none tracking-[-.01em] num" data-count="@Model.TotalCategories">0</div>
-      <div class="font-sans text-xs tracking-[.16em] uppercase text-stone-600 mt-3">Categories</div>
-    </div>
-  </div>
-</div>
- 
-<!-- latest worlds -->
-<section id="worlds" class="py-16">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-8">
-      <div>
-        <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Newest entries</span>
-        <h2 class="font-serif font-medium text-[clamp(26px,3.4vw,38px)] tracking-[-.01em] leading-[1.05]">Latest worlds</h2>
-      </div>
-      <a href="#top" class="font-sans text-xs tracking-[.05em] text-teal-900 no-underline border-b border-transparent hover:border-[#1c4551] transition-colors whitespace-nowrap">See all 12,480 →</a>
-    </div>
- 
-    <div class="grid grid-cols-1 min-[440px]:grid-cols-2 md:grid-cols-3 min-[1000px]:grid-cols-5 gap-4">
-      <article class="bg-stone-100 border border-stone-300 flex flex-col transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_14px_26px_rgba(33,28,20,0.10)] hover:border-[#1c4551]">
-        <div class="aspect-[5/4] relative overflow-hidden border-b border-stone-300">
-          <div class="topo t1"></div>
-          <span class="absolute top-[9px] left-[10px] font-sans text-xs tracking-[.08em] text-[#153640] bg-stone-100/80 px-[7px] py-[2px] border border-stone-200 z-10">WLD-4471</span>
-        </div>
-        <div class="p-[15px] pb-[17px] flex flex-col flex-1">
-          <h3 class="font-serif font-semibold text-lg leading-[1.1] tracking-[-.01em]">Ashfall Reach</h3>
-          <p class="text-xs text-stone-600 leading-[1.45] mt-2 mb-[14px] flex-1">A once-bright volcano-city rebuilt from its own cinders, ruled by the guild that outlasted the last eruption.</p>
-          <div class="flex gap-1.5 flex-wrap">
-            <span class="font-sans text-xs tracking-[.06em] uppercase px-2 py-[3px] border border-stone-300 text-stone-600">Fantasy</span>
-            <span class="font-sans text-xs tracking-[.06em] uppercase px-2 py-[3px] border border-stone-300 text-stone-600">Grimdark</span>
-          </div>
-        </div>
-      </article>
- 
-      <article class="bg-stone-100 border border-stone-300 flex flex-col transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_14px_26px_rgba(33,28,20,0.10)] hover:border-[#1c4551]">
-        <div class="aspect-[5/4] relative overflow-hidden border-b border-stone-300">
-          <div class="topo t2"></div>
-          <span class="absolute top-[9px] left-[10px] font-sans text-xs tracking-[.08em] text-[#153640] bg-stone-100/80 px-[7px] py-[2px] border border-stone-200 z-10">WLD-4468</span>
-        </div>
-        <div class="p-[15px] pb-[17px] flex flex-col flex-1">
-          <h3 class="font-serif font-semibold text-lg leading-[1.1] tracking-[-.01em]">Nova Station</h3>
-          <p class="text-xs text-stone-600 leading-[1.45] mt-2 mb-[14px] flex-1">A deep-space refuelling belt at the frayed edge of charted space, where every dock hums with rumour.</p>
-          <div class="flex gap-1.5 flex-wrap">
-            <span class="font-sans text-xs tracking-[.06em] uppercase px-2 py-[3px] border border-stone-300 text-stone-600">Sci-Fi</span>
-            <span class="font-sans text-xs tracking-[.06em] uppercase px-2 py-[3px] border border-stone-300 text-stone-600">Mystery</span>
-          </div>
-        </div>
-      </article>
- 
-      <article class="bg-stone-100 border border-stone-300 flex flex-col transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_14px_26px_rgba(33,28,20,0.10)] hover:border-[#1c4551]">
-        <div class="aspect-[5/4] relative overflow-hidden border-b border-stone-300">
-          <div class="topo t3"></div>
-          <span class="absolute top-[9px] left-[10px] font-sans text-xs tracking-[.08em] text-[#153640] bg-stone-100/80 px-[7px] py-[2px] border border-stone-200 z-10">WLD-4455</span>
-        </div>
-        <div class="p-[15px] pb-[17px] flex flex-col flex-1">
-          <h3 class="font-serif font-semibold text-lg leading-[1.1] tracking-[-.01em]">The Mirefields</h3>
-          <p class="text-xs text-stone-600 leading-[1.45] mt-2 mb-[14px] flex-1">A tidal marsh that keeps whatever it drowns, and returns it changed on the seventh night.</p>
-          <div class="flex gap-1.5 flex-wrap">
-            <span class="font-sans text-xs tracking-[.06em] uppercase px-2 py-[3px] border border-stone-300 text-stone-600">Horror</span>
-            <span class="font-sans text-xs tracking-[.06em] uppercase px-2 py-[3px] border border-stone-300 text-stone-600">Folk</span>
-          </div>
-        </div>
-      </article>
- 
-      <article class="bg-stone-100 border border-stone-300 flex flex-col transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_14px_26px_rgba(33,28,20,0.10)] hover:border-[#1c4551]">
-        <div class="aspect-[5/4] relative overflow-hidden border-b border-stone-300">
-          <div class="topo t4"></div>
-          <span class="absolute top-[9px] left-[10px] font-sans text-xs tracking-[.08em] text-[#153640] bg-stone-100/80 px-[7px] py-[2px] border border-stone-200 z-10">WLD-4450</span>
-        </div>
-        <div class="p-[15px] pb-[17px] flex flex-col flex-1">
-          <h3 class="font-serif font-semibold text-lg leading-[1.1] tracking-[-.01em]">Harbor City</h3>
-          <p class="text-xs text-stone-600 leading-[1.45] mt-2 mb-[14px] flex-1">A rain-slick port town where three families run the docks and everyone owes somebody something.</p>
-          <div class="flex gap-1.5 flex-wrap">
-            <span class="font-sans text-xs tracking-[.06em] uppercase px-2 py-[3px] border border-stone-300 text-stone-600">Modern</span>
-            <span class="font-sans text-xs tracking-[.06em] uppercase px-2 py-[3px] border border-stone-300 text-stone-600">Crime</span>
-          </div>
-        </div>
-      </article>
- 
-      <article class="bg-stone-100 border border-stone-300 flex flex-col transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_14px_26px_rgba(33,28,20,0.10)] hover:border-[#1c4551]">
-        <div class="aspect-[5/4] relative overflow-hidden border-b border-stone-300">
-          <div class="topo t5"></div>
-          <span class="absolute top-[9px] left-[10px] font-sans text-xs tracking-[.08em] text-[#153640] bg-stone-100/80 px-[7px] py-[2px] border border-stone-200 z-10">WLD-4442</span>
-        </div>
-        <div class="p-[15px] pb-[17px] flex flex-col flex-1">
-          <h3 class="font-serif font-semibold text-lg leading-[1.1] tracking-[-.01em]">Verdant Expanse</h3>
-          <p class="text-xs text-stone-600 leading-[1.45] mt-2 mb-[14px] flex-1">An overgrown continent swallowing its own ruins faster than any map can name them.</p>
-          <div class="flex gap-1.5 flex-wrap">
-            <span class="font-sans text-xs tracking-[.06em] uppercase px-2 py-[3px] border border-stone-300 text-stone-600">Fantasy</span>
-            <span class="font-sans text-xs tracking-[.06em] uppercase px-2 py-[3px] border border-stone-300 text-stone-600">Explore</span>
-          </div>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
- 
-<!-- popular index -->
-<div id="index" class="bg-[#ddd6c4]/40 border-y border-stone-300">
-  <section class="py-16">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-8">
-        <div>
-          <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Browse the registry</span>
-          <h2 class="font-serif font-medium text-[clamp(26px,3.4vw,38px)] tracking-[-.01em] leading-[1.05]">Popular worlds, by genre</h2>
-        </div>
-        <a href="#top" class="font-sans text-xs tracking-[.05em] text-teal-900 no-underline border-b border-transparent hover:border-[#1c4551] transition-colors whitespace-nowrap">All 320+ genres →</a>
-      </div>
- 
-      <div class="grid grid-cols-2 min-[1000px]:grid-cols-6 gap-x-0 gap-y-6">
-        <div class="px-5 first:pl-0 border-r border-stone-200">
-          <h4 class="font-sans text-xs tracking-[.16em] text-teal-900 font-semibold pb-3 mb-3 border-b border-stone-300">FANTASY</h4>
-          <ul class="list-none">
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Ashfall Reach</a><span class="font-sans text-xs text-stone-600">2.4k</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">The Ninth Court</a><span class="font-sans text-xs text-stone-600">1.9k</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Saltmourne</a><span class="font-sans text-xs text-stone-600">1.5k</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Emberhold</a><span class="font-sans text-xs text-stone-600">988</span></li>
-          </ul>
-        </div>
-        <div class="px-5 border-r border-stone-200">
-          <h4 class="font-sans text-xs tracking-[.16em] text-teal-900 font-semibold pb-3 mb-3 border-b border-stone-300">SCI-FI</h4>
-          <ul class="list-none">
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Nova Station</a><span class="font-sans text-xs text-stone-600">2.1k</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Halcyon Drift</a><span class="font-sans text-xs text-stone-600">1.7k</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">The Long Array</a><span class="font-sans text-xs text-stone-600">1.2k</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Cindergate</a><span class="font-sans text-xs text-stone-600">742</span></li>
-          </ul>
-        </div>
-        <div class="px-5 min-[1000px]:border-r border-stone-200">
-          <h4 class="font-sans text-xs tracking-[.16em] text-teal-900 font-semibold pb-3 mb-3 border-b border-stone-300">HORROR</h4>
-          <ul class="list-none">
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">The Mirefields</a><span class="font-sans text-xs text-stone-600">1.8k</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Hollow County</a><span class="font-sans text-xs text-stone-600">1.3k</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">The Wake</a><span class="font-sans text-xs text-stone-600">901</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Nightglass</a><span class="font-sans text-xs text-stone-600">655</span></li>
-          </ul>
-        </div>
-        <div class="px-5 border-r border-stone-200">
-          <h4 class="font-sans text-xs tracking-[.16em] text-teal-900 font-semibold pb-3 mb-3 border-b border-stone-300">MODERN</h4>
-          <ul class="list-none">
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Harbor City</a><span class="font-sans text-xs text-stone-600">1.6k</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Prospect Line</a><span class="font-sans text-xs text-stone-600">1.1k</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Cold Harbor</a><span class="font-sans text-xs text-stone-600">820</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">The Meridian</a><span class="font-sans text-xs text-stone-600">577</span></li>
-          </ul>
-        </div>
-        <div class="px-5 min-[1000px]:border-r border-stone-200">
-          <h4 class="font-sans text-xs tracking-[.16em] text-teal-900 font-semibold pb-3 mb-3 border-b border-stone-300">HISTORICAL</h4>
-          <ul class="list-none">
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Bellum Vale</a><span class="font-sans text-xs text-stone-600">1.2k</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">The Tsar's Road</a><span class="font-sans text-xs text-stone-600">944</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Ironmarch</a><span class="font-sans text-xs text-stone-600">701</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Low Countries</a><span class="font-sans text-xs text-stone-600">468</span></li>
-          </ul>
-        </div>
-        <div class="px-5 last:pr-0">
-          <h4 class="font-sans text-xs tracking-[.16em] text-teal-900 font-semibold pb-3 mb-3 border-b border-stone-300">MYTHIC</h4>
-          <ul class="list-none">
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">The Ninefold</a><span class="font-sans text-xs text-stone-600">1.4k</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Godsreach</a><span class="font-sans text-xs text-stone-600">1.0k</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">The Weaving</a><span class="font-sans text-xs text-stone-600">812</span></li>
-            <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0"><a href="#top" class="font-serif text-base no-underline hover:text-teal-900 transition-colors">Ashen Myth</a><span class="font-sans text-xs text-stone-600">503</span></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
- 
-<!-- cta -->
-<div class="bg-[#211c14] text-[#f0ebdf]">
-  <div class="max-w-7xl mx-auto px-6 py-16 flex flex-col md:flex-row md:items-center md:justify-between gap-9">
-    <div>
-      <h2 class="font-serif font-medium text-[clamp(28px,4vw,44px)] tracking-[-.01em] leading-[1.02] max-w-[520px]">Ready to build your own world?</h2>
-      <p class="text-[#c8c1af] mt-3.5 max-w-[460px] text-sm">Start from a blank map or fork a template — most writers get their first world on record in about five minutes.</p>
-    </div>
-    <div class="flex gap-4 flex-wrap">
-      <a href="#top" class="inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-[#f0ebdf] bg-stone-100 text-stone-900 no-underline cursor-pointer transition-all duration-150 hover:bg-[#a3712a] hover:border-[#a3712a] hover:text-stone-900 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-[3px]">Create a world <span class="text-base leading-none">→</span></a>
-      <a href="#top" class="inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-[#f0ebdf] text-[#f0ebdf] no-underline cursor-pointer transition-all duration-150 hover:bg-stone-100 hover:text-stone-900 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-[3px]">Browse templates</a>
-    </div>
-  </div>
-</div>
- 
-<script>
-  // Stat count-up on scroll into view
-  const fmt = new Intl.NumberFormat('en-US');
-  function runCount(el){
-    const target = +el.dataset.count, suffix = el.dataset.suffix || '', dur = 1400, start = performance.now();
-    (function tick(now){
-      const p = Math.min((now - start) / dur, 1), eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = fmt.format(Math.round(target * eased)) + (p === 1 ? suffix : '');
-      if (p < 1) requestAnimationFrame(tick);
-    })(start);
-  }
-  const io = new IntersectionObserver((entries, obs) => {
-    entries.forEach(e => { if (e.isIntersecting){ runCount(e.target); obs.unobserve(e.target); } });
-  }, { threshold: .6 });
-  document.querySelectorAll('.num[data-count]').forEach(el => io.observe(el));
-</script>
-</body>
-<div class="flex flex-col gap-5"> 
-   <section class="text-center px-5 py-12 space-y-5">
-            <div class="text-black font-bold text-5xl font-['Karla']">
-                Build your own world
+    <hr class="border-none border-t border-stone-300 max-w-7xl mx-auto" aria-hidden="true">
+
+    <!-- hero -->
+    <header id="top" class="relative text-center px-6 pt-20 pb-16 overflow-hidden">
+        <svg class="hidden sm:block absolute top-8 right-[max(28px,calc((100vw-1160px)/2+6px))] opacity-50 pointer-events-none" width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" stroke="#1c4551" stroke-width="1" />
+            <circle cx="60" cy="60" r="40" stroke="#1c4551" stroke-width=".6" stroke-dasharray="2 4" />
+            <path d="M60 12 L67 60 L60 108 L53 60 Z" fill="#1c4551" opacity=".85" />
+            <path d="M12 60 L60 53 L108 60 L60 67 Z" fill="#a3712a" opacity=".7" />
+            <circle cx="60" cy="60" r="3" fill="#211c14" />
+            <text x="60" y="9" font-family="IBM Plex Mono" font-size="8" fill="#5a5142" text-anchor="middle">N</text>
+        </svg>
+        <div class="relative z-10 max-w-3xl mx-auto">
+            <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Est. 2019 · @Model.TotalWorlds.ToString("N0") worlds on record</span>
+            <h1 class="font-serif font-semibold text-[clamp(52px,9vw,104px)] leading-[.94] tracking-[-.02em] mt-5">Build your <span class="italic font-medium text-teal-900">world.</span></h1>
+            <p class="text-[clamp(16px,2vw,19px)] text-stone-600 max-w-xl mx-auto mt-[22px] leading-[1.55]">Create, catalogue, and explore invented worlds and the characters who live in them — fantasy, sci-fi, modern, and everything past the edge of the map.</p>
+            <div class="flex gap-4 justify-center flex-wrap mt-[34px]">
+                <a asp-controller="World" asp-action="Create" class="inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-[#211c14] bg-[#211c14] text-[#f0ebdf] no-underline cursor-pointer transition-all duration-150 hover:bg-[#1c4551] hover:border-[#1c4551] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(33,28,20,0.10)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-[3px]">Start building <span class="text-base leading-none">→</span></a>
+                <a asp-controller="World" asp-action="Index" class="inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-[#211c14] no-underline cursor-pointer transition-all duration-150 hover:bg-[#211c14] hover:text-[#f0ebdf] hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-[3px]">Explore worlds</a>
             </div>
-            <p>
-                Create, explore and share immersive worlds and character across every genre - fantasy, sci-fi, modern, and beyond.
-            </p>
-            <div class="flex flex-row flex-wrap justify-center">
-                <a asp-controller="World" asp-action="Create" class="bg-sky-700 hover:bg-blue-500 rounded p-4 text-white">+ Start building</a>
-                <a asp-controller="World" asp-action="Index" class="bg-sky-700 hover:bg-blue-500 rounded p-4 ms-4 text-white">Explore worlds</a>
+        </div>
+    </header>
+
+    <!-- stats (counts animate up from @Model totals) -->
+    <div class="border-y border-stone-300 bg-stone-100/50">
+        <div class="grid grid-cols-2 sm:grid-cols-4 max-w-7xl mx-auto">
+            <div class="text-center px-6 py-[34px] border-b sm:border-b-0 border-r border-stone-200">
+                <div class="font-serif font-medium text-[clamp(30px,4vw,44px)] leading-none tracking-[-.01em] num" data-count="@Model.TotalWorlds">0</div>
+                <div class="font-sans text-xs tracking-[.16em] uppercase text-stone-600 mt-3">Worlds on record</div>
+            </div>
+            <div class="text-center px-6 py-[34px] border-b sm:border-b-0 sm:border-r border-stone-200">
+                <div class="font-serif font-medium text-[clamp(30px,4vw,44px)] leading-none tracking-[-.01em] num" data-count="@Model.TotalUsers">0</div>
+                <div class="font-sans text-xs tracking-[.16em] uppercase text-stone-600 mt-3">Active users</div>
+            </div>
+            <div class="text-center px-6 py-[34px] border-r border-stone-200">
+                <div class="font-serif font-medium text-[clamp(30px,4vw,44px)] leading-none tracking-[-.01em] num" data-count="@Model.TotalTags">0</div>
+                <div class="font-sans text-xs tracking-[.16em] uppercase text-stone-600 mt-3">Tags</div>
+            </div>
+            <div class="text-center px-6 py-[34px]">
+                <div class="font-serif font-medium text-[clamp(30px,4vw,44px)] leading-none tracking-[-.01em] num" data-count="@Model.TotalCategories">0</div>
+                <div class="font-sans text-xs tracking-[.16em] uppercase text-stone-600 mt-3">Categories</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- latest worlds -->
+    <section id="worlds" class="py-16">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-8">
+                <div>
+                    <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Newest entries</span>
+                    <h2 class="font-serif font-medium text-[clamp(26px,3.4vw,38px)] tracking-[-.01em] leading-[1.05]">Latest worlds</h2>
+                </div>
+                <a asp-controller="World" asp-action="Index" class="font-sans text-xs tracking-[.05em] text-teal-900 no-underline border-b border-transparent hover:border-[#1c4551] transition-colors whitespace-nowrap">See all @Model.TotalWorlds.ToString("N0") →</a>
             </div>
 
-        </section>
-        <div class="grid grid-cols-4 border-y-2 mb-5 divide-x-2">
-            <div class="p-5 m-3 text-center">
-                <h1 class="text-4xl">12 480</h1>
-                <div class="font-normal pt-2 italic">Worlds created</div>
-            </div>
-            <div class="p-5 m-3 text-center">
-                <h1 class="text-4xl">84 300</h1>
-                <div class="font-normal italic">Characters</div>
-            </div>
-            <div class="p-5 m-3 text-center">
-                <h1 class="text-4xl">5,920</h1>
-                <div class="font-normal italic">Active builders</div>
-            </div>
-            <div class="p-5 m-3 text-center">
-                <h1 class="text-4xl">320</h1>
-                <div class="font-normal italic">Genres & Tags</div>
-            </div>
+            @if (latest.Any())
+            {
+                <div class="grid grid-cols-1 min-[440px]:grid-cols-2 md:grid-cols-3 min-[1000px]:grid-cols-5 gap-4">
+                    @for (int i = 0; i < latest.Count; i++)
+                    {
+                        var w = latest[i];
+                        var cover = w.Pictures?.FirstOrDefault(p => !string.IsNullOrEmpty(p.PicPath));
+                        var topo = "t" + ((i % 5) + 1);
+                        <a asp-controller="World" asp-action="Details" asp-route-id="@w.WorldIDPK"
+                           class="bg-stone-100 border border-stone-300 flex flex-col no-underline text-stone-900 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_14px_26px_rgba(33,28,20,0.10)] hover:border-[#1c4551]">
+                            <div class="aspect-[5/4] relative overflow-hidden border-b border-stone-300">
+                                @if (cover != null)
+                                {
+                                    <img src="~/@cover.PicPath" alt="@w.WorldName" class="w-full h-full object-cover" />
+                                }
+                                else
+                                {
+                                    <div class="topo @topo"></div>
+                                }
+                                <span class="absolute top-[9px] left-[10px] font-sans text-xs tracking-[.08em] text-[#153640] bg-stone-100/80 px-[7px] py-[2px] border border-stone-200 z-10">WLD-@w.WorldIDPK.ToString("D4")</span>
+                            </div>
+                            <div class="p-[15px] pb-[17px] flex flex-col flex-1">
+                                <h3 class="font-serif font-semibold text-lg leading-[1.1] tracking-[-.01em]">@w.WorldName</h3>
+                                <p class="text-xs text-stone-600 leading-[1.45] mt-2 mb-[14px] flex-1 line-clamp-3">@w.WorldDesc</p>
+                                <div class="flex gap-1.5 flex-wrap">
+                                    <span class="font-sans text-xs tracking-[.06em] uppercase px-2 py-[3px] border border-stone-300 text-stone-600">@w.WorldGenFK</span>
+                                    @foreach (var tag in (w.Tags ?? new List<WorldBuilder.Models.Tag>()).Take(1))
+                                    {
+                                        <span class="font-sans text-xs tracking-[.06em] uppercase px-2 py-[3px] border border-stone-300 text-stone-600">@tag.TagName</span>
+                                    }
+                                </div>
+                            </div>
+                        </a>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="border border-dashed border-stone-400 px-6 py-16 text-center">
+                    <div class="font-serif text-2xl mb-1">No worlds on record yet</div>
+                    <div class="text-sm text-stone-600 mb-5">Be the first to add one to the registry.</div>
+                    <a asp-controller="World" asp-action="Create" class="inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-[#211c14] bg-[#211c14] text-[#f0ebdf] no-underline hover:bg-[#1c4551] hover:border-[#1c4551] transition-colors">Create a world <span class="text-base leading-none">→</span></a>
+                </div>
+            }
         </div>
-        <div>
-            <div>
+    </section>
 
-            </div>
-        </div>
-
-
+    <!-- popular index -->
+    @if (genres.Any())
+    {
         <div id="index" class="bg-[#ddd6c4]/40 border-y border-stone-300">
-        <section class="py-16">
-            <div class="max-w-7xl mx-auto px-6">
-
-                <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-8">
-                    <div>
-                        <span class="font-sans text-xs tracking-wide uppercase text-teal-900">
-                            Browse the registry
-                        </span>
-                        <h2 class="font-serif font-medium text-3xl tracking-tight leading-tight">
-                            Popular worlds, by genre
-                        </h2>
+            <section class="py-16">
+                <div class="max-w-7xl mx-auto px-6">
+                    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-8">
+                        <div>
+                            <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Browse the registry</span>
+                            <h2 class="font-serif font-medium text-[clamp(26px,3.4vw,38px)] tracking-[-.01em] leading-[1.05]">Popular worlds, by genre</h2>
+                        </div>
+                        <a asp-controller="World" asp-action="Index" class="font-sans text-xs tracking-[.05em] text-teal-900 no-underline border-b border-transparent hover:border-[#1c4551] transition-colors whitespace-nowrap">All @genres.Count genres →</a>
                     </div>
 
-                    <a href="#top"
-                       class="font-sans text-xs text-teal-900 no-underline border-b border-transparent hover:border-[#1c4551] transition-colors whitespace-nowrap">
-                        All genres →
-                    </a>
+                    <div class="grid grid-cols-2 min-[1000px]:grid-cols-6 gap-x-0 gap-y-6">
+                        @foreach (var genre in genres)
+                        {
+                            <div class="px-5 first:pl-0 last:pr-0 border-r last:border-r-0 border-stone-200">
+                                <h4 class="font-sans text-xs tracking-[.16em] text-teal-900 font-semibold pb-3 mb-3 border-b border-stone-300 flex items-center gap-2">
+                                    @if (!string.IsNullOrEmpty(genre.Color))
+                                    {
+                                        <span class="w-2 h-2 rounded-full inline-block" style="background-color:@genre.Color"></span>
+                                    }
+                                    @genre.Name.ToUpper()
+                                </h4>
+                                <ul class="list-none">
+                                    @foreach (var world in genre.Worlds)
+                                    {
+                                        <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0">
+                                            <a asp-controller="World" asp-action="Details" asp-route-id="@world.Id"
+                                               class="font-serif text-base no-underline text-stone-900 hover:text-teal-900 transition-colors">@world.Name</a>
+                                            <span class="font-sans text-xs text-stone-600">@Kfmt(world.Likes)</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    </div>
                 </div>
+            </section>
+        </div>
+    }
 
-
-                <div class="grid grid-cols-2 min-[1000px]:grid-cols-6 gap-x-0 gap-y-6">
-
-                    @foreach (var genre in genres)
-                    {
-                        <div class="px-5 border-r border-stone-200 last:border-r-0">
-
-                            <h4 class="font-sans text-xs tracking-wide text-teal-900 font-semibold pb-3 mb-3 border-b border-stone-300">
-                                @genre.Name.ToUpper()
-                            </h4>
-
-                            <ul class="list-none">
-                                @foreach (var world in genre.Worlds.Take(5))
-                                {
-                                    <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0">
-
-                                        <a href="#top"
-                                           class="font-serif text-base no-underline hover:text-teal-900 transition-colors">
-                                            @world
-                                        </a>
-
-                                        <span class="font-sans text-xs text-stone-600">
-                                            1.6k
-                                        </span>
-
-                                    </li>
-                                }
-                            </ul>
-
-                        </div>
-                    }
-
-                </div>
-
+    <!-- cta -->
+    <div class="bg-[#211c14] text-[#f0ebdf]">
+        <div class="max-w-7xl mx-auto px-6 py-16 flex flex-col md:flex-row md:items-center md:justify-between gap-9">
+            <div>
+                <h2 class="font-serif font-medium text-[clamp(28px,4vw,44px)] tracking-[-.01em] leading-[1.02] max-w-[520px]">Ready to build your own world?</h2>
+                <p class="text-[#c8c1af] mt-3.5 max-w-[460px] text-sm">Start from a blank map — most writers get their first world on record in about five minutes.</p>
             </div>
-        </section>     
+            <div class="flex gap-4 flex-wrap">
+                <a asp-controller="World" asp-action="Create" class="inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-[#f0ebdf] bg-stone-100 text-stone-900 no-underline cursor-pointer transition-all duration-150 hover:bg-[#a3712a] hover:border-[#a3712a] hover:text-stone-900 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-[3px]">Create a world <span class="text-base leading-none">→</span></a>
+                <a asp-controller="World" asp-action="Index" class="inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-[#f0ebdf] text-[#f0ebdf] no-underline cursor-pointer transition-all duration-150 hover:bg-stone-100 hover:text-stone-900 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-[3px]">Browse all worlds</a>
+            </div>
+        </div>
+    </div>
+
 </div>
 
+@section Scripts {
+    <script>
+        // Stat count-up on scroll into view
+        const fmt = new Intl.NumberFormat('en-US');
+        function runCount(el) {
+            const target = +el.dataset.count, suffix = el.dataset.suffix || '', dur = 1400, start = performance.now();
+            (function tick(now) {
+                const p = Math.min((now - start) / dur, 1), eased = 1 - Math.pow(1 - p, 3);
+                el.textContent = fmt.format(Math.round(target * eased)) + (p === 1 ? suffix : '');
+                if (p < 1) requestAnimationFrame(tick);
+            })(start);
+        }
+        const io = new IntersectionObserver((entries, obs) => {
+            entries.forEach(e => { if (e.isIntersecting) { runCount(e.target); obs.unobserve(e.target); } });
+        }, { threshold: .6 });
+        document.querySelectorAll('.num[data-count]').forEach(el => io.observe(el));
+    </script>
+}
