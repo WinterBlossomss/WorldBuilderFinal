@@ -37,17 +37,6 @@
 
 @Html.AntiForgeryToken()
 
-<style>
-    #worldSearchResults .wsr-head { font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:#a89f8e; padding:6px 12px 2px; }
-    #worldSearchResults .wsr-item { display:flex; align-items:center; gap:8px; padding:7px 12px; border-bottom:1px dashed #e5ddcb; text-decoration:none; color:#1a1a1a; font-size:13px; }
-    #worldSearchResults .wsr-item:last-child { border-bottom:0; }
-    #worldSearchResults .wsr-item:hover { background:#1a1a1a; color:#f7f3ea; }
-    #worldSearchResults .wsr-item:hover .wsr-meta { color:#c9bfa9; }
-    #worldSearchResults .wsr-title { font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    #worldSearchResults .wsr-meta { margin-left:auto; flex:0 0 auto; font-size:11px; color:#a89f8e; }
-    #worldSearchResults .wsr-empty { padding:10px 12px; font-size:12.5px; color:#a89f8e; }
-</style>
-
 <div class="m-5">
     <div class=" text-[#1a1a1a] -mx-4 -my-3 px-[30px] pt-5 pb-16">
 
@@ -303,24 +292,33 @@
 
         function render(data) {
             var html = '';
+
+            var headCls = 'text-[10px] tracking-wider uppercase text-[#a89f8e] pt-1.5 px-3 pb-0.5';
+            // `group` so the meta span can react to the item's hover
+            var itemCls = 'group flex items-center gap-2 py-[7px] px-3 border-b border-dashed border-[#e5ddcb] '
+                        + 'last:border-b-0 no-underline text-[#1a1a1a] text-[13px] '
+                        + 'hover:bg-[#1a1a1a] hover:text-[#f7f3ea]';
+            var titleCls = 'font-bold whitespace-nowrap overflow-hidden text-ellipsis';
+            var metaCls  = 'ml-auto shrink-0 text-[11px] text-[#a89f8e] group-hover:text-[#c9bfa9]';
+
             if (data.categories && data.categories.length) {
-                html += '<div class="wsr-head">Categories</div>';
+                html += '<div class="' + headCls + '">Categories</div>';
                 data.categories.forEach(function (c) {
-                    html += '<a class="wsr-item" href="' + catBase + '/' + worldId + '?catId=' + c.id + '">'
-                          +   '<span class="wsr-title">' + esc(c.name) + '</span>'
-                          +   '<span class="wsr-meta">category</span></a>';
+                    html += '<a class="' + itemCls + '" href="' + catBase + '/' + worldId + '?catId=' + c.id + '">'
+                          +   '<span class="' + titleCls + '">' + esc(c.name) + '</span>'
+                          +   '<span class="' + metaCls + '">category</span></a>';
                 });
             }
             if (data.scripts && data.scripts.length) {
-                html += '<div class="wsr-head">Entries</div>';
+                html += '<div class="' + headCls + '">Entries</div>';
                 data.scripts.forEach(function (s) {
                     var meta = s.cat || (s.isChar ? 'character' : 'entry');
-                    html += '<a class="wsr-item" href="' + scriptBase + '?scriptidpk=' + s.id + '">'
-                          +   '<span class="wsr-title">' + esc(s.title) + '</span>'
-                          +   '<span class="wsr-meta">' + esc(meta) + '</span></a>';
+                    html += '<a class="' + itemCls + '" href="' + scriptBase + '?scriptidpk=' + s.id + '">'
+                          +   '<span class="' + titleCls + '">' + esc(s.title) + '</span>'
+                          +   '<span class="' + metaCls + '">' + esc(meta) + '</span></a>';
                 });
             }
-            if (!html) html = '<div class="wsr-empty">No matches in this world</div>';
+            if (!html) html = '<div class="py-2.5 px-3 text-[12.5px] text-[#a89f8e]">No matches in this world</div>';
             panel.innerHTML = html;
             panel.classList.remove('hidden');
         }

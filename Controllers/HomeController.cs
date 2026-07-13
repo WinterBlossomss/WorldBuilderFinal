@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using WorldBuilder.Models;
 
@@ -17,10 +18,33 @@ namespace WorldBuilder.Controllers
 
         public IActionResult Index()
         {
-            ViewData["Genres"] = _context.Genres
-                .Select(g => g.GenreName)
+            var worlds = _context.Worlds
+                .Include(w => w.Pictures)
+                .Include(w => w.Categories)
+                .Include(w => w.Tags)
                 .ToList();
-            return View();
+
+            HomeViewModel model = new HomeViewModel
+            {
+                WorldList = worlds,
+                UserList = _context.UserInfos.ToList(),
+                CategoryList = _context.Categories.ToList(),
+                TagList = _context.Tags.ToList()
+            };
+
+
+
+            ViewData["Genres"] = _context.Genres
+            .Select(g => new GenreViewModel
+            {
+                Name = g.GenreName,
+                Worlds = g.Worlds
+                    .Select(w => w.WorldName)
+                    .Take(5)
+                    .ToList()
+            })
+            .ToList();
+            return View(model);
         }
 
         public IActionResult Privacy()

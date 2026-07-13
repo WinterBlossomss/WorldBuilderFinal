@@ -25,3 +25,9 @@ public partial class Genre
     [InverseProperty("WorldGenFKNavigation")]
     public virtual ICollection<World> Worlds { get; set; } = new List<World>();
 }
+
+public class GenreViewModel
+{
+    public string Name { get; set; }
+    public List<string> Worlds { get; set; } = new();
+}
