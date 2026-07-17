@@ -17,17 +17,36 @@
     var filtering = !string.IsNullOrWhiteSpace(activeQ) || !string.IsNullOrWhiteSpace(activeGenre);
     var allActive = string.IsNullOrWhiteSpace(activeGenre);
 
-    var sortLabel = activeSort switch { "newest" => "Newest", "name" => "A–Z", _ => "Most loved" };
+    var sortLabel = activeSort switch
+    {
+        "newest" => "Newest",
+        "loved" => "Most loved",
+        "name" => "Z–A",
+        _ => "Featured"
+    };
 
-    // Only used when filtering returns nothing
-    var related = chips.Where(c => c != activeGenre).Take(4).ToList();
+    // Which discover rows this sort exposes
+    var showNewest = activeSort is "" or "newest" or "name";
+    var showLoved = activeSort is "" or "loved" or "name";
+    var showByGenre = string.IsNullOrWhiteSpace(activeSort);
 
     // Discover-row data (used when no filter is active)
     var newest = worlds.OrderByDescending(w => w.WorldCreatedAt).Take(8).ToList();
     var loved = worlds.OrderByDescending(w => w.WorldLikes ?? 0).Take(8).ToList();
+
+    // Z–A keeps both rows but reorders their contents
+    if (activeSort == "name")
+    {
+        newest = newest.OrderByDescending(w => w.WorldName).ToList();
+        loved = loved.OrderByDescending(w => w.WorldName).ToList();
+    }
+
     var byGenre = worlds.Where(w => !string.IsNullOrEmpty(w.WorldGenFK))
                         .GroupBy(w => w.WorldGenFK)
                         .OrderByDescending(g => g.Count());
+
+    // Only used when filtering returns nothing
+    var related = chips.Where(c => c != activeGenre).Take(4).ToList();
 
     // Registry-aesthetic tokens (mirrors Home/Index.cshtml)
     const string chipOn = "font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-stone-900 bg-stone-900 text-stone-50 no-underline cursor-pointer";
@@ -36,7 +55,8 @@
     const string btnLine = "inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-stone-300 text-stone-900 no-underline hover:border-teal-900 hover:text-teal-900 transition-colors";
 }
 
-<div class="max-w-7xl mx-auto px-6 py-10 text-stone-900">
+<!-- Width is like that to make sure cards fit perfectly-->
+<div class="max-w-[calc(5*240px+4*1rem+3rem)] mx-auto px-6 py-10 text-stone-900">
 
     <!-- Header: eyebrow + title + subtitle -->
     <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Browse the registry</span>
@@ -77,12 +97,14 @@
                     <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1 L 5 5 L 9 1" stroke="#57534e" stroke-width="1.4" fill="none" /></svg>
                 </summary>
                 <div class="absolute right-0 mt-1 bg-stone-100 border border-stone-300 py-1 z-20 min-w-[150px] shadow-[0_10px_24px_rgba(33,28,20,0.10)]">
+                    <a asp-action="Index" asp-route-q="@activeQ" asp-route-genre="@activeGenre"
+                       class="block px-3 py-1.5 font-sans text-xs text-stone-700 no-underline hover:bg-stone-200">Featured</a>
                     <a asp-action="Index" asp-route-q="@activeQ" asp-route-genre="@activeGenre" asp-route-sort="loved"
                        class="block px-3 py-1.5 font-sans text-xs text-stone-700 no-underline hover:bg-stone-200">Most loved</a>
                     <a asp-action="Index" asp-route-q="@activeQ" asp-route-genre="@activeGenre" asp-route-sort="newest"
                        class="block px-3 py-1.5 font-sans text-xs text-stone-700 no-underline hover:bg-stone-200">Newest</a>
                     <a asp-action="Index" asp-route-q="@activeQ" asp-route-genre="@activeGenre" asp-route-sort="name"
-                       class="block px-3 py-1.5 font-sans text-xs text-stone-700 no-underline hover:bg-stone-200">A–Z</a>
+                       class="block px-3 py-1.5 font-sans text-xs text-stone-700 no-underline hover:bg-stone-200">Z–A</a>
                 </div>
             </details>
         </div>
@@ -199,24 +221,27 @@
         else
         {
             <!-- Discover rows -->
-            @if (newest.Any())
+            @if (showNewest && newest.Any())
             {
                 <partial name="_WorldRow" model='new ValueTuple<string, string, List<WorldBuilder.Models.World>>("New worlds", "Recently added", newest)' />
             }
-            @if (loved.Any())
+            @if (showLoved && loved.Any())
             {
                 <partial name="_WorldRow" model='new ValueTuple<string, string, List<WorldBuilder.Models.World>>("Most loved", "All-time", loved)' />
             }
 
-            <!-- By-genre section header -->
-            <div class="mt-10 mb-6 pt-8 border-t border-stone-300">
-                <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Browse the registry</span>
-                <h2 class="font-serif font-medium text-[clamp(24px,3.2vw,34px)] tracking-[-.01em] leading-[1.05]">By genre</h2>
-            </div>
-
-            @foreach (var g in byGenre)
+            @if (showByGenre)
             {
-                <partial name="_WorldRow" model='new ValueTuple<string, string, List<WorldBuilder.Models.World>>(g.Key, g.Count() + " worlds", g.ToList())' />
+                <!-- By-genre section header -->
+                <div class="mt-10 mb-6 pt-8 border-t border-stone-300">
+                    <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Browse the registry</span>
+                    <h2 class="font-serif font-medium text-[clamp(24px,3.2vw,34px)] tracking-[-.01em] leading-[1.05]">By genre</h2>
+                </div>
+
+                @foreach (var g in byGenre)
+                {
+                    <partial name="_WorldRow" model='new ValueTuple<string, string, List<WorldBuilder.Models.World>>(g.Key, g.Count() + " worlds", g.ToList())' />
+                }
             }
         }
     }

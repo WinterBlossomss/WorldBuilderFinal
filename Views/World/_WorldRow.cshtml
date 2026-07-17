@@ -28,7 +28,7 @@
         </div>
     </div>
     <div data-row-track
-         class="flex gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+         class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         @foreach (var w in Model.Items)
         {
             <partial name="_WorldCard" model="w" />

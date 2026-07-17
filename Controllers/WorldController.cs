@@ -61,14 +61,29 @@ public class WorldController : Controller
         query = sort switch
         {
             "newest" => query.OrderByDescending(w => w.WorldCreatedAt),
-            "name" => query.OrderBy(w => w.WorldName),
-            _ => query.OrderByDescending(w => w.WorldLikes ?? 0), // "loved" (default)
+            "name" => query.OrderByDescending(w => w.WorldName),   // Z–A, matches the label
+            "loved" => query.OrderByDescending(w => w.WorldLikes ?? 0),
+            _ => query.OrderByDescending(w => w.WorldLikes ?? 0), // "" = Featured
         };
 
         var worlds = await query.ToListAsync();
+        var worldIds = worlds.Select(w => w.WorldIDPK).ToList();
 
-        ViewData["Genres"] = _context.Genres.Select(g => g.GenreName).ToList();
-        ViewData["Pictures"] = _context.Pictures.ToList();
+        var authorIds = worlds
+            .Select(w => w.WorldUserFKNavigation?.UserInfoUserIDFK)
+            .Where(id => id != null)
+            .Distinct()
+            .ToList();
+
+        ViewData["Authors"] = await _userManager.Users
+            .Where(u => authorIds.Contains(u.Id))
+            .ToDictionaryAsync(u => u.Id, u => u.UserName);
+
+        ViewData["Pictures"] = await _context.Pictures
+            .Where(p => worldIds.Contains((int)p.PicWorldFK))
+            .ToListAsync();
+
+        ViewData["Genres"] = await _context.Genres.Select(g => g.GenreName).ToListAsync();
 
         // Echo the active filter state back to the view
         ViewData["Query"] = q;

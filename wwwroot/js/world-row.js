@@ -8,8 +8,13 @@
         const next = row.querySelector('[data-row-next]');
         if (!track || !prev || !next) return;
 
-        // One page = one viewport, less a sliver so the edge card stays as an anchor.
-        const pageSize = () => Math.max(track.clientWidth - 48, 120);
+        const pageSize = () => {
+            const card = track.firstElementChild;
+            if (!card) return track.clientWidth;
+            const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+            const step = card.getBoundingClientRect().width + gap;
+            return Math.max(Math.floor(track.clientWidth / step), 1) * step;
+        };
 
         function sync() {
             const max = track.scrollWidth - track.clientWidth;
