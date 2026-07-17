@@ -1,124 +1,341 @@
 @model WorldBuilder.ViewComponents.DrawerViewModel
 
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+
+@inject WorldBuilderDBContext Context
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    var userInfo = await Context.UserInfos
+        .FirstOrDefaultAsync(x => x.UserInfoIDPK == Model.UserInfoId);
+
+    var author = userInfo != null
+        ? await UserManager.FindByIdAsync(userInfo.UserInfoUserIDFK)
+        : null;
+}
+
 <aside id="drawerPanel"
-       class="flex h-full w-[360px] max-w-[86vw] -translate-x-full flex-col overflow-y-auto bg-[#f4f1e8] text-[#2b2825] shadow-2xl transition-transform duration-300 ease-out"
+       class="flex h-full w-96 max-w-[86vw] -translate-x-full flex-col overflow-y-auto bg-stone-200 text-stone-900 shadow-2xl transition-transform duration-300 ease-out"
        onclick="event.stopPropagation()">
 
-    <!-- header -->
-    <div class="flex items-center gap-3 px-5 pb-4 pt-5">
-        <button type="button" onclick="hideDrawer()" aria-label="Close menu"
-                class="flex h-11 w-11 flex-none items-center justify-center rounded-full border-2 border-[#2b2825] transition-colors hover:bg-black/5">
-            <span class="material-symbols-outlined text-[22px]">close</span>
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-6">
+
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="font-serif font-semibold text-xl tracking-widest uppercase text-teal-900 no-underline">
+            World Builder
+        </a>
+
+        <button type="button"
+                onclick="hideDrawer()"
+                aria-label="Close menu"
+                class="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-stone-300">
+
+            <span class="material-symbols-outlined text-lg">
+                close
+            </span>
+
         </button>
-        <span class="material-symbols-outlined text-[26px]">public</span>
-        <a asp-controller="Home" asp-action="Index" class="text-[26px] font-bold italic tracking-tight no-underline text-[#2b2825]">World Builder</a>
+
     </div>
 
-    <div class="mx-5 border-t border-[#d8d3c6]"></div>
 
-    <!-- user -->
+    <hr class="border-stone-300">
+
+
+    <!-- User -->
     @if (Model.IsAuthenticated)
     {
-        <a asp-controller="Author" asp-action="Index" asp-route-id="@Model.UserInfoId"
-           class="flex items-center gap-4 px-5 py-4 no-underline text-[#2b2825] hover:bg-black/5 transition-colors">
-            <div class="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-[#1c1a17] text-[22px] font-bold text-[#f4f1e8]">@Model.Initial</div>
-            <div>
-                <div class="text-[19px] font-bold italic leading-tight">@@@(Model.Handle?.TrimStart('@'))</div>
-                <div class="text-[14px] text-[#a39c8e]">@Model.MyWorlds worlds · @Model.MyScripts scripts</div>
+        <a asp-controller="Author"
+           asp-action="Index"
+           asp-route-id="@Model.UserInfoId"
+           class="flex items-center gap-4 px-6 py-5 text-stone-900 no-underline transition-colors hover:bg-stone-300/50">
+
+
+            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-stone-900 text-lg font-bold text-stone-100">
+                @Model.Initial
             </div>
-            <span class="material-symbols-outlined ml-auto text-[#8f887a]">chevron_right</span>
+
+
+            <div class="flex-1">
+
+                <div class="font-serif text-lg italic font-semibold">
+                    @@@author.UserName
+                </div>
+
+                <div class="mt-1 text-xs uppercase tracking-wider text-stone-600">
+                    @Model.MyWorlds worlds · @Model.MyScripts scripts
+                </div>
+
+            </div>
+
+
+            <span class="material-symbols-outlined text-stone-600">
+                chevron_right
+            </span>
+
         </a>
     }
     else
     {
-        <div class="flex items-center gap-4 px-5 py-4">
-            <div class="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-[#1c1a17] text-[22px] font-bold text-[#f4f1e8]">?</div>
-            <div>
-                <div class="text-[19px] font-bold italic leading-tight">Guest</div>
-                <a asp-area="Identity" asp-page="/Account/Login" class="text-[14px] text-[#7a6f5c] underline">Sign in to build</a>
+        <div class="flex items-center gap-4 px-6 py-5">
+
+            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-stone-900 text-lg font-bold text-stone-100">
+                ?
             </div>
+
+            <div>
+                <div class="font-serif text-lg italic font-semibold">
+                    Guest
+                </div>
+
+                <a asp-area="Identity"
+                   asp-page="/Account/Login"
+                   class="text-xs uppercase tracking-wider text-teal-900 underline">
+                    Sign in to build
+                </a>
+            </div>
+
         </div>
     }
 
-    <div class="mx-5 border-t border-dashed border-[#cbc4b3]"></div>
 
-    <!-- browse -->
-    <div class="px-6 pb-1.5 pt-5 text-[12px] italic uppercase tracking-[0.16em] text-[#b0a999]">Browse</div>
-    <nav class="px-3">
-        <a asp-controller="World" asp-action="Index" onclick="hideDrawer()"
-           class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] no-underline text-[#2b2825] transition-colors hover:bg-black/5">
-            <span class="material-symbols-outlined text-[22px]">explore</span>
-            <span class="flex-1">Explore</span>
+    <hr class="mx-6 border-dashed border-stone-300">
+
+
+    <!-- Browse -->
+    <div class="px-6 pt-6 pb-2 text-xs uppercase tracking-widest text-teal-900">
+        Browse
+    </div>
+
+
+    <nav class="space-y-1 px-4">
+
+
+        <a asp-controller="World"
+           asp-action="Index"
+           onclick="hideDrawer()"
+           class="flex items-center gap-4 rounded-md px-3 py-3 text-stone-900 no-underline transition-colors hover:bg-stone-300/60">
+
+            <span class="material-symbols-outlined">
+                explore
+            </span>
+
+            <span class="flex-1 font-serif text-lg">
+                Explore
+            </span>
+
         </a>
-        <a asp-controller="World" asp-action="Index" onclick="hideDrawer()"
-           class="flex items-center gap-4 rounded-[11px] bg-[#e7e2d4] px-3 py-2.5 text-[19px] no-underline text-[#2b2825]">
-            <span class="material-symbols-outlined text-[22px]">public</span>
-            <span class="flex-1 font-bold">All Worlds</span>
-            <span class="text-[15px] italic text-[#b0a999]">@Model.TotalWorlds.ToString("N0")</span>
+
+
+
+        <a asp-controller="World"
+           asp-action="Index"
+           onclick="hideDrawer()"
+           class="flex items-center gap-4 rounded-md bg-stone-300/60 px-3 py-3 text-stone-900 no-underline">
+
+            <span class="material-symbols-outlined text-teal-900">
+                public
+            </span>
+
+
+            <span class="flex-1 font-serif text-lg font-semibold">
+                All Worlds
+            </span>
+
+
+            <span class="text-xs tracking-wide text-stone-600">
+                @Model.TotalWorlds.ToString("N0")
+            </span>
+
         </a>
-        <a asp-controller="Author" asp-action="Browse" onclick="hideDrawer()"
-           class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] no-underline text-[#2b2825] transition-colors hover:bg-black/5">
-            <span class="material-symbols-outlined text-[22px]">groups</span>
-            <span class="flex-1">Community</span>
+
+
+
+        <a asp-controller="Author"
+           asp-action="Browse"
+           onclick="hideDrawer()"
+           class="flex items-center gap-4 rounded-md px-3 py-3 text-stone-900 no-underline transition-colors hover:bg-stone-300/60">
+
+            <span class="material-symbols-outlined">
+                groups
+            </span>
+
+            <span class="flex-1 font-serif text-lg">
+                Community
+            </span>
+
         </a>
+
+
+
         @if (Model.IsAdmin)
         {
-            <a asp-controller="Admin" asp-action="Index" onclick="hideDrawer()"
-               class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] no-underline text-[#2b2825] transition-colors hover:bg-black/5">
-                <span class="material-symbols-outlined text-[22px]">shield_person</span>
-                <span class="flex-1">Admin</span>
-                <span class="text-[12px] italic text-[#b0a999]">panel</span>
+            <a asp-controller="Admin"
+               asp-action="Index"
+               onclick="hideDrawer()"
+               class="flex items-center gap-4 rounded-md px-3 py-3 text-stone-900 no-underline transition-colors hover:bg-stone-300/60">
+
+
+                <span class="material-symbols-outlined">
+                    shield_person
+                </span>
+
+
+                <span class="flex-1 font-serif text-lg">
+                    Admin
+                </span>
+
+
             </a>
         }
+
+
     </nav>
+
+
 
     @if (Model.IsAuthenticated)
     {
-        <!-- yours -->
-        <div class="px-6 pb-1.5 pt-5 text-[12px] italic uppercase tracking-[0.16em] text-[#b0a999]">Yours</div>
-        <nav class="px-3 pb-2">
-            <a asp-controller="Author" asp-action="Index" asp-route-id="@Model.UserInfoId" onclick="hideDrawer()"
-               class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] no-underline text-[#2b2825] transition-colors hover:bg-black/5">
-                <span class="material-symbols-outlined text-[22px]">folder</span>
-                <span class="flex-1">My worlds</span>
-                <span class="text-[15px] italic text-[#b0a999]">@Model.MyWorlds</span>
+
+        <div class="px-6 pt-6 pb-2 text-xs uppercase tracking-widest text-teal-900">
+            Yours
+        </div>
+
+
+        <nav class="space-y-1 px-4">
+
+
+            <a asp-controller="Author"
+               asp-action="Index"
+               asp-route-id="@Model.UserInfoId"
+               onclick="hideDrawer()"
+               class="flex items-center gap-4 rounded-md px-3 py-3 text-stone-900 no-underline transition-colors hover:bg-stone-300/60">
+
+
+                <span class="material-symbols-outlined">
+                    folder
+                </span>
+
+
+                <span class="flex-1 font-serif text-lg">
+                    My Worlds
+                </span>
+
+
+                <span class="text-xs text-stone-600">
+                    @Model.MyWorlds
+                </span>
+
+
             </a>
-            <a asp-controller="World" asp-action="Create" onclick="hideDrawer()"
-               class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] no-underline text-[#2b2825] transition-colors hover:bg-black/5">
-                <span class="material-symbols-outlined text-[22px]">add_circle</span>
-                <span class="flex-1">New world</span>
+
+
+
+            <a asp-controller="World"
+               asp-action="Create"
+               onclick="hideDrawer()"
+               class="flex items-center gap-4 rounded-md px-3 py-3 text-stone-900 no-underline transition-colors hover:bg-stone-300/60">
+
+
+                <span class="material-symbols-outlined">
+                    add_circle
+                </span>
+
+
+                <span class="flex-1 font-serif text-lg">
+                    New World
+                </span>
+
+
             </a>
-            <a asp-controller="World" asp-action="Liked" onclick="hideDrawer()"
-               class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[19px] no-underline text-[#2b2825] transition-colors hover:bg-black/5">
-                <span class="material-symbols-outlined text-[22px]">favorite</span>
-                <span class="flex-1">Liked worlds</span>
-                <span class="text-[15px] italic text-[#b0a999]">@Model.LikedWorlds</span>
+
+
+
+            <a asp-controller="World"
+               asp-action="Liked"
+               onclick="hideDrawer()"
+               class="flex items-center gap-4 rounded-md px-3 py-3 text-stone-900 no-underline transition-colors hover:bg-stone-300/60">
+
+
+                <span class="material-symbols-outlined">
+                    favorite
+                </span>
+
+
+                <span class="flex-1 font-serif text-lg">
+                    Liked Worlds
+                </span>
+
+
+                <span class="text-xs text-stone-600">
+                    @Model.LikedWorlds
+                </span>
+
+
             </a>
+
+
         </nav>
 
-        <div class="mx-5 border-t border-dashed border-[#cbc4b3]"></div>
-        <nav class="px-3 py-3">
-            <a asp-area="Identity" asp-page="/Account/Manage/Index" onclick="hideDrawer()"
-               class="flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[17px] no-underline text-[#2b2825] transition-colors hover:bg-black/5">
-                <span class="material-symbols-outlined text-[20px]">settings</span>
-                <span class="flex-1">Settings</span>
+
+
+        <hr class="mx-6 my-4 border-dashed border-stone-300">
+
+
+
+        <nav class="space-y-1 px-4 pb-5">
+
+
+            <a asp-controller="Profile"
+               asp-action="Edit"
+               onclick="hideDrawer()"
+               class="flex items-center gap-4 rounded-md px-3 py-3 text-stone-900 no-underline transition-colors hover:bg-stone-300/60">
+
+
+                <span class="material-symbols-outlined">
+                    settings
+                </span>
+                <span class="font-serif text-lg">
+                    Settings
+                </span>
             </a>
-            <form asp-area="Identity" asp-page="/Account/Logout"
-                  asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" class="m-0">
+            <form asp-area="Identity"
+                  asp-page="/Account/Logout"
+                  asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
+                  method="post">
                 <button type="submit"
-                        class="w-full flex items-center gap-4 rounded-[11px] px-3 py-2.5 text-[17px] text-left text-[#7a2f2f] transition-colors hover:bg-black/5">
-                    <span class="material-symbols-outlined text-[20px]">logout</span>
-                    <span class="flex-1">Sign out</span>
+                        class="flex w-full items-center gap-4 rounded-md px-3 py-3 text-left text-red-900 transition-colors hover:bg-stone-300/60">
+                    <span class="material-symbols-outlined">
+                        logout
+                    </span>
+                    <span class="font-serif text-lg">
+                        Sign out
+                    </span>
                 </button>
             </form>
         </nav>
+
     }
     else
     {
-        <div class="px-5 py-4">
-            <a asp-area="Identity" asp-page="/Account/Login"
-               class="block w-full text-center rounded-[11px] bg-[#1c1a17] text-[#f4f1e8] px-3 py-2.5 no-underline">Sign in</a>
+
+        <div class="mt-auto px-6 py-6">
+
+            <a asp-area="Identity"
+               asp-page="/Account/Login"
+               class="block border border-stone-900 bg-stone-900 px-4 py-3 text-center text-sm text-stone-100 no-underline transition-colors hover:bg-teal-900 hover:border-teal-900">
+
+                Sign in
+
+            </a>
+
         </div>
+
     }
+
 
 </aside>

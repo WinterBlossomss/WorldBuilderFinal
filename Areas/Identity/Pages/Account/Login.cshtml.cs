@@ -116,17 +116,17 @@ namespace WorldBuilder.Areas.Identity.Pages.Account
                     var user = await _signInManager.UserManager.GetUserAsync(User);
                     var userId = user?.Id;
 
-                    if (userId != null)
-                    {
-                        var exists = await _context.UserInfos
-                            .AnyAsync(u => u.UserInfoUserIDFK == userId);
+                    //if (userId != null)
+                    //{
+                    //    var exists = await _context.UserInfos
+                    //        .AnyAsync(u => u.UserInfoUserIDFK == userId);
 
-                        if (!exists)
-                        {
-                            _context.UserInfos.Add(new UserInfo { UserInfoUserIDFK = userId, UserInfoCreatedAt = DateTime.UtcNow });
-                            await _context.SaveChangesAsync();
-                        }
-                    }
+                    //    if (!exists)
+                    //    {
+                    //        _context.UserInfos.Add(new UserInfo { UserInfoUserIDFK = userId, UserInfoCreatedAt = DateTime.UtcNow });
+                    //        await _context.SaveChangesAsync();
+                    //    }
+                    //}
 
                     return LocalRedirect(returnUrl);
                 }

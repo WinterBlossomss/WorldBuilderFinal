@@ -571,6 +571,58 @@ public class WorldController : Controller
         // Reuses the existing Views/World/Index.cshtml grid
         return View("Index", worlds);
     }
+
+    // GET: /World/GlobalSearch?q=...  — live registry search for the top-bar dropdown
+    [HttpGet]
+    public async Task<IActionResult> GlobalSearch(string q)
+    {
+        q = (q ?? "").Trim();
+        if (q.Length < 1)
+            return Json(new { worlds = Array.Empty<object>(), builders = Array.Empty<object>() });
+
+        // Public worlds by name / description / genre, most-loved first.
+        var worlds = await _context.Worlds
+            .Include(w => w.WorldGenFKNavigation)
+            .Where(w => w.WorldIsPublic && (
+                w.WorldName.Contains(q) ||
+                (w.WorldDesc != null && w.WorldDesc.Contains(q)) ||
+                w.WorldGenFK.Contains(q)))
+            .OrderByDescending(w => w.WorldLikes ?? 0)
+            .Take(6)
+            .Select(w => new
+            {
+                id = w.WorldIDPK,
+                name = w.WorldName,
+                genre = w.WorldGenFK,
+                color = w.WorldGenFKNavigation != null ? w.WorldGenFKNavigation.GenreColor : null,
+                likes = w.WorldLikes ?? 0
+            })
+            .ToListAsync();
+
+        // Builders by username (Identity store), mapped back to their public profile id.
+        var matches = await _userManager.Users
+            .Where(iu => iu.UserName != null && iu.UserName.Contains(q))
+            .Select(iu => new { iu.Id, iu.UserName })
+            .Take(4)
+            .ToListAsync();
+        var ids = matches.Select(m => m.Id).ToList();
+
+        var infos = await _context.UserInfos
+            .Where(u => ids.Contains(u.UserInfoUserIDFK))
+            .Select(u => new { u.UserInfoIDPK, u.UserInfoUserIDFK })
+            .ToListAsync();
+
+        var builders = infos
+            .Select(i => new
+            {
+                id = i.UserInfoIDPK,
+                name = matches.FirstOrDefault(m => m.Id == i.UserInfoUserIDFK)?.UserName
+            })
+            .Where(b => b.name != null)
+            .ToList();
+
+        return Json(new { worlds, builders });
+    }
     private bool WorldExists(int? worldidpk)
     {
         return _context.Worlds.Any(e => e.WorldIDPK == worldidpk);

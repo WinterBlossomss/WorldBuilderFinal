@@ -29,62 +29,67 @@
                         .GroupBy(w => w.WorldGenFK)
                         .OrderByDescending(g => g.Count());
 
-    const string chipOn = "px-3.5 py-1.5 rounded-full text-sm no-underline cursor-pointer bg-[#1a1a1a] text-[#f7f3ea] border-1 border-[#1a1a1a]";
-    const string chipOff = "px-3.5 py-1.5 rounded-full text-sm no-underline cursor-pointer border-1 border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-[#f7f3ea] transition-colors";
-    const string btnFill = "inline-flex items-center bg-[#1a1a1a] text-[#f7f3ea] px-4 py-2 rounded-md text-[14px] font-bold no-underline";
-    const string btnLine = "inline-flex items-center border-[1.5px] border-[#1a1a1a] px-4 py-2 rounded-md text-[14px] font-bold no-underline hover:bg-[#1a1a1a] hover:text-[#f7f3ea] transition-colors";
+    // Registry-aesthetic tokens (mirrors Home/Index.cshtml)
+    const string chipOn = "font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-stone-900 bg-stone-900 text-stone-50 no-underline cursor-pointer";
+    const string chipOff = "font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-stone-300 text-stone-600 no-underline cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors";
+    const string btnFill = "inline-flex items-center gap-2 font-sans text-sm px-6 py-3 bg-stone-900 text-stone-50 no-underline hover:bg-teal-900 transition-colors";
+    const string btnLine = "inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-stone-300 text-stone-900 no-underline hover:border-teal-900 hover:text-teal-900 transition-colors";
 }
 
-<div class="text-[#1a1a1a] -mx-4 -my-3 px-[30px] pt-[30px] pb-[60px]">
+<div class="max-w-7xl mx-auto px-6 py-10 text-stone-900">
 
-    <!-- Header: title + subtitle -->
-    <div class="text-4xl font-bold mb-1">Find a world</div>
+    <!-- Header: eyebrow + title + subtitle -->
+    <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Browse the registry</span>
+    <h1 class="font-serif font-semibold text-3xl text-[clamp(28px,4vw,40px)] tracking-[-.01em] leading-[1.05] mt-2 mb-2">Find a world</h1>
     @if (filtering)
     {
-        <div class="text-[14px] mb-4">@total.ToString("N0") of @totalAll.ToString("N0") worlds match your filters</div>
+        <p class="font-sans text-sm text-stone-600 mb-6">@total.ToString("N0") of @totalAll.ToString("N0") worlds match your filters</p>
     }
     else
     {
-        <div class="text-[14px] mb-4">@totalAll.ToString("N0") user-built worlds · pick a genre or just start scrolling</div>
+        <p class="font-sans text-sm text-stone-600 mb-6">@totalAll.ToString("N0") user-built worlds · pick a genre or just start scrolling</p>
     }
 
     <!-- Search bar (keeps genre + sort while searching) -->
-    <form asp-action="Index" method="get" class="flex items-center gap-2.5 border-[1.5px] rounded-full px-2 py-2.5 mb-4">
-        <svg width="18" height="18" viewBox="0 0 14 14"><circle cx="6" cy="6" r="4" stroke="#1a1a1a" stroke-width="1.4" fill="none" /><line x1="9" y1="9" x2="13" y2="13" stroke="#1a1a1a" stroke-width="1.4" /></svg>
+    <form asp-action="Index" method="get" class="flex items-center gap-3 border border-stone-300 bg-stone-100 px-4 py-3 mb-5">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="6.5" cy="6.5" r="4.5" stroke="#57534e" stroke-width="1.4" />
+            <line x1="10" y1="10" x2="14.5" y2="14.5" stroke="#57534e" stroke-width="1.4" stroke-linecap="round" />
+        </svg>
         <input name="q" value="@activeQ" placeholder="Search by title, creator, tag, or lore keyword…"
-               class="flex-1 outline-none text-[16px] bg-transparent" />
+               class="flex-1 outline-none font-sans text-sm bg-transparent placeholder-stone-400" />
         <input type="hidden" name="genre" value="@activeGenre" />
         <input type="hidden" name="sort" value="@activeSort" />
         @if (!string.IsNullOrWhiteSpace(activeQ))
         {
             <a asp-action="Index" asp-route-genre="@activeGenre" asp-route-sort="@activeSort"
-               class="text-[#a89f8e] text-[13px] px-2 no-underline whitespace-nowrap">✕ clear</a>
+               class="font-sans text-xs text-stone-500 no-underline whitespace-nowrap hover:text-teal-900 transition-colors">✕ clear</a>
         }
     </form>
 
     <!-- Filter toolbar -->
-    <div class="flex items-center justify-between mb-2.5">
-        <div class="text-[13px]">Filter by genre</div>
+    <div class="flex items-center justify-between mb-3">
+        <span class="font-sans text-xs tracking-[.16em] uppercase text-stone-600">Filter by genre</span>
         <div class="flex gap-2">
             <details class="relative">
-                <summary class="list-none [&::-webkit-details-marker]:hidden flex items-center gap-1.5 border-[1.5px] rounded-full px-3 py-1.5 text-[13px] cursor-pointer">
+                <summary class="list-none [&::-webkit-details-marker]:hidden flex items-center gap-1.5 border border-stone-300 bg-stone-100 px-3 py-1.5 font-sans text-xs text-stone-700 cursor-pointer hover:border-teal-900 transition-colors">
                     Sort: @sortLabel
-                    <svg width="10" height="6" viewBox="0 0 10 6"><path d="M1 1 L 5 5 L 9 1" stroke="#1a1a1a" stroke-width="1.4" fill="none" /></svg>
+                    <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1 L 5 5 L 9 1" stroke="#57534e" stroke-width="1.4" fill="none" /></svg>
                 </summary>
-                <div class="absolute right-0 mt-1 bg-[#f7f3ea] border-[1.5px] border-[#1a1a1a] rounded-md py-1 z-20 min-w-[150px] shadow-sm">
+                <div class="absolute right-0 mt-1 bg-stone-100 border border-stone-300 py-1 z-20 min-w-[150px] shadow-[0_10px_24px_rgba(33,28,20,0.10)]">
                     <a asp-action="Index" asp-route-q="@activeQ" asp-route-genre="@activeGenre" asp-route-sort="loved"
-                       class="block px-3 py-1.5 text-[13px] no-underline hover:bg-[#1a1a1a] hover:text-[#f7f3ea]">Most loved</a>
+                       class="block px-3 py-1.5 font-sans text-xs text-stone-700 no-underline hover:bg-stone-200">Most loved</a>
                     <a asp-action="Index" asp-route-q="@activeQ" asp-route-genre="@activeGenre" asp-route-sort="newest"
-                       class="block px-3 py-1.5 text-[13px] no-underline hover:bg-[#1a1a1a] hover:text-[#f7f3ea]">Newest</a>
+                       class="block px-3 py-1.5 font-sans text-xs text-stone-700 no-underline hover:bg-stone-200">Newest</a>
                     <a asp-action="Index" asp-route-q="@activeQ" asp-route-genre="@activeGenre" asp-route-sort="name"
-                       class="block px-3 py-1.5 text-[13px] no-underline hover:bg-[#1a1a1a] hover:text-[#f7f3ea]">A–Z</a>
+                       class="block px-3 py-1.5 font-sans text-xs text-stone-700 no-underline hover:bg-stone-200">A–Z</a>
                 </div>
             </details>
         </div>
     </div>
 
     <!-- Genre chips -->
-    <div class="flex flex-wrap gap-2 mb-2.5">
+    <div class="flex flex-wrap gap-2 mb-3">
         <a asp-action="Index" asp-route-q="@activeQ" asp-route-sort="@activeSort"
            class="@(allActive ? chipOn : chipOff)">All</a>
         @foreach (var c in chips)
@@ -100,25 +105,25 @@
     @if (filtering)
     {
         <!-- Active filter pills -->
-        <div class="flex items-center gap-2 flex-wrap text-[12px] mb-4 border-[1.5px] border-dashed border-[#a89f8e] rounded-md px-3 py-2">
-            <span class="font-['Caveat'] text-[15px] text-[#a89f8e] mr-1">active filters:</span>
+        <div class="flex items-center gap-2 flex-wrap border border-stone-300 bg-stone-100 px-3 py-2.5 mb-6">
+            <span class="font-sans text-xs tracking-[.16em] uppercase text-stone-600 mr-1">Active filters</span>
             @if (!string.IsNullOrWhiteSpace(activeGenre))
             {
                 <a asp-action="Index" asp-route-q="@activeQ" asp-route-sort="@activeSort"
-                   class="inline-flex items-center gap-1.5 border-[1.5px] rounded-full px-2.5 py-1 no-underline text-[#1a1a1a]">@activeGenre ✕</a>
+                   class="inline-flex items-center gap-1.5 border border-stone-300 px-2.5 py-1 font-sans text-xs text-stone-700 no-underline hover:border-teal-900 transition-colors">@activeGenre ✕</a>
             }
             @if (!string.IsNullOrWhiteSpace(activeQ))
             {
                 <a asp-action="Index" asp-route-genre="@activeGenre" asp-route-sort="@activeSort"
-                   class="inline-flex items-center gap-1.5 border-[1.5px] rounded-full px-2.5 py-1 no-underline text-[#1a1a1a]">“@activeQ” ✕</a>
+                   class="inline-flex items-center gap-1.5 border border-stone-300 px-2.5 py-1 font-sans text-xs text-stone-700 no-underline hover:border-teal-900 transition-colors">“@activeQ” ✕</a>
             }
-            <a asp-action="Index" class="ml-auto underline text-[#a89f8e] no-underline hover:underline">clear all</a>
+            <a asp-action="Index" class="ml-auto font-sans text-xs text-teal-900 no-underline hover:underline">Clear all</a>
         </div>
 
         @if (worlds.Any())
         {
             <!-- Results grid -->
-            <div class="flex flex-wrap gap-5 mt-4">
+            <div class="flex flex-wrap gap-4 mt-4">
                 @foreach (var w in worlds)
                 {
                     <partial name="_WorldCard" model="w" />
@@ -128,33 +133,29 @@
         else
         {
             <!-- Empty state (adapts to search vs. genre filter) -->
-            <div class="text-center py-16">
-                <div class="flex justify-center mb-5">
-                    <svg width="84" height="62" viewBox="0 0 84 62" fill="none">
-                        <path d="M6 10 L 30 4 L 54 10 L 78 4 V 52 L 54 58 L 30 52 L 6 58 Z" stroke="#1a1a1a" stroke-width="1.5" fill="none" />
-                        <line x1="30" y1="4" x2="30" y2="52" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="3 3" />
-                        <line x1="54" y1="10" x2="54" y2="58" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="3 3" />
-                        <path d="M14 34 Q 30 24, 46 32 T 72 30" stroke="#1a1a1a" stroke-width="1.2" fill="none" />
-                        <path d="M18 18 l 6 6 M24 18 l -6 6" stroke="#1a1a1a" stroke-width="1.4" />
-                        <path d="M39 14 l 6 6 M45 14 l -6 6" stroke="#1a1a1a" stroke-width="1.4" />
-                        <path d="M60 40 l 6 6 M66 40 l -6 6" stroke="#1a1a1a" stroke-width="1.4" />
-                        <circle cx="66" cy="16" r="5" stroke="#1a1a1a" stroke-width="1.4" fill="none" />
-                        <line x1="66" y1="13" x2="66" y2="19" stroke="#1a1a1a" stroke-width="1.2" />
-                        <line x1="63" y1="16" x2="69" y2="16" stroke="#1a1a1a" stroke-width="1.2" />
+            <div class="text-center py-16 border border-stone-300 bg-stone-100">
+                <div class="flex justify-center mb-6">
+                    <svg width="96" height="96" viewBox="0 0 96 96" fill="none" aria-hidden="true">
+                        <circle cx="48" cy="48" r="34" stroke="#1c4551" stroke-width="1" />
+                        <circle cx="48" cy="48" r="24" stroke="#1c4551" stroke-width=".6" stroke-dasharray="2 4" />
+                        <path d="M48 16 L54 48 L48 80 L42 48 Z" fill="#1c4551" opacity=".85" />
+                        <path d="M16 48 L48 42 L80 48 L48 54 Z" fill="#a3712a" opacity=".7" />
+                        <circle cx="48" cy="48" r="2.5" fill="#211c14" />
+                        <text x="48" y="12" font-family="IBM Plex Mono, monospace" font-size="8" fill="#5a5142" text-anchor="middle">N</text>
                     </svg>
                 </div>
 
                 @if (!string.IsNullOrWhiteSpace(activeGenre))
                 {
-                    <div class="font-['Caveat'] text-[34px] font-bold mb-2">No @activeGenre worlds match those filters</div>
-                    <div class="text-[14px] text-[#a89f8e] mb-6">Loosen the filters to see more, or drop them entirely.</div>
-                    <div class="flex gap-3 justify-center mb-8 flex-wrap">
+                    <h2 class="font-serif font-semibold text-[clamp(22px,3vw,30px)] tracking-[-.01em] mb-2">No @activeGenre worlds match those filters</h2>
+                    <p class="font-sans text-sm text-stone-500 mb-6">Loosen the filters to see more, or drop them entirely.</p>
+                    <div class="flex gap-3 justify-center mb-10 flex-wrap">
                         <a asp-action="Index" asp-route-genre="@activeGenre" class="@btnFill">Show all @activeGenre worlds</a>
                         <a asp-action="Index" class="@btnLine">Clear filters</a>
                     </div>
                     @if (related.Any())
                     {
-                        <div class="font-['Caveat'] text-[16px] text-[#a89f8e] mb-2">Or try a related genre:</div>
+                        <div class="font-sans text-xs tracking-[.16em] uppercase text-stone-500 mb-3">Or try a related genre</div>
                         <div class="flex flex-wrap gap-2 justify-center">
                             @foreach (var r in related)
                             {
@@ -165,15 +166,15 @@
                 }
                 else
                 {
-                    <div class="font-['Caveat'] text-[34px] font-bold mb-2">Nothing matches “@activeQ”</div>
-                    <div class="text-[14px] text-[#a89f8e] mb-6">No worlds, creators, or genres share that name.<br />Try a broader spelling, or browse by genre.</div>
-                    <div class="flex gap-3 justify-center mb-8 flex-wrap">
+                    <h2 class="font-serif font-semibold text-[clamp(22px,3vw,30px)] tracking-[-.01em] mb-2">Nothing matches “@activeQ”</h2>
+                    <p class="font-sans text-sm text-stone-500 mb-6">No worlds, creators, or genres share that name.<br />Try a broader spelling, or browse by genre.</p>
+                    <div class="flex gap-3 justify-center mb-10 flex-wrap">
                         <a asp-action="Index" class="@btnFill">Browse all worlds</a>
                         <a asp-action="Create" class="@btnLine">+ Create a world called “@activeQ”</a>
                     </div>
                     @if (chips.Any())
                     {
-                        <div class="font-['Caveat'] text-[16px] text-[#a89f8e] mb-2">Browse by genre:</div>
+                        <div class="font-sans text-xs tracking-[.16em] uppercase text-stone-500 mb-3">Browse by genre</div>
                         <div class="flex flex-wrap gap-2 justify-center">
                             @foreach (var r in chips.Take(4))
                             {
@@ -189,25 +190,29 @@
     {
         @if (total == 0)
         {
-            <div class="border-1 border-dashed border-[#a89f8e] rounded-md px-6 py-16 text-center mt-6">
-                <div class="text-[28px] font-bold mb-1">No worlds yet</div>
-                <div class="text-[13px] text-[#a89f8e] mb-4">Be the first to build one.</div>
+            <div class="border border-stone-300 bg-stone-100 px-6 py-16 text-center mt-6">
+                <h2 class="font-serif font-semibold text-[28px] tracking-[-.01em] mb-1">No worlds yet</h2>
+                <p class="font-sans text-sm text-stone-500 mb-5">Be the first to build one.</p>
                 <a asp-action="Create" class="@btnFill">Create a world →</a>
             </div>
         }
         else
         {
-            <!-- ✨ Discover rows -->
+            <!-- Discover rows -->
             @if (newest.Any())
             {
-                <partial name="_WorldRow" model='new ValueTuple<string, string, List<WorldBuilder.Models.World>>("\u2728  New worlds", "last 7d", newest)' />
+                <partial name="_WorldRow" model='new ValueTuple<string, string, List<WorldBuilder.Models.World>>("New worlds", "Recently added", newest)' />
             }
             @if (loved.Any())
             {
-                <partial name="_WorldRow" model='new ValueTuple<string, string, List<WorldBuilder.Models.World>>("\u2728  Most loved", "all-time", loved)' />
+                <partial name="_WorldRow" model='new ValueTuple<string, string, List<WorldBuilder.Models.World>>("Most loved", "All-time", loved)' />
             }
 
-            <div class="border-t-[1.5px] border-dashed border-[#a89f8e] my-2.5 pt-1 font-['Caveat'] text-[18px] text-[#a89f8e]">by genre ↓</div>
+            <!-- By-genre section header -->
+            <div class="mt-10 mb-6 pt-8 border-t border-stone-300">
+                <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Browse the registry</span>
+                <h2 class="font-serif font-medium text-[clamp(24px,3.2vw,34px)] tracking-[-.01em] leading-[1.05]">By genre</h2>
+            </div>
 
             @foreach (var g in byGenre)
             {
@@ -216,4 +221,3 @@
         }
     }
 </div>
-

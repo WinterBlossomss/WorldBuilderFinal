@@ -4,7 +4,7 @@
     ViewData["Title"] = "Create World";
 }
 
-<div class="p-5">
+<div class="p-5 m-5">
     <!-- Breadcrumb -->
     <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
         <a asp-controller="World" asp-action="Index" class="text-gray-500 hover:text-gray-900 no-underline transition-colors">Public Worlds</a>
@@ -12,13 +12,13 @@
         <span class="text-gray-700">New world</span>
     </div>
 
-    <h1 class="text-4xl font-bold">Create a new World</h1>
+    <h1 class="text-4xl font-semibold">Create a new World</h1>
     <p class="text-sm text-gray-500 mt-2 mb-2">Just the basics — you can add scripts, characters and lore after.</p>
 
-    <div class="flex flex-row">
+    <div class="grid grid-cols-3">
 
         <!-- Left: form -->
-        <div>
+        <div class="col-span-2 border p-5 rounded border-stone-900 bg-stone-100">
             <form asp-action="Create" enctype="multipart/form-data" id="createForm" novalidate>
                 <div asp-validation-summary="ModelOnly" class="mb-4 p-3 rounded-lg border border-red-200 bg-red-50 text-sm text-red-600"></div>
 
@@ -69,7 +69,7 @@
                     <div id="genreWrap" class="flex flex-wrap gap-2 rounded-lg transition-all"></div>
                     <div class="mt-2">
                         <button type="button" id="requestGenreChip"
-                                class="px-4 py-1 rounded-full border border-dashed border-gray-500 text-sm text-gray-600 bg-white cursor-pointer hover:border-gray-900 hover:text-gray-900 transition-colors">
+                                class="font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-dashed border-stone-300 text-stone-600 no-underline cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors">
                             + Request genre
                         </button>
                         @if (TempData["GenreReqSent"] != null)
@@ -134,9 +134,8 @@
 
             </form>
         </div>
-        <div class="m-5"></div>
         <!-- Right: live preview -->
-        <div class="sticky shrink-0 w-96 top-16">
+        <div class="sticky shrink-0 w-96 top-16 justify-self-center">
             <div class="border border-gray-200 rounded-xl p-5 bg-gray-50">
                 <div class="flex items-center justify-between mb-4">
                     <span class="text-sm font-semibold">Live preview</span>
@@ -259,8 +258,8 @@
 
         // Genre chips: built from the server-rendered hidden <select>,
         // so ViewBag.WorldGenFK drives everything automatically.
-        const CHIP_OFF = 'px-4 py-1 rounded-full border border-sky-500 text-sm text-black bg-white cursor-pointer hover:text-sky-500 transition-colors';
-        const CHIP_ON  = 'px-4 py-1 rounded-full border border-sky-900 text-sm text-black bg-sky-500 font-medium cursor-pointer transition-colors';
+        const CHIP_OFF = 'font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-stone-300 bg-stone-200 text-stone-600 no-underline cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors';
+        const CHIP_ON  = 'font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-stone-900 bg-stone-900 text-stone-50 no-underline cursor-pointer';
 
         [...genreSelect.options].forEach(opt => {
             if (!opt.value) return;

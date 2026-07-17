@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
 using WorldBuilder.Models;
 
 namespace WorldBuilder.Controllers
@@ -7,10 +9,12 @@ namespace WorldBuilder.Controllers
     public class AuthorController : Controller
     {
         private readonly WorldBuilderDBContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public AuthorController(WorldBuilderDBContext context)
+        public AuthorController(WorldBuilderDBContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: /Author/Index/5   or   /Author/Index?handle=runeforge
@@ -27,6 +31,10 @@ namespace WorldBuilder.Controllers
             }
 
             if (user == null) return NotFound();
+
+            // Username lives on the Identity account, keyed by the profile's user id.
+            var identityUser = await _userManager.FindByIdAsync(user.UserInfoUserIDFK);
+            var username = identityUser?.UserName;
 
             // Public worlds by this builder (drafts/private excluded from the public profile)
             var worlds = await _context.Worlds
@@ -71,6 +79,7 @@ namespace WorldBuilder.Controllers
             var vm = new AuthorProfile
             {
                 User = user,
+                Username = username,
                 Worlds = worlds,
                 Characters = characters,
                 TotalScripts = await _context.Scripts.CountAsync(s => catIds.Contains(s.ScriptCatFK)),
@@ -85,26 +94,41 @@ namespace WorldBuilder.Controllers
         // GET: /Author/Browse — directory of builders
         public async Task<IActionResult> Browse()
         {
+            // Username lives on the Identity account — map user id -> username.
+            var usernames = await _userManager.Users
+                .Select(iu => new { iu.Id, iu.UserName })
+                .ToDictionaryAsync(x => x.Id, x => x.UserName);
+
             var builders = await _context.UserInfos
-                .Select(u => new BuilderRow
+                .Select(u => new
                 {
-                    UserInfoId = u.UserInfoIDPK,
-                    Handle = u.UserInfoProN,
-                    Bio = u.UserInfoBio,
+                    u.UserInfoIDPK,
+                    u.UserInfoUserIDFK,
+                    u.UserInfoBio,
                     Worlds = _context.Worlds.Count(w => w.WorldUserFK == u.UserInfoIDPK && w.WorldIsPublic),
                     Likes = _context.Worlds.Where(w => w.WorldUserFK == u.UserInfoIDPK).Sum(w => (int?)w.WorldLikes) ?? 0
                 })
                 .OrderByDescending(b => b.Worlds)
                 .ToListAsync();
 
+            var rows = builders.Select(b => new BuilderRow
+            {
+                UserInfoId = b.UserInfoIDPK,
+                Username = usernames.TryGetValue(b.UserInfoUserIDFK, out var name) ? name : null,
+                Bio = b.UserInfoBio,
+                Worlds = b.Worlds,
+                Likes = b.Likes
+            }).ToList();
+
             ViewData["Title"] = "Community";
-            return View(builders);
+            return View(rows);
         }
     }
 
     public class AuthorProfile
     {
         public UserInfo User { get; set; }
+        public string Username { get; set; }
         public List<World> Worlds { get; set; } = new();
         public List<CharacterCard> Characters { get; set; } = new();
         public int TotalScripts { get; set; }
@@ -123,7 +147,7 @@ namespace WorldBuilder.Controllers
     public class BuilderRow
     {
         public int UserInfoId { get; set; }
-        public string Handle { get; set; }
+        public string Username { get; set; }   
         public string Bio { get; set; }
         public int Worlds { get; set; }
         public int Likes { get; set; }

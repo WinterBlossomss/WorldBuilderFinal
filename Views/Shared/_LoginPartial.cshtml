@@ -1,17 +1,47 @@
-﻿@model int?
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using WorldBuilder.Models
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+@inject WorldBuilderDBContext DbContext
+@model int?
+
+@{
+    // Resolve the signed-in user's own profile id. Prefer the value the layout passes
+    // (set by HomeController), but fall back to a direct lookup so the link works on
+    // every view, not just Home.
+    int? profileId = Model;
+    if (SignInManager.IsSignedIn(User) && profileId == null)
+    {
+        var uid = UserManager.GetUserId(User);
+        profileId = await DbContext.UserInfos
+            .Where(u => u.UserInfoUserIDFK == uid)
+            .Select(u => (int?)u.UserInfoIDPK)
+            .FirstOrDefaultAsync();
+    }
+}
 
 <ul class="flex items-center gap-1 list-none m-0 p-0">
     @if (SignInManager.IsSignedIn(User))
     {
         <li>
-            <a asp-controller="Author" asp-action="Index" asp-route-id="@Model"
-               class="text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-100 px-3 py-1.5 rounded-md transition-colors duration-150"
-               title="Manage">
-                Hello, @User.Identity?.Name!
-            </a>
+            @if (profileId != null)
+            {
+                <a asp-controller="Author" asp-action="Index" asp-route-id="@profileId"
+                   class="text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-100 px-3 py-1.5 rounded-md transition-colors duration-150"
+                   title="My profile">
+                    Hello, @User.Identity?.Name!
+                </a>
+            }
+            else
+            {
+                @* No public profile row yet — send them to their settings instead. *@
+                <a asp-controller="Profile" asp-action="Edit"
+                   class="text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-100 px-3 py-1.5 rounded-md transition-colors duration-150"
+                   title="My profile">
+                    Hello, @User.Identity?.Name!
+                </a>
+            }
         </li>
         <li>
             <form asp-area="Identity" asp-page="/Account/Logout"

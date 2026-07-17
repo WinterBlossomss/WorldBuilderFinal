@@ -1,105 +1,280 @@
 @model WorldBuilder.Controllers.AuthorProfile
 @using WorldBuilder.Models
+
 @{
     var u = Model.User;
-    var handle = string.IsNullOrWhiteSpace(u.UserInfoProN) ? "builder" : u.UserInfoProN;
-    var allPictures = ViewData["Pictures"] as List<Picture> ?? new List<Picture>();
 
-    string Pic(string p) => string.IsNullOrEmpty(p) ? null
+    var username = string.IsNullOrWhiteSpace(Model.Username)
+        ? "builder"
+        : Model.Username;
+
+    var pronouns = u.UserInfoProN;
+
+    string Pic(string p) => string.IsNullOrEmpty(p)
+        ? null
         : (p.StartsWith("/") || p.StartsWith("http")) ? p : "/" + p;
 
-    string Kfmt(int n) => n >= 1000 ? (n / 1000.0).ToString("0.#") + "k" : n.ToString();
+
+    string Kfmt(int n) =>
+        n >= 1000
+            ? (n / 1000.0).ToString("0.#") + "k"
+            : n.ToString();
 }
 
-<div class="font-['Kalam'] text-[#1a1a1a] px-[30px] pt-6 pb-16 max-w-6xl mx-auto">
 
-    <!-- Breadcrumb -->
-    <div class="flex items-center gap-1.5 text-[12.5px] text-[#a89f8e] mb-4">
-        <a asp-controller="Author" asp-action="Browse" class="no-underline hover:text-[#1a1a1a]">Builders</a>
-        <span>›</span>
-        <span class="text-[#1a1a1a]">@@@handle</span>
+
+<div class="bg-stone-200 text-stone-900 text-base leading-normal antialiased min-h-screen">
+
+
+    <!-- top bar -->
+    <div class="flex items-center justify-between max-w-7xl mx-auto px-6 py-[22px]">
+
+
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="font-serif font-semibold text-[22px] tracking-[.14em] no-underline">
+
+           @*  WORLD BUILDER *@
+
+        </a>
+
+
+
+        <nav class="hidden sm:flex items-center gap-7 font-sans text-xs tracking-[.04em]">
+
+
+            <a asp-controller="World"
+               asp-action="Index"
+               class="text-stone-600 hover:text-stone-900 no-underline">
+
+                Worlds
+
+            </a>
+
+
+            <a asp-controller="Author"
+               asp-action="Browse"
+               class="text-teal-900 no-underline">
+
+                Builders
+
+            </a>
+
+
+        </nav>
+
+
     </div>
 
-    <!-- Hero -->
-    <div class="border-[1.5px] border-[#1a1a1a] rounded-md p-6 mb-10 flex flex-col md:flex-row gap-6">
-        <div class="flex h-28 w-28 flex-none items-center justify-center rounded-full border-[1.5px] border-[#1a1a1a] text-[46px] font-['Caveat'] font-bold">
-            @handle.Substring(0, 1).ToUpper()
+
+    <hr class="border-none border-t border-stone-300 max-w-7xl mx-auto">
+
+
+
+
+
+    <main class="max-w-7xl mx-auto px-6 pt-12 pb-20">
+
+
+
+        <!-- breadcrumb -->
+
+        <div class="flex items-center gap-2 text-xs text-stone-600 mb-8">
+
+            <a asp-controller="Author"
+               asp-action="Browse"
+               class="no-underline hover:text-teal-900">
+
+                Builders
+
+            </a>
+
+
+            <span>
+                →
+            </span>
+
+
+            <span class="text-stone-900">
+                @@username
+            </span>
+
+
         </div>
-        <div class="flex-1">
-            <div class="font-['Caveat'] text-[46px] font-bold leading-none mb-1">@handle</div>
-            <div class="text-[13px] text-[#a89f8e] mb-3">
-                @@@handle · @Model.Worlds.Count public worlds · @Kfmt(Model.TotalScripts) scripts · ♥ @Kfmt(Model.TotalLikes)
+
+
+
+
+
+        <!-- profile hero -->
+
+        <section class="border-y border-stone-300 py-10 mb-14">
+
+
+            <div class="flex flex-col md:flex-row gap-8 items-start">
+
+
+
+                <div class="w-32 h-32 p-5 flex-none rounded-full border border-stone-400 flex items-center justify-center font-serif text-5xl">
+
+                    @username.Substring(0, 1).ToUpper()
+
+                </div>
+
+
+
+
+                <div class="flex-1">
+
+
+                    <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">
+
+                        World builder
+
+                    </span>
+
+
+
+                    <h1 class="font-serif font-semibold text-lg text-[clamp(42px,7vw,72px)] leading-none tracking-[-.02em] mt-3">
+
+                        @username
+
+                    </h1>
+
+
+
+
+                    <div class="font-sans text-sm text-stone-600 mt-4">
+
+
+                        @if (!string.IsNullOrWhiteSpace(pronouns))
+                        {
+                            <span>@pronouns · </span>
+                        }
+
+
+                        @Model.Worlds.Count public worlds
+                        ·
+                        @Kfmt(Model.TotalScripts) scripts
+                        ·
+                        ♥ @Kfmt(Model.TotalLikes)
+
+
+                    </div>
+
+
+
+
+                    @if (!string.IsNullOrWhiteSpace(u.UserInfoBio))
+                    {
+
+                        <p class="text-lg leading-relaxed max-w-2xl mt-5">
+
+                            @u.UserInfoBio
+
+                        </p>
+
+                    }
+                    else
+                    {
+
+                        <p class="italic text-stone-600 mt-5">
+
+                            This builder hasn't written a bio yet.
+
+                        </p>
+
+                    }
+
+
+
+                    <p class="text-xs text-stone-600 mt-5">
+
+                        Joined @u.UserInfoCreatedAt.ToString("MMM yyyy")
+
+                    </p>
+
+
+                </div>
+
+
             </div>
-            @if (!string.IsNullOrWhiteSpace(u.UserInfoBio))
+
+
+        </section>
+
+
+
+
+
+
+        <!-- worlds -->
+
+
+        <section class="mb-16">
+
+
+            <div class="flex items-end justify-between mb-6">
+
+
+                <div>
+
+                    <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">
+
+                        Registry entries
+
+                    </span>
+
+
+                    <h2 class="font-serif text-[clamp(28px,4vw,40px)] font-medium">
+
+                        Public worlds
+
+                    </h2>
+
+
+                </div>
+
+
+                <span class="font-sans text-xs text-stone-600">
+
+                    @Model.Worlds.Count worlds
+
+                </span>
+
+
+            </div>
+
+
+
+
+            @if (Model.Worlds.Any())
             {
-                <p class="text-[15px] leading-relaxed max-w-2xl">@u.UserInfoBio</p>
+
+                <div class="grid grid-cols-1 min-[440px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+
+                    @foreach (var w in Model.Worlds)
+                    {
+
+                        <partial name="~/Views/World/_WorldCard.cshtml" model="w" />
+
+                    }
+
+                </div>
+
             }
             else
             {
-                <p class="text-[14px] italic text-[#a89f8e]">This builder hasn't written a bio yet.</p>
+
+                <div class="border border-dashed border-stone-400 p-10 text-center text-stone-600">
+
+                    No public worlds yet.
+
+                </div>
+
             }
-            <div class="text-[12px] text-[#a89f8e] mt-3">Joined @u.UserInfoCreatedAt.ToString("MMM yyyy")</div>
-        </div>
-    </div>
 
-    <!-- Public worlds -->
-    <div class="flex items-baseline justify-between mb-1">
-        <h2 class="font-['Caveat'] text-[30px] font-bold">Public worlds</h2>
-        <span class="text-[12px] text-[#a89f8e]">@Model.Worlds.Count worlds</span>
-    </div>
-    <div class="mx-[-6px] border-t border-dashed border-[#cbc4b3] mb-5"></div>
 
-    @if (Model.Worlds.Any())
-    {
-        <div class="flex flex-wrap gap-6 mb-12">
-            @foreach (var w in Model.Worlds)
-            {
-                <partial name="~/Views/World/_WorldCard.cshtml" model="w" />
-            }
-        </div>
-    }
-    else
-    {
-        <p class="text-[14px] text-[#a89f8e] mb-12">No public worlds yet.</p>
-    }
-
-    <!-- Featured characters -->
-    <div class="flex items-baseline justify-between mb-1">
-        <h2 class="font-['Caveat'] text-[30px] font-bold">Featured characters</h2>
-        <span class="text-[12px] text-[#a89f8e]">from across their worlds</span>
-    </div>
-    <div class="mx-[-6px] border-t border-dashed border-[#cbc4b3] mb-5"></div>
-
-    @if (Model.Characters.Any())
-    {
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-5">
-            @foreach (var c in Model.Characters)
-            {
-                <a asp-controller="Script" asp-action="Details" asp-route-scriptidpk="@c.ScriptId"
-                   class="block no-underline text-[#1a1a1a] group">
-                    <div class="aspect-[4/5] w-full border-[1.5px] border-dashed border-[#1a1a1a] overflow-hidden flex items-center justify-center
-                                bg-[repeating-linear-gradient(135deg,transparent_0_10px,rgba(26,26,26,0.08)_10px_11px)]">
-                        @if (!string.IsNullOrEmpty(c.PortraitPath))
-                        {
-                            <img src="@Pic(c.PortraitPath)" alt="@c.Title" class="w-full h-full object-cover" />
-                        }
-                        else
-                        {
-                            <span class="text-[12px] text-[#a89f8e]">portrait</span>
-                        }
-                    </div>
-                    <div class="pt-1.5">
-                        <div class="font-bold text-[14px] leading-tight group-hover:underline">@c.Title</div>
-                        <div class="text-[11px] text-[#a89f8e] leading-snug">
-                            in @c.WorldName@(string.IsNullOrEmpty(c.CategoryName) ? "" : " · " + c.CategoryName)
-                        </div>
-                    </div>
-                </a>
-            }
-        </div>
-    }
-    else
-    {
-        <p class="text-[14px] text-[#a89f8e]">No public characters yet.</p>
-    }
+        </section>
+    </main>
 </div>

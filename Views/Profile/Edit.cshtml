@@ -1,0 +1,157 @@
+@model WorldBuilder.Controllers.ProfileEditViewModel
+
+@{
+    ViewData["Title"] = "Edit profile";
+    var myId = ViewData["MyAuthorId"] as int?;
+    var saved = TempData["ProfileSaved"] as string;
+}
+
+
+<div class="bg-stone-200 text-stone-900 text-base leading-normal antialiased scroll-smooth min-h-screen">
+    <!-- top bar -->
+    <div class="flex items-center justify-between max-w-7xl mx-auto px-6 py-[22px]">
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="font-serif font-semibold text-[22px] tracking-[.14em] no-underline text-stone-900">
+       @*      WORLD BUILDER *@
+        </a>
+        <nav class="hidden sm:flex items-center gap-7 font-sans text-xs tracking-[.04em]">
+            <a asp-controller="World"
+               asp-action="Index"
+               class="text-stone-600 hover:text-stone-900 transition-colors no-underline">
+                Worlds
+            </a>
+            <a asp-controller="Community"
+               asp-action="Index"
+               class="text-stone-600 hover:text-stone-900 transition-colors no-underline">
+                Community
+            </a>
+        </nav>
+    </div>
+    <hr class="border-none border-t border-stone-300 max-w-7xl mx-auto">
+
+    <!-- content -->
+    <main class="max-w-3xl mx-auto px-6 pt-14 pb-20">
+        <!-- breadcrumb -->
+        <div class="flex items-center gap-2 font-sans text-xs text-stone-600 mb-6">
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="no-underline hover:text-teal-900 transition-colors">
+                Home
+            </a>
+            <span>→</span>
+            <span class="text-stone-900">
+                Settings
+            </span>
+        </div>
+        <header class="mb-8">
+            <span class="font-sans text-3xl tracking-[.22em] uppercase text-teal-900">
+                Account settings
+            </span>
+            <h1 class="font-serif font-semibold text-[clamp(38px,6vw,56px)] leading-none tracking-[-.02em] mt-4">
+                Edit profile
+            </h1>
+            <p class="text-stone-600 mt-3 max-w-xl">
+                Update how you appear across World Builder.
+            </p>
+        </header>
+        @if (!string.IsNullOrEmpty(saved))
+        {
+            <div class="mb-6 border border-green-700 bg-green-700/10 text-green-900 px-5 py-4 text-sm">
+                @saved
+            </div>
+
+        }
+        <form asp-action="Edit"
+              method="post"
+              class="border border-stone-300 bg-stone-100/40 p-8 bg-stone-100">
+            <div asp-validation-summary="ModelOnly"
+                 class="mb-5 text-sm text-red-700">
+            </div>
+            <!-- Username -->
+            <div class="mb-7">
+                <label asp-for="Username"
+                       class="block font-serif text-xl mb-2">
+                    Username
+                </label>
+                <p class="text-sm text-stone-600 mb-3">
+                    The name you sign in and appear under.
+                </p>
+                <input asp-for="Username"
+                       maxlength="256"
+                       autocomplete="off"
+                       placeholder="Your username"
+                       class="w-full bg-transparent border border-stone-400 px-4 py-3 outline-none focus:border-teal-900 transition-colors" />
+                <span asp-validation-for="Username"
+                      class="block mt-2 text-xs text-red-700">
+                </span>
+            </div>
+            <!-- Pronouns -->
+            <div class="mb-7">
+                <label asp-for="Pronouns"
+                       class="block font-serif text-xl mb-2">
+                    Pronouns
+                </label>
+                <p class="text-sm text-stone-600 mb-3">
+                    Optional. For example: they/them, she/her, he/him.
+                </p>
+                <input asp-for="Pronouns"
+                       maxlength="10"
+                       autocomplete="off"
+                       placeholder="they/them"
+                       class="w-full bg-transparent border border-stone-400 px-4 py-3 outline-none focus:border-teal-900 transition-colors" />
+                <span asp-validation-for="Pronouns"
+                      class="block mt-2 text-xs text-red-700">
+                </span>
+            </div>
+            <!-- Bio -->
+            <div class="mb-8">
+                <label asp-for="Bio"
+                       class="block font-serif text-xl mb-2">
+                    Bio
+                </label>
+                <p class="text-sm text-stone-600 mb-3">
+                    Optional. Up to 500 characters.
+                </p>
+                <textarea asp-for="Bio"
+                          maxlength="500"
+                          rows="5"
+                          placeholder="Tell other builders about yourself..."
+                          class="w-full bg-transparent border border-stone-400 px-4 py-3 outline-none resize-y focus:border-teal-900 transition-colors"></textarea>
+                <span asp-validation-for="Bio"
+                      class="block mt-2 text-xs text-red-700">
+                </span>
+            </div>
+            <!-- Actions -->
+            <div class="flex items-center gap-6">
+                <button type="submit"
+                        class="inline-flex items-center gap-2 font-sans text-sm px-6 py-3 bg-teal-900 text-stone-100 cursor-pointer transition-all hover:bg-teal-950">
+                    Save changes →
+                </button>
+                @if (myId != null)
+                {
+                    <a asp-controller="Author"
+                       asp-action="Index"
+                       asp-route-id="@myId"
+                       class="font-sans text-sm text-teal-900 no-underline border-b border-transparent hover:border-teal-900 transition-colors">
+                        View public profile
+                    </a>
+                }
+            </div>
+        </form>
+        <!-- security -->
+        <div class="mt-8 text-sm text-stone-600 border-t border-stone-300 pt-6">
+            Need to change your email or password?
+            <a asp-area="Identity"
+               asp-page="/Account/Manage/Index"
+               class="text-teal-900 underline">
+                Account &amp; security settings
+            </a>
+        </div>
+    </main>
+</div>
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

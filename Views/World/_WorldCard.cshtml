@@ -1,9 +1,12 @@
+@using Microsoft.AspNetCore.Identity
 @model WorldBuilder.Models.World
-
+@inject UserManager<IdentityUser> UserManager
 @{
     var allPictures = (ViewData["Pictures"] as List<Picture>)?.ToList(); 
     var cover = allPictures?.Where(p => p.PicWorldFK == Model.WorldIDPK).FirstOrDefault();
-    var author = Model.WorldUserFKNavigation?.UserInfoProN;
+    var author = await UserManager.FindByIdAsync(
+        Model.WorldUserFKNavigation.UserInfoUserIDFK
+    );
 }
 
 <a asp-action="Details" asp-route-id="@Model.WorldIDPK"
@@ -20,7 +23,7 @@
     </div>
     <div class="p-[15px] pb-[17px] flex flex-col flex-1">
         <div class="text-lg font-semibold text-truncate leading-tight group-hover:underline">@Model.WorldName</div>
-        <div class="text-[11px] text-[#a89f8e]">by @@@(author ?? "creator")</div>
+        <div class="text-[11px] text-[#a89f8e]">by @@@(author?.UserName ?? "creator")</div>
         @if (!string.IsNullOrEmpty(Model.WorldDesc))
         {
             <div class="text-[11.5px] text-[#444444] leading-snug mt-0.5 line-clamp-2">@Model.WorldDesc</div>

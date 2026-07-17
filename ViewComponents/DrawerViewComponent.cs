@@ -1,3 +1,4 @@
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,9 +11,9 @@ namespace WorldBuilder.ViewComponents
     public class DrawerViewComponent : ViewComponent
     {
         private readonly WorldBuilderDBContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly Microsoft.AspNetCore.Identity.UserManager<IdentityUser> _userManager;
 
-        public DrawerViewComponent(WorldBuilderDBContext context, UserManager<IdentityUser> userManager)
+        public DrawerViewComponent(WorldBuilderDBContext context, Microsoft.AspNetCore.Identity.UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -36,7 +37,7 @@ namespace WorldBuilder.ViewComponents
                 if (me != null)
                 {
                     vm.UserInfoId = me.UserInfoIDPK;
-                    vm.Handle = string.IsNullOrWhiteSpace(me.UserInfoProN) ? User.Identity!.Name : me.UserInfoProN;
+                    vm.Handle = _userManager.GetUserName((System.Security.Claims.ClaimsPrincipal)User);
 
                     var myWorldIds = await _context.Worlds
                         .Where(w => w.WorldUserFK == me.UserInfoIDPK)

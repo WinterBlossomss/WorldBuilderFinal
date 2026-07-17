@@ -6,141 +6,266 @@
     string Kfmt(int n) => n >= 1000 ? (n / 1000.0).ToString("0.#") + "k" : n.ToString();
 }
 
-<div class="font-['Kalam'] text-[#1a1a1a] px-6 py-6 max-w-7xl mx-auto">
-
+<aside class="bg-stone-200 text-stone-900 antialiased min-h-screen">
     <!-- Header -->
-    <div class="flex flex-wrap items-end justify-between gap-3 mb-2">
+    <div class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
         <div>
-            <h1 class="font-['Caveat'] text-[42px] font-bold leading-none">Admin</h1>
-            <div class="text-[13px] text-[#a89f8e] mt-1">
-                @Model.TotalWorlds worlds · @Model.ActiveBuilders builders · @Model.PendingRequests.Count pending requests
-            </div>
+            <span class="font-sans text-xs uppercase tracking-[.22em] text-teal-900">
+                Administration
+            </span>
+            <h1 class="font-serif font-semibold text-5xl leading-none mt-3">
+                Control panel.
+            </h1>
+            <p class="text-sm text-stone-600 mt-3">
+                Manage users, worlds, genres and the registry.
+            </p>
         </div>
-        <button type="button" onclick="document.getElementById('genreModal').classList.remove('hidden')"
-                class="border-[1.5px] border-[#1a1a1a] rounded-full px-4 py-1.5 text-[13px] font-bold hover:bg-[#1a1a1a] hover:text-[#f7f3ea] transition-colors">
-            + Create a new genre
+        <button type="button"
+                onclick="document.getElementById('genreModal').classList.remove('hidden')"
+                class="inline-flex items-center gap-2 bg-teal-950 text-[#f0ebdf] px-6 py-3 text-sm transition-all hover:bg-teal-900 hover:border-teal-900 hover:-translate-y-0.5">
+            Create genre
+            <span>→</span>
         </button>
     </div>
+    <hr class="max-w-7xl mx-auto border-stone-300">
+    <!-- stats -->
+    <div class="border-y border-stone-300 bg-stone-100/50 mt-10">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4">
+            <div class="text-center px-6 py-8 border-r border-stone-200">
+                <div class="font-serif text-4xl font-medium">
+                    @Model.TotalWorlds.ToString("N0")
+                </div>
 
-    <!-- Tabs -->
-    <div class="flex items-center gap-4 text-[15px] border-b-[1.5px] border-[#1a1a1a] mb-5">
-        <span class="pb-1 -mb-[1.5px] border-b-[3px] border-[#1a1a1a] font-bold">Users <span class="text-[#a89f8e]">@Model.Users.Count</span></span>
-        <a asp-controller="World" asp-action="Index" class="pb-1 no-underline text-[#a89f8e] hover:text-[#1a1a1a]">Worlds</a>
-        <a asp-controller="Genre" asp-action="Index" class="pb-1 no-underline text-[#a89f8e] hover:text-[#1a1a1a]">Genres</a>
-        <a asp-controller="Tag" asp-action="Index" class="pb-1 no-underline text-[#a89f8e] hover:text-[#1a1a1a]">Tags</a>
+                <div class="font-sans text-xs uppercase tracking-[.16em] text-stone-600 mt-3">
+                    Worlds
+                </div>
+            </div>
+            <div class="text-center px-6 py-8 border-r border-stone-200">
+                <div class="font-serif text-4xl font-medium">
+                    @Model.ActiveBuilders.ToString("N0")
+                </div>
+                <div class="font-sans text-xs uppercase tracking-[.16em] text-stone-600 mt-3">
+                    Builders
+                </div>
+            </div>
+            <div class="text-center px-6 py-8 border-r border-stone-200">
+
+                <div class="font-serif text-4xl font-medium">
+                    @Model.CreatorNodes.ToString("N0")
+                </div>
+
+                <div class="font-sans text-xs uppercase tracking-[.16em] text-stone-600 mt-3">
+                    Categories
+                </div>
+            </div>
+            <div class="text-center px-6 py-8">
+                <div class="font-serif text-4xl font-medium">
+                    @Model.LockedUsers.ToString("N0")
+                </div>
+                <div class="font-sans text-xs uppercase tracking-[.16em] text-stone-600 mt-3">
+                    Locked users
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-6">
-
-        <!-- LEFT: users -->
-        <div>
-            <form method="get" class="flex items-center gap-2 border-[1.5px] border-[#1a1a1a] rounded-full px-3 py-1.5 mb-4">
-                <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="6" cy="6" r="4" stroke="#1a1a1a" stroke-width="1.4" fill="none" /><line x1="9" y1="9" x2="13" y2="13" stroke="#1a1a1a" stroke-width="1.4" /></svg>
-                <input name="q" value="@Model.Query" placeholder="search by username or email…" class="flex-1 outline-none bg-transparent text-[13px]" />
+    @* <main class="max-w-7xl mx-auto px-6 py-16">
+        <!-- tabs -->
+        <div class="flex gap-8 border-b border-stone-300 mb-8">
+            <span class="pb-3 border-b-2 border-teal-900 font-serif text-lg">
+                Users
+                <span class="text-stone-500 text-sm">
+                    @Model.Users.Count
+                </span>
+            </span>
+            <a asp-controller="World"
+               asp-action="Index"
+               class="pb-3 text-stone-600 hover:text-stone-900 no-underline">
+                Worlds
+            </a>
+            <a asp-controller="Genre"
+               asp-action="Index"
+               class="pb-3 text-stone-600 hover:text-stone-900 no-underline">
+                Genres
+            </a>
+            <a asp-controller="Tag"
+               asp-action="Index"
+               class="pb-3 text-stone-600 hover:text-stone-900 no-underline">
+                Tags
+            </a>
+        </div>
+    </main> *@
+    <!-- content -->
+    <aside class="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-8 m-5">
+        <!-- users -->
+        <section>
+            <form method="get"
+                  class="flex items-center gap-3 border border-stone-300 bg-stone-100 px-4 py-3 mb-5">
+                <span class="material-symbols-outlined text-stone-500">
+                    search
+                </span>
+                <input name="q"
+                       value="@Model.Query"
+                       placeholder="Search users..."
+                       class="flex-1 bg-transparent outline-none text-sm">
             </form>
-
-            <div class="border-[1.5px] border-[#1a1a1a] rounded-md overflow-hidden">
-                <table class="w-full text-[13px] border-collapse">
+            <div class="border border-stone-300 bg-stone-100">
+                <table class="w-full text-sm">
                     <thead>
-                        <tr class="text-left text-[11px] uppercase tracking-wide text-[#a89f8e] border-b border-[#1a1a1a]">
-                            <th class="py-2 px-3">User</th>
-                            <th class="py-2 px-3">Role</th>
-                            <th class="py-2 px-3">Worlds</th>
-                            <th class="py-2 px-3">Likes</th>
-                            <th class="py-2 px-3">Joined</th>
-                            <th class="py-2 px-3">Status</th>
-                            <th class="py-2 px-3"></th>
+                        <tr class="border-b border-stone-300 text-xs uppercase tracking-widest text-stone-500">
+                            <th class="text-left px-4 py-3">
+                                User
+                            </th>
+                            <th class="text-left px-4 py-3">
+                                Role
+                            </th>
+                            <th class="text-left px-4 py-3">
+                                Worlds
+                            </th>
+                            <th class="text-left px-4 py-3">
+                                Likes
+                            </th>
+                            <th class="text-left px-4 py-3">
+                                Status
+                            </th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var u in Model.Users)
                         {
-                            <tr class="border-b border-dashed border-[#e0d9c8] align-middle">
-                                <td class="py-2 px-3">
-                                    <div class="font-bold">@@@(u.Handle)</div>
-                                    <div class="text-[11px] text-[#a89f8e]">@u.Email</div>
+                            <tr class="border-b border-dashed border-stone-300">
+                                <td class="px-4 py-4">
+                                    <div class="font-serif text-lg">
+                                        @@@u.Handle
+                                    </div>
+
+                                    <div class="text-xs text-stone-500">
+                                        @u.Email
+                                    </div>
                                 </td>
-                                <td class="py-2 px-3">
-                                    <form asp-action="SetRole" method="post" class="inline">
+                                <td class="px-4 py-4">
+                                    <form asp-action="SetRole"
+                                          method="post">
                                         @Html.AntiForgeryToken()
-                                        <input type="hidden" name="userId" value="@u.IdentityId" />
-                                        <select name="role" onchange="this.form.submit()"
-                                                class="border border-[#1a1a1a] rounded-full px-2 py-0.5 text-[12px] bg-transparent">
+                                        <input type="hidden"
+                                               name="userId"
+                                               value="@u.IdentityId">
+                                        <select name="role"
+                                                onchange="this.form.submit()"
+                                                class="border border-stone-300 bg-transparent px-3 py-1 text-xs">
                                             @foreach (var r in Model.AllRoles)
                                             {
-                                                <option value="@r" selected="@(r == u.Role)">@r.ToLower()</option>
+                                                <option value="@r"
+                                                        selected="@(r == u.Role)">
+                                                    @r
+                                                </option>
                                             }
                                         </select>
                                     </form>
                                 </td>
-                                <td class="py-2 px-3">@u.Worlds</td>
-                                <td class="py-2 px-3">♥ @Kfmt(u.Likes)</td>
-                                <td class="py-2 px-3 text-[#a89f8e]">@(u.Joined?.ToString("MMM yyyy") ?? "—")</td>
-                                <td class="py-2 px-3">
+                                <td class="px-4 py-4">
+                                    @u.Worlds
+                                </td>
+                                <td class="px-4 py-4">
+                                    ♥ @Kfmt(u.Likes)
+                                </td>
+                                <td class="px-4 py-4">
                                     @if (u.Locked)
                                     {
-                                        <span class="inline-block rounded-full border border-[#b04a4a] text-[#b04a4a] px-2 py-0.5 text-[11px]">locked</span>
+                                        <span class="text-xs text-red-800 uppercase tracking-wide">
+                                            Locked
+                                        </span>
                                     }
                                     else
                                     {
-                                        <span class="inline-block rounded-full border border-[#4f7a52] text-[#4f7a52] px-2 py-0.5 text-[11px]">active</span>
+                                        <span class="text-xs text-green-800 uppercase tracking-wide">
+                                            Active
+                                        </span>
                                     }
                                 </td>
-                                <td class="py-2 px-3 text-right whitespace-nowrap">
-                                    <form asp-action="ToggleLock" method="post" class="inline">
+                                <td class="px-4 py-4">
+                                    <form asp-action="ToggleLock"
+                                          method="post">
                                         @Html.AntiForgeryToken()
-                                        <input type="hidden" name="userId" value="@u.IdentityId" />
-                                        <button type="submit" title="@(u.Locked ? "Unlock" : "Lock")"
-                                                class="material-symbols-outlined text-[18px] align-middle hover:text-[#b04a4a]">
+                                        <input type="hidden"
+                                               name="userId"
+                                               value="@u.IdentityId">
+                                        <button class="material-symbols-outlined hover:text-teal-900">
                                             @(u.Locked ? "lock_open" : "lock")
                                         </button>
                                     </form>
                                 </td>
                             </tr>
                         }
-                        @if (!Model.Users.Any())
-                        {
-                            <tr><td colspan="7" class="py-6 text-center text-[#a89f8e]">No users match.</td></tr>
-                        }
                     </tbody>
                 </table>
             </div>
-        </div>
+        </section>
 
-        <!-- RIGHT: sidebar -->
-        <div class="space-y-5">
-
-            <!-- pending genre requests -->
-            <div class="border-[1.5px] border-[#1a1a1a] rounded-md p-4">
-                <div class="flex items-center justify-between mb-3">
-                    <h2 class="font-['Caveat'] text-[24px] font-bold">Pending genre requests</h2>
-                    <span class="w-6 h-6 rounded-full bg-[#b04a4a] text-white text-[12px] flex items-center justify-center">@Model.PendingRequests.Count</span>
+        <!-- RIGHT SIDEBAR -->
+        <aside class="space-y-8">
+            <!-- Pending genre requests -->
+            <section class="border border-stone-300 bg-stone-100 p-6">
+                <div class="flex items-end justify-between mb-6">
+                    <div>
+                        <span class="font-sans text-xs uppercase tracking-[.22em] text-teal-900">
+                            Review
+                        </span>
+                        <h2 class="font-serif text-3xl leading-none mt-2">
+                            Genre requests
+                        </h2>
+                    </div>
+                    <span class="flex h-7 w-7 items-center justify-center rounded-full bg-teal-900 text-stone-100 text-xs">
+                        @Model.PendingRequests.Count
+                    </span>
                 </div>
                 @if (Model.PendingRequests.Any())
                 {
-                    <div class="space-y-3">
+                    <div class="space-y-5">
                         @foreach (var r in Model.PendingRequests)
                         {
-                            <div class="flex items-start justify-between gap-2 border-b border-dashed border-[#e0d9c8] pb-3 last:border-0">
-                                <div class="min-w-0">
-                                    <div class="font-bold">@r.GenreReqName</div>
-                                    <div class="text-[11px] text-[#a89f8e]">from @@@(r.GenreReqUserFKNavigation?.UserInfoProN ?? "someone") · @r.GenreReqCreatedAt.ToString("MMM d")</div>
-                                    @if (!string.IsNullOrWhiteSpace(r.GenreReqReason))
-                                    {
-                                        <div class="text-[12px] text-[#555] line-clamp-2 mt-0.5">@r.GenreReqReason</div>
-                                    }
-                                </div>
-                                <div class="flex flex-col gap-1 shrink-0">
-                                    <form asp-action="ApproveRequest" method="post">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@r.GenreReqIDPK" />
-                                        <button class="w-full rounded-md bg-[#1a1a1a] text-[#f7f3ea] px-3 py-1 text-[12px]">Approve</button>
-                                    </form>
-                                    <form asp-action="RejectRequest" method="post">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@r.GenreReqIDPK" />
-                                        <button class="w-full rounded-md border border-[#1a1a1a] px-3 py-1 text-[12px]">Reject</button>
-                                    </form>
+                            <div class="border-b border-dashed border-stone-300 pb-5 last:border-none">
+                                <div class="flex justify-between gap-4">
+                                    <div>
+                                        <h3 class="font-serif text-xl">
+                                            @r.GenreReqName
+                                        </h3>
+                                        <p class="text-xs text-stone-500 mt-1">
+                                            from
+                                            @@@(r.GenreReqUserFKNavigation?.UserInfoProN ?? "someone")
+
+                                            ·
+                                            @r.GenreReqCreatedAt.ToString("MMM d")
+                                        </p>
+                                        @if (!string.IsNullOrWhiteSpace(r.GenreReqReason))
+                                        {
+                                            <p class="text-sm text-stone-600 mt-3">
+                                                @r.GenreReqReason
+                                            </p>
+                                        }
+                                    </div>
+                                    <div class="flex flex-col gap-2">
+                                        <form asp-action="ApproveRequest"
+                                              method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@r.GenreReqIDPK">
+                                            <button class="bg-[#211c14] text-stone-100 px-4 py-2 text-xs hover:bg-teal-900 transition-colors">
+                                                Approve
+                                            </button>
+                                        </form>
+                                        <form asp-action="RejectRequest"
+                                              method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@r.GenreReqIDPK">
+                                            <button class="border border-stone-900 px-4 py-2 text-xs hover:bg-stone-200 transition-colors">
+                                                Reject
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         }
@@ -148,127 +273,229 @@
                 }
                 else
                 {
-                    <p class="text-[12px] text-[#a89f8e]">No pending requests.</p>
+                    <p class="text-sm text-stone-500">
+                        No pending requests.
+                    </p>
                 }
-            </div>
+            </section>
 
-            <!-- worlds at a glance -->
-            <div class="border-[1.5px] border-[#1a1a1a] rounded-md p-4">
-                <h2 class="font-['Caveat'] text-[24px] font-bold mb-3">Worlds at a glance</h2>
-                <div class="grid grid-cols-2 gap-3 text-center">
-                    <div class="border border-dashed border-[#cbc4b3] rounded-md py-3">
-                        <div class="text-[26px] font-bold">@Model.TotalWorlds.ToString("N0")</div>
-                        <div class="text-[11px] text-[#a89f8e]">total worlds</div>
+            <!-- Worlds overview -->
+            <section class="border border-stone-300 bg-stone-100">
+                <div class="px-6 pt-6">
+                    <span class="font-sans text-xs uppercase tracking-[.22em] text-teal-900">
+                        Overview
+                    </span>
+                    <h2 class="font-serif text-3xl mt-2">
+                        Registry
+                    </h2>
+                </div>
+                <div class="grid grid-cols-2 mt-6">
+                    <div class="text-center py-6 border-t border-r border-stone-300">
+                        <div class="font-serif text-4xl">
+                            @Model.TotalWorlds.ToString("N0")
+                        </div>
+                        <div class="text-xs uppercase tracking-widest text-stone-500 mt-2">
+                            Worlds
+                        </div>
                     </div>
-                    <div class="border border-dashed border-[#cbc4b3] rounded-md py-3">
-                        <div class="text-[26px] font-bold">@Model.ActiveBuilders.ToString("N0")</div>
-                        <div class="text-[11px] text-[#a89f8e]">active builders</div>
+                    <div class="text-center py-6 border-t border-stone-300">
+                        <div class="font-serif text-4xl">
+                            @Model.ActiveBuilders.ToString("N0")
+                        </div>
+                        <div class="text-xs uppercase tracking-widest text-stone-500 mt-2">
+                            Builders
+                        </div>
                     </div>
-                    <div class="border border-dashed border-[#cbc4b3] rounded-md py-3">
-                        <div class="text-[26px] font-bold">@Model.CreatorNodes.ToString("N0")</div>
-                        <div class="text-[11px] text-[#a89f8e]">categories</div>
+                    <div class="text-center py-6 border-t border-r border-stone-300">
+                        <div class="font-serif text-4xl">
+                            @Model.CreatorNodes.ToString("N0")
+                        </div>
+                        <div class="text-xs uppercase tracking-widest text-stone-500 mt-2">
+                            Categories
+                        </div>
                     </div>
-                    <div class="border border-dashed border-[#cbc4b3] rounded-md py-3">
-                        <div class="text-[26px] font-bold">@Model.LockedUsers.ToString("N0")</div>
-                        <div class="text-[11px] text-[#a89f8e]">locked users</div>
+                    <div class="text-center py-6 border-t border-stone-300">
+                        <div class="font-serif text-4xl">
+                            @Model.LockedUsers.ToString("N0")
+                        </div>
+                        <div class="text-xs uppercase tracking-widest text-stone-500 mt-2">
+                            Locked
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- most used genres -->
-            <div class="border-[1.5px] border-[#1a1a1a] rounded-md p-4">
-                <h2 class="font-['Caveat'] text-[24px] font-bold mb-3">Most used genres</h2>
-                <div class="space-y-2">
+            <!-- Most used genres -->
+            <section class="border border-stone-300 bg-stone-100 p-6">
+                <span class="font-sans text-xs uppercase tracking-[.22em] text-teal-900">
+                    Analytics
+                </span>
+                <h2 class="font-serif text-3xl mt-2 mb-6">
+                    Popular genres
+                </h2>
+
+
+
+                <div class="space-y-5">
+
+
                     @foreach (var g in Model.MostUsedGenres)
                     {
                         <div>
-                            <div class="flex justify-between text-[12px] mb-0.5"><span>@g.Name</span><span class="text-[#a89f8e]">@g.Count</span></div>
-                            <div class="h-2 bg-[#e7e2d4] rounded-full overflow-hidden">
-                                <div class="h-full bg-[#1a1a1a]" style="width:@(maxUsed == 0 ? 0 : (int)(g.Count * 100.0 / maxUsed))%"></div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="font-serif">
+                                    @g.Name
+                                </span>
+                                <span class="text-stone-500">
+                                    @g.Count
+                                </span>
+                            </div>
+                            <div class="h-2 bg-stone-300">
+                                <div class="h-full bg-teal-900"
+                                     style="width:@(maxUsed == 0 ? 0 : (int)(g.Count * 100.0 / maxUsed))%">
+                                </div>
                             </div>
                         </div>
                     }
-                    @if (!Model.MostUsedGenres.Any()) { <p class="text-[12px] text-[#a89f8e]">No data yet.</p> }
+                    @if (!Model.MostUsedGenres.Any())
+                    {
+                        <p class="text-sm text-stone-500">
+                            No data yet.
+                        </p>
+                    }
                 </div>
-            </div>
+            </section>
 
-            <!-- most liked genres -->
-            <div class="border-[1.5px] border-[#1a1a1a] rounded-md p-4">
-                <h2 class="font-['Caveat'] text-[24px] font-bold mb-3">Most ♥ genres</h2>
-                <div class="space-y-2">
+            <!-- Most liked genres -->
+            <section class="border border-stone-300 bg-stone-100 p-6">
+                <span class="font-sans text-xs uppercase tracking-[.22em] text-teal-900">
+                    Engagement
+                </span>
+                <h2 class="font-serif text-3xl mt-2 mb-6">
+                    Most liked
+                </h2>
+                <div class="space-y-5">
                     @foreach (var g in Model.MostLikedGenres)
                     {
                         <div>
-                            <div class="flex justify-between text-[12px] mb-0.5"><span>@g.Name</span><span class="text-[#a89f8e]">@Kfmt(g.Count)</span></div>
-                            <div class="h-2 bg-[#e7e2d4] rounded-full overflow-hidden">
-                                <div class="h-full bg-[#b04a4a]" style="width:@(maxLiked == 0 ? 0 : (int)(g.Count * 100.0 / maxLiked))%"></div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="font-serif">
+                                    @g.Name
+                                </span>
+                                <span class="text-stone-500">
+                                    @Kfmt(g.Count)
+                                </span>
+                            </div>
+                            <div class="h-2 bg-stone-300">
+                                <div class="h-full bg-[#a3712a]"
+                                     style="width:@(maxLiked == 0 ? 0 : (int)(g.Count * 100.0 / maxLiked))%">
+                                </div>
                             </div>
                         </div>
                     }
-                    @if (!Model.MostLikedGenres.Any()) { <p class="text-[12px] text-[#a89f8e]">No data yet.</p> }
-                </div>
-            </div>
-
-            <!-- most used tags -->
-            <div class="border-[1.5px] border-[#1a1a1a] rounded-md p-4">
-                <h2 class="font-['Caveat'] text-[24px] font-bold mb-3">Most used tags</h2>
-                <div class="flex flex-wrap gap-2">
-                    @foreach (var t in Model.MostUsedTags)
+                    @if (!Model.MostLikedGenres.Any())
                     {
-                        <span class="inline-flex items-center gap-1 border border-[#1a1a1a] rounded-full px-2.5 py-0.5 text-[12px]">
-                            @t.Name <span class="text-[#a89f8e]">@t.Count</span>
-                        </span>
+                        <p class="text-sm text-stone-500">
+                            No data yet.
+                        </p>
                     }
-                    @if (!Model.MostUsedTags.Any()) { <p class="text-[12px] text-[#a89f8e]">No tags yet.</p> }
+                </div>
+            </section>
+        </aside>
+    </aside>
+</aside>
+
+<!-- Create genre modal -->
+<div id="genreModal"
+     class="hidden fixed inset-0 z-50 flex  items-center justify-center bg-black/40 px-6"
+     onclick="if(event.target===this) this.classList.add('hidden')">
+    <div class="max-w-lg bg-stone-100 border border-stone-900 p-8 shadow-xl w-[40%]">
+        <div class="flex items-start justify-between mb-6">
+            <div>
+                <span class="font-sans text-xs uppercase tracking-[.22em] text-teal-900">
+                    Registry
+                </span>
+                <h2 class="font-serif text-4xl leading-none mt-2">
+                    Create genre
+                </h2>
+            </div>
+            <button type="button"
+                    onclick="document.getElementById('genreModal').classList.add('hidden')"
+                    class="material-symbols-outlined text-stone-600 hover:text-stone-900">
+                close
+            </button>
+        </div>
+        <p class="text-sm text-stone-600 mb-8">
+            Add a new genre to the world registry. It will immediately become available when creating worlds.
+        </p>
+        <form asp-action="CreateGenre"
+              method="post">
+            @Html.AntiForgeryToken()
+            <!-- Name -->
+            <div class="mb-5">
+                <label class="block font-sans text-xs uppercase tracking-widest text-stone-600 mb-2">
+                    Genre name
+                </label>
+                <input name="GenreName"
+                       maxlength="100"
+                       required
+                       placeholder="Solarpunk"
+                       class="w-full border border-stone-300 bg-white px-4 py-3 outline-none focus:border-teal-900">
+            </div>
+            <!-- Description -->
+            <div class="mb-5">
+                <label class="block font-sans text-xs uppercase tracking-widest text-stone-600 mb-2">
+                    Description
+                </label>
+                <textarea name="GenreDescription"
+                          maxlength="500"
+                          rows="4"
+                          placeholder="Hopeful futures powered by renewable technology..."
+                          class="w-full border border-stone-300 bg-white px-4 py-3 outline-none focus:border-teal-900"></textarea>
+            </div>
+            <!-- Color -->
+            <div class="mb-8">
+                <label class="block font-sans text-xs uppercase tracking-widest text-stone-600 mb-3">
+                    Accent colour
+                </label>
+                <input type="hidden"
+                       id="GenreColor"
+                       name="GenreColor"
+                       value="#1c4551">
+                @{
+                    var swatches = new[]
+                    {
+                        "#1c4551",
+                        "#a3712a",
+                        "#4f7a52",
+                        "#7a2f3a",
+                        "#3f6079",
+                        "#6b4a7a",
+                        "#211c14"
+                    };
+                }
+                <div class="flex gap-3">
+                    @foreach (var c in swatches)
+                    {
+                        <button type="button"
+                                data-color="@c"
+                                class="genre-swatch h-8 w-8 border-2 border-transparent transition-transform hover:scale-110"
+                                style="background:@c">
+                        </button>
+                    }
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- ── Create-genre modal (admin) ── -->
-<div id="genreModal" class="hidden fixed inset-0 z-[150] flex items-center justify-center bg-black/40 p-4"
-     onclick="if(event.target===this) this.classList.add('hidden')">
-    <div class="w-full max-w-md bg-[#f7f3ea] border-[1.5px] border-[#1a1a1a] rounded-lg p-6 font-['Kalam'] text-[#1a1a1a]"
-         style="box-shadow:5px 5px 0 #1a1a1a">
-        <div class="flex items-start justify-between mb-1">
-            <h2 class="font-['Caveat'] text-[30px] font-bold leading-none">Create a new genre</h2>
-            <button type="button" onclick="document.getElementById('genreModal').classList.add('hidden')"
-                    class="material-symbols-outlined text-[22px]">close</button>
-        </div>
-        <p class="text-[12px] text-[#a89f8e] mb-4">Added instantly and available on the Create-World page.</p>
-
-        <form asp-action="CreateGenre" method="post">
-            @Html.AntiForgeryToken()
-            <label class="block text-[13px] font-bold mb-1">Genre name <span class="text-red-500">*</span></label>
-            <input name="GenreName" maxlength="100" required
-                   class="w-full border-[1.5px] border-[#1a1a1a] rounded-md px-3 py-2 text-[16px] bg-white outline-none mb-4"
-                   placeholder="Solarpunk" />
-
-            <label class="block text-[13px] font-bold mb-1">Short description</label>
-            <textarea name="GenreDescription" maxlength="500" rows="3"
-                      class="w-full border-[1.5px] border-[#1a1a1a] rounded-md px-3 py-2 text-[14px] bg-white outline-none mb-4"
-                      placeholder="Hopeful near-future fiction grounded in renewable tech…"></textarea>
-
-            <label class="block text-[13px] font-bold mb-2">Color</label>
-            <div id="genreColorRow" class="flex items-center gap-2 mb-6">
-                <input type="hidden" name="GenreColor" id="GenreColor" value="#4f7a52" />
-                @{
-                    var swatches = new[] { "#4f7a52", "#3f6079", "#7a2f3a", "#8a7a3a", "#6b4a7a", "#7a5a3f", "#1a1a1a" };
-                }
-                @foreach (var c in swatches)
-                {
-                    <button type="button" data-color="@c"
-                            class="genre-swatch w-7 h-7 rounded-full border-2 border-transparent"
-                            style="background:@c"></button>
-                }
-            </div>
-
-            <div class="flex justify-end gap-2">
-                <button type="button" onclick="document.getElementById('genreModal').classList.add('hidden')"
-                        class="border-[1.5px] border-[#1a1a1a] rounded-md px-4 py-1.5 text-[13px]">Cancel</button>
+            <!-- Buttons -->
+            <div class="flex justify-end gap-3">
+                <button type="button"
+                        onclick="document.getElementById('genreModal').classList.add('hidden')"
+                        class="border border-stone-900 px-6 py-3 text-sm hover:bg-stone-200">
+                    Cancel
+                </button>
                 <button type="submit"
-                        class="bg-[#1a1a1a] text-[#f7f3ea] rounded-md px-4 py-1.5 text-[13px] font-bold">Create genre →</button>
+                        class="bg-[#211c14] text-stone-100 px-6 py-3 text-sm hover:bg-teal-900 transition-colors">
+                    Create genre →
+                </button>
             </div>
         </form>
     </div>

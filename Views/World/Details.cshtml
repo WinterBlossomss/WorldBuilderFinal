@@ -30,224 +30,224 @@
         return (days / 365) + "y ago";
     }
 }
-<div class="m-5">
-    @Html.AntiForgeryToken()
-    <div class="font-['Kalam'] text-[#1a1a1a] -mx-4 -my-3 px-[30px] pt-5 pb-16 ">
 
-        <!-- Breadcrumb -->
-        <div class="flex items-center gap-1.5 text-[12.5px] text-[#a89f8e] mb-4">
-            <a asp-action="Index" class="no-underline hover:text-[#1a1a1a]">Public Worlds</a>
-            <span>›</span>
-            <a asp-action="Index" asp-route-genre="@Model?.WorldGenFK" class="no-underline hover:text-[#1a1a1a]">@Model?.WorldGenFK</a>
-            <span>›</span>
-            <span class="text-[#1a1a1a]">@Model?.WorldName</span>
+<div class="max-w-7xl mx-auto px-6 py-8 text-stone-900">
+    @Html.AntiForgeryToken()
+
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-1.5 font-sans text-xs text-stone-500 mb-5">
+        <a asp-action="Index" class="no-underline hover:text-teal-900 transition-colors">Public Worlds</a>
+        <span>›</span>
+        <a asp-action="Index" asp-route-genre="@Model?.WorldGenFK" class="no-underline hover:text-teal-900 transition-colors">@Model?.WorldGenFK</a>
+        <span>›</span>
+        <span class="text-stone-900">@Model?.WorldName</span>
+    </div>
+
+    <!-- ── Hero ── -->
+    <div class="border border-stone-300 bg-stone-100 p-5 mb-10 grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-6">
+
+        <!-- Cover -->
+        <div class="aspect-[16/9] w-full border border-stone-300 bg-[repeating-linear-gradient(135deg,transparent_0_10px,rgba(28,69,81,0.06)_10px_11px)] flex items-center justify-center overflow-hidden">
+            @if (cover != null && !string.IsNullOrEmpty(cover.PicPath))
+            {
+                <img src="@Url.Content("~/" + cover.PicPath)" alt="@cover.PicCaption" class="w-full h-full object-cover" />
+            }
+            else
+            {
+                <span class="font-sans text-xs text-stone-500">No cover yet</span>
+            }
         </div>
 
-        <!-- ── Hero ── -->
-        <div class="border-[1.5px] border-[#1a1a1a] rounded-md p-5 mb-10 grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-6">
+        <!-- Info -->
+        <div class="flex flex-col">
+            <div class="font-sans text-xs tracking-[.16em] uppercase text-teal-900 mb-2">
+                @Model?.WorldGenFK · @(Model != null && Model.WorldIsPublic ? "public world" : "private world")
+            </div>
 
-            <!-- Cover -->
-            <div class="aspect-[16/9] w-full border-[1.5px] border-dashed border-[#1a1a1a] bg-[repeating-linear-gradient(135deg,transparent_0_10px,rgba(26,26,26,0.08)_10px_11px)] flex items-center justify-center overflow-hidden">
-                @if (cover != null && !string.IsNullOrEmpty(cover.PicPath))
+            <h1 class="font-serif font-semibold text-[clamp(30px,4vw,44px)] tracking-[-.01em] leading-[1.02] mb-1.5">@Model?.WorldName</h1>
+
+            <div class="font-sans text-sm text-stone-600 mb-3">
+                by <span class="text-stone-900">@@@(author ?? "creator")</span>
+                <span class="mx-1 text-stone-400">·</span> updated @Ago(lastTouch)
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model?.WorldDesc))
+            {
+                <p class="text-[15px] text-stone-600 leading-relaxed mb-4 max-w-prose">@Model.WorldDesc</p>
+            }
+
+            <!-- Stats -->
+            <div class="flex items-center gap-2 font-sans text-sm text-stone-600 mb-1">
+                <span class="inline-flex items-center gap-1.5">
+                    <svg width="12" height="11" viewBox="0 0 24 22" fill="none"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="#1c4551" stroke-width="1.8" fill="none" /></svg>
+                    <span id="worldLikeCountStat">@Kfmt(Model?.WorldLikes ?? 0)</span>
+                </span>
+                <span class="text-stone-400">·</span>
+                <span>@categories.Count categories</span>
+                <span class="text-stone-400">·</span>
+                <span>@subTotal entries</span>
+            </div>
+
+            <!-- Tags -->
+            @if (Model?.Tags != null && Model.Tags.Any())
+            {
+                <div class="flex flex-wrap gap-1.5 mt-2">
+                    @foreach (var tag in Model.Tags)
+                    {
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 font-sans text-xs text-stone-700 border border-stone-300">
+                            <span class="w-2 h-2 rounded-full" style="background-color:@tag.TagColor"></span>
+                            @tag.TagName
+                        </span>
+                    }
+                </div>
+            }
+
+            <!-- Actions -->
+            <div class="flex items-center gap-2.5 mt-auto pt-6">
+                @if (isOwner)
                 {
-                    <img src="@Url.Content("~/" + cover.PicPath)" alt="@cover.PicCaption" class="w-full h-full object-cover" />
+                    <a asp-action="Edit" asp-route-id="@Model?.WorldIDPK"
+                       class="inline-flex items-center font-sans text-sm font-medium px-6 py-3 bg-stone-900 text-stone-50 no-underline hover:bg-teal-900 transition-colors">Edit world</a>
+                    <a asp-controller="BuilderView" asp-action="Index" asp-route-id="@Model?.WorldIDPK"
+                       class="inline-flex items-center font-sans text-sm font-medium px-5 py-3 border border-stone-300 text-stone-900 no-underline hover:border-teal-900 hover:text-teal-900 transition-colors">Open workspace →</a>
                 }
                 else
                 {
-                    <span class="text-[13px] text-[#a89f8e]">No cover yet</span>
-                }
-            </div>
-
-            <!-- Info -->
-            <div class="flex flex-col">
-                <div class="text-[11px] tracking-wide text-[#a89f8e] uppercase mb-1">
-                    @Model?.WorldGenFK · @(Model != null && Model.WorldIsPublic ? "public world" : "private world")
-                </div>
-
-                <div class="font-['Caveat'] text-[44px] font-bold leading-none mb-1">@Model?.WorldName</div>
-
-                <div class="text-[13px] text-[#a89f8e] mb-3">
-                    by <span class="text-[#1a1a1a]">@@@(author ?? "creator")</span>
-                    <span class="mx-1">·</span> updated @Ago(lastTouch)
-                </div>
-
-                @if (!string.IsNullOrEmpty(Model?.WorldDesc))
-                {
-                    <p class="text-[13.5px] text-[#444444] leading-snug mb-3 max-w-prose">@Model.WorldDesc</p>
+                    <a asp-action="Read" asp-route-id="@Model?.WorldIDPK"
+                       class="inline-flex items-center font-sans text-sm font-medium px-6 py-3 bg-stone-900 text-stone-50 no-underline hover:bg-teal-900 transition-colors">Enter the world →</a>
                 }
 
-                <!-- Stats -->
-                <div class="flex items-center gap-2 text-[12.5px] text-[#444444] mb-1">
-                    <span class="inline-flex items-center gap-1">
-                        <svg width="12" height="11" viewBox="0 0 24 22" fill="none"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="#1a1a1a" stroke-width="1.8" fill="none" /></svg>
-                        <span id="worldLikeCountStat">@Kfmt(Model?.WorldLikes ?? 0)</span>
-                    </span>
-                    <span class="text-[#a89f8e]">·</span>
-                    <span>@categories.Count categories</span>
-                    <span class="text-[#a89f8e]">·</span>
-                    <span>@subTotal entries</span>
-                </div>
+                <!-- Like button — works for anyone signed in, owner or not -->
+                <button type="button" id="worldLikeBtn" data-id="@Model?.WorldIDPK"
+                        class="inline-flex items-center gap-1.5 border px-4 py-3 font-sans text-sm font-medium cursor-pointer transition-colors @(hasLiked ? "bg-teal-900 text-stone-50 border-teal-900" : "border-stone-300 text-stone-900 hover:border-teal-900 hover:text-teal-900")">
+                    <svg width="13" height="12" viewBox="0 0 24 22" fill="none"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="currentColor" stroke-width="1.8" fill="@(hasLiked ? "currentColor" : "none")" /></svg>
+                    <span>Like</span><span class="opacity-60">·</span><span id="worldLikeCount">@(Model?.WorldLikes ?? 0)</span>
+                </button>
 
-                <!-- Tags -->
-                @if (Model?.Tags != null && Model.Tags.Any())
-                {
-                    <div class="flex flex-wrap gap-1.5 mt-2">
-                        @foreach (var tag in Model.Tags)
-                        {
-                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11.5px] border border-[#1a1a1a]">
-                                <span class="w-2 h-2 rounded-full" style="background-color:@tag.TagColor"></span>
-                                @tag.TagName
-                            </span>
-                        }
-                    </div>
-                }
-
-                <!-- Actions -->
-                <div class="flex items-center gap-2.5 mt-auto pt-5">
-                    @if (isOwner)
-                    {
-                        <a asp-action="Edit" asp-route-id="@Model?.WorldIDPK"
-                           class="inline-flex items-center bg-[#1a1a1a] text-[#f7f3ea] px-5 py-2.5 rounded-md text-[14px] font-bold no-underline">Edit world</a>
-                        <a asp-controller="BuilderView" asp-action="Index" asp-route-id="@Model?.WorldIDPK"
-                           class="inline-flex items-center border-[1.5px] border-[#1a1a1a] px-4 py-2.5 rounded-md text-[14px] font-bold no-underline hover:bg-[#1a1a1a] hover:text-[#f7f3ea] transition-colors">Open workspace →</a>
-                    }
-                    else
-                    {
-                        <a asp-action="Read" asp-route-id="@Model?.WorldIDPK"
-                           class="inline-flex items-center bg-[#1a1a1a] text-[#f7f3ea] px-5 py-2.5 rounded-md text-[14px] font-bold no-underline">Enter the world →</a>
-                    }
-
-                    <!-- Like button — works for anyone signed in, owner or not -->
-                    <button type="button" id="worldLikeBtn" data-id="@Model?.WorldIDPK"
-                            class="inline-flex items-center gap-1.5 border-[1.5px] border-[#1a1a1a] px-4 py-2.5 rounded-md text-[14px] font-bold cursor-pointer transition-colors @(hasLiked ? "bg-[#1a1a1a] text-[#f7f3ea]" : "hover:bg-[#1a1a1a] hover:text-[#f7f3ea]")">
-                        <svg width="13" height="12" viewBox="0 0 24 22" fill="none"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="currentColor" stroke-width="1.8" fill="@(hasLiked ? "currentColor" : "none")" /></svg>
-                        <span>Like</span><span class="opacity-70">·</span><span id="worldLikeCount">@(Model?.WorldLikes ?? 0)</span>
-                    </button>
-
-                    <button type="button" title="Share"
-                            class="inline-flex items-center justify-center w-10 h-10 border-[1.5px] border-[#1a1a1a] rounded-md cursor-pointer hover:bg-[#1a1a1a] hover:text-[#f7f3ea] transition-colors">
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="4" cy="8" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="3.5" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="12.5" r="2" stroke="currentColor" stroke-width="1.4" /><line x1="5.7" y1="7" x2="10.3" y2="4.4" stroke="currentColor" stroke-width="1.2" /><line x1="5.7" y1="9" x2="10.3" y2="11.6" stroke="currentColor" stroke-width="1.2" /></svg>
-                    </button>
-                </div>
+                <button type="button" title="Share"
+                        class="inline-flex items-center justify-center w-11 h-11 border border-stone-300 text-stone-900 cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="4" cy="8" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="3.5" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="12.5" r="2" stroke="currentColor" stroke-width="1.4" /><line x1="5.7" y1="7" x2="10.3" y2="4.4" stroke="currentColor" stroke-width="1.2" /><line x1="5.7" y1="9" x2="10.3" y2="11.6" stroke="currentColor" stroke-width="1.2" /></svg>
+                </button>
             </div>
         </div>
+    </div>
 
-        <!-- ── Body + Sidebar ── -->
-        <div class="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-10">
+    <!-- ── Body + Sidebar ── -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-10">
 
-            <!-- Left: readable body -->
-            <div>
-                @if (categories.Any())
+        <!-- Left: readable body -->
+        <div>
+            @if (categories.Any())
+            {
+                foreach (var cat in categories)
                 {
-                    foreach (var cat in categories)
+                    <section id="cat-@cat.CatIDPK" class="mb-9 scroll-mt-6">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="w-2.5 h-2.5 rounded-full" style="background-color:@cat.CatColor"></span>
+                            <h2 class="font-serif font-semibold text-2xl tracking-[-.01em] leading-none">@cat.CatName</h2>
+                        </div>
+                        @if (!string.IsNullOrEmpty(cat.CatDescription))
+                        {
+                            <p class="text-sm text-stone-600 leading-relaxed mb-3 max-w-prose">@cat.CatDescription</p>
+                        }
+                        @if (cat.SubCategories != null && cat.SubCategories.Any())
+                        {
+                            <ul class="space-y-1.5 max-w-prose">
+                                @foreach (var sub in cat.SubCategories.OrderBy(s => s.SubName))
+                                {
+                                    <li class="flex gap-2 text-sm">
+                                        <span class="text-stone-400">└</span>
+                                        <div>
+                                            <span class="font-semibold">@sub.SubName</span>
+                                            @if (!string.IsNullOrEmpty(sub.SubDescription))
+                                            {
+                                                <span class="text-stone-600"> — @sub.SubDescription</span>
+                                            }
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </section>
+                }
+            }
+            else
+            {
+                <div class="border border-stone-300 bg-stone-100 px-6 py-14 text-center">
+                    <div class="font-serif font-semibold text-2xl tracking-[-.01em] mb-1">Nothing written here yet</div>
+                    <div class="font-sans text-sm text-stone-500">This world doesn't have any categories or entries to read yet.</div>
+                </div>
+            }
+        </div>
+
+        <!-- Right: contents sidebar + other worlds -->
+        <aside>
+            <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Index</span>
+            <h2 class="font-serif font-semibold text-2xl tracking-[-.01em] mt-1 mb-3">Contents</h2>
+
+            <div class="flex items-center gap-2 border border-stone-300 bg-stone-100 px-3 py-2 mb-4">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="#57534e" stroke-width="1.4" /><line x1="9" y1="9" x2="13" y2="13" stroke="#57534e" stroke-width="1.4" stroke-linecap="round" /></svg>
+                <input id="tocFilter" placeholder="Filter contents…" class="flex-1 outline-none bg-transparent font-sans text-sm placeholder-stone-400" />
+            </div>
+
+            @if (categories.Any())
+            {
+                <div id="toc" class="text-sm mb-8">
+                    @foreach (var cat in categories)
                     {
-                        <section id="cat-@cat.CatIDPK" class="mb-9 scroll-mt-6">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="w-2.5 h-2.5 rounded-full" style="background-color:@cat.CatColor"></span>
-                                <h2 class="font-['Caveat'] text-[28px] font-bold leading-none">@cat.CatName</h2>
-                            </div>
-                            @if (!string.IsNullOrEmpty(cat.CatDescription))
-                            {
-                                <p class="text-[14px] text-[#444444] leading-relaxed mb-3 max-w-prose">@cat.CatDescription</p>
-                            }
+                        <div class="toc-group" data-name="@cat.CatName.ToLower()">
+                            <a href="#cat-@cat.CatIDPK" class="flex items-center justify-between py-1 no-underline text-stone-900 hover:text-teal-900 transition-colors">
+                                <span class="font-semibold">@cat.CatName</span>
+                                <span class="font-sans text-xs text-stone-500">@(cat.SubCategories?.Count ?? 0)</span>
+                            </a>
                             @if (cat.SubCategories != null && cat.SubCategories.Any())
                             {
-                                <ul class="space-y-1.5 max-w-prose">
+                                <div class="pl-3">
                                     @foreach (var sub in cat.SubCategories.OrderBy(s => s.SubName))
                                     {
-                                        <li class="flex gap-2 text-[13.5px]">
-                                            <span class="text-[#a89f8e]">└</span>
-                                            <div>
-                                                <span class="font-bold">@sub.SubName</span>
-                                                @if (!string.IsNullOrEmpty(sub.SubDescription))
-                                                {
-                                                    <span class="text-[#444444]"> — @sub.SubDescription</span>
-                                                }
-                                            </div>
-                                        </li>
+                                        <div class="toc-item flex gap-1.5 py-0.5 text-stone-600" data-name="@sub.SubName.ToLower()">
+                                            <span class="text-stone-400">└</span><span>@sub.SubName</span>
+                                        </div>
                                     }
-                                </ul>
+                                </div>
                             }
-                        </section>
+                        </div>
                     }
-                }
-                else
-                {
-                    <div class="border-[1.5px] border-dashed border-[#a89f8e] rounded-md px-6 py-14 text-center">
-                        <div class="font-['Caveat'] text-[26px] font-bold mb-1">Nothing written here yet</div>
-                        <div class="text-[13px] text-[#a89f8e]">This world doesn't have any categories or entries to read yet.</div>
-                    </div>
-                }
-            </div>
-
-            <!-- Right: contents sidebar + other worlds -->
-            <aside>
-                <h2 class="font-['Caveat'] text-[26px] font-bold mb-2">Contents</h2>
-
-                <div class="flex items-center gap-2 border-[1.5px] rounded-full px-3 py-1.5 mb-3">
-                    <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="6" cy="6" r="4" stroke="#1a1a1a" stroke-width="1.4" fill="none" /><line x1="9" y1="9" x2="13" y2="13" stroke="#1a1a1a" stroke-width="1.4" /></svg>
-                    <input id="tocFilter" placeholder="Filter contents…" class="flex-1 outline-none bg-transparent text-[13px]" />
                 </div>
+            }
+            else
+            {
+                <p class="font-sans text-sm text-stone-500 mb-8">No contents yet.</p>
+            }
 
-                @if (categories.Any())
-                {
-                    <div id="toc" class="text-[13.5px] mb-8">
-                        @foreach (var cat in categories)
-                        {
-                            <div class="toc-group" data-name="@cat.CatName.ToLower()">
-                                <a href="#cat-@cat.CatIDPK" class="flex items-center justify-between py-1 no-underline text-[#1a1a1a] hover:text-[#a89f8e]">
-                                    <span class="font-bold">@cat.CatName</span>
-                                    <span class="text-[#a89f8e] text-[12px]">@(cat.SubCategories?.Count ?? 0)</span>
-                                </a>
-                                @if (cat.SubCategories != null && cat.SubCategories.Any())
-                                {
-                                    <div class="pl-3">
-                                        @foreach (var sub in cat.SubCategories.OrderBy(s => s.SubName))
-                                        {
-                                            <div class="toc-item flex gap-1.5 py-0.5 text-[#444444]" data-name="@sub.SubName.ToLower()">
-                                                <span class="text-[#a89f8e]">└</span><span>@sub.SubName</span>
-                                            </div>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <p class="text-[13px] text-[#a89f8e] mb-8">No contents yet.</p>
-                }
-
-                @if (moreByAuthor.Any())
-                {
-                    <h2 class="font-['Caveat'] text-[22px] font-bold mb-2">Other worlds by @@@(author ?? "creator")</h2>
-                    <div class="space-y-1.5">
-                        @foreach (var w in moreByAuthor)
-                        {
-                            <a asp-action="Details" asp-route-id="@w.WorldIDPK"
-                               class="flex items-center justify-between text-[13.5px] no-underline text-[#1a1a1a] hover:text-[#a89f8e]">
-                                <span class="flex gap-1.5"><span class="text-[#a89f8e]">└</span>@w.WorldName</span>
-                                <span class="inline-flex items-center gap-1 text-[12px] text-[#a89f8e]">
-                                    <svg width="11" height="10" viewBox="0 0 24 22" fill="none"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="#a89f8e" stroke-width="1.8" fill="none" /></svg>
-                                    @Kfmt(w.WorldLikes ?? 0)
-                                </span>
-                            </a>
-                        }
-                    </div>
-                }
-            </aside>
-        </div>
-
-        <!-- ── Bottom carousel: more in genre ── -->
-        @if (moreInGenre.Any())
-        {
-            <div class="mt-12 pt-8 border-t-[1.5px] border-dashed border-[#a89f8e]">
-                <partial name="_WorldRow"
-                         model='new ValueTuple<string, string, List<WorldBuilder.Models.World>>("More " + Model.WorldGenFK + " worlds", genreCount.ToString("N0") + " worlds", moreInGenre)' />
-            </div>
-        }
+            @if (moreByAuthor.Any())
+            {
+                <div class="font-sans text-xs tracking-[.16em] uppercase text-stone-600 mb-2">Other worlds by @@@(author ?? "creator")</div>
+                <div class="space-y-1.5">
+                    @foreach (var w in moreByAuthor)
+                    {
+                        <a asp-action="Details" asp-route-id="@w.WorldIDPK"
+                           class="flex items-center justify-between text-sm no-underline text-stone-900 hover:text-teal-900 transition-colors">
+                            <span class="flex gap-1.5"><span class="text-stone-400">└</span>@w.WorldName</span>
+                            <span class="inline-flex items-center gap-1 font-sans text-xs text-stone-500">
+                                <svg width="11" height="10" viewBox="0 0 24 22" fill="none"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="#a8a29e" stroke-width="1.8" fill="none" /></svg>
+                                @Kfmt(w.WorldLikes ?? 0)
+                            </span>
+                        </a>
+                    }
+                </div>
+            }
+        </aside>
     </div>
+
+    <!-- ── Bottom carousel: more in genre ── -->
+    @if (moreInGenre.Any())
+    {
+        <div class="mt-12 pt-8 border-t border-stone-300">
+            <partial name="_WorldRow"
+                     model='new ValueTuple<string, string, List<WorldBuilder.Models.World>>("More " + Model.WorldGenFK + " worlds", genreCount.ToString("N0") + " worlds", moreInGenre)' />
+        </div>
+    }
 </div>
 
 
@@ -272,37 +272,39 @@
         })();
     </script>
     <script>
-    (function () {
-        var btn = document.getElementById('worldLikeBtn');
-        if (!btn) return;
-        var tokenEl = document.querySelector('input[name="__RequestVerificationToken"]');
-        btn.addEventListener('click', async function () {
-            var id = btn.getAttribute('data-id');
-            btn.disabled = true;
-            try {
-                var res = await fetch('@Url.Action("ToggleLike", "World")/' + id, {
-                    method: 'POST',
-                    headers: { 'RequestVerificationToken': tokenEl ? tokenEl.value : '' }
-                });
-                if (res.status === 401) { window.location.href = '/Identity/Account/Login'; return; }
-                if (!res.ok) throw new Error('failed');
-                var data = await res.json();
-                var pretty = data.count >= 1000 ? (data.count / 1000).toFixed(1) + 'k' : data.count;
-                var cEl = document.getElementById('worldLikeCount');
-                if (cEl) cEl.textContent = data.count;          // button count (raw)
-                var sEl = document.getElementById('worldLikeCountStat');
-                if (sEl) sEl.textContent = pretty;              // stats line (compact)
-                var heart = btn.querySelector('path');
-                if (data.liked) {
-                    btn.classList.add('bg-[#1a1a1a]', 'text-[#f7f3ea]');
-                    if (heart) heart.setAttribute('fill', 'currentColor');
-                } else {
-                    btn.classList.remove('bg-[#1a1a1a]', 'text-[#f7f3ea]');
-                    if (heart) heart.setAttribute('fill', 'none');
-                }
-            } catch (e) { console.error(e); }
-            finally { btn.disabled = false; }
-        });
-    })();
-</script>
+        (function () {
+            var btn = document.getElementById('worldLikeBtn');
+            if (!btn) return;
+            var tokenEl = document.querySelector('input[name="__RequestVerificationToken"]');
+            btn.addEventListener('click', async function () {
+                var id = btn.getAttribute('data-id');
+                btn.disabled = true;
+                try {
+                    var res = await fetch('@Url.Action("ToggleLike", "World")/' + id, {
+                        method: 'POST',
+                        headers: { 'RequestVerificationToken': tokenEl ? tokenEl.value : '' }
+                    });
+                    if (res.status === 401) { window.location.href = '/Identity/Account/Login'; return; }
+                    if (!res.ok) throw new Error('failed');
+                    var data = await res.json();
+                    var pretty = data.count >= 1000 ? (data.count / 1000).toFixed(1) + 'k' : data.count;
+                    var cEl = document.getElementById('worldLikeCount');
+                    if (cEl) cEl.textContent = data.count;          // button count (raw)
+                    var sEl = document.getElementById('worldLikeCountStat');
+                    if (sEl) sEl.textContent = pretty;              // stats line (compact)
+                    var heart = btn.querySelector('path');
+                    if (data.liked) {
+                        btn.classList.remove('border-stone-300', 'text-stone-900', 'hover:border-teal-900', 'hover:text-teal-900');
+                        btn.classList.add('bg-teal-900', 'text-stone-50', 'border-teal-900');
+                        if (heart) heart.setAttribute('fill', 'currentColor');
+                    } else {
+                        btn.classList.remove('bg-teal-900', 'text-stone-50', 'border-teal-900');
+                        btn.classList.add('border-stone-300', 'text-stone-900', 'hover:border-teal-900', 'hover:text-teal-900');
+                        if (heart) heart.setAttribute('fill', 'none');
+                    }
+                } catch (e) { console.error(e); }
+                finally { btn.disabled = false; }
+            });
+        })();
+    </script>
 }

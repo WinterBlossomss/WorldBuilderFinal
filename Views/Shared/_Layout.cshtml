@@ -35,8 +35,8 @@
                     menu
                 </button>
                 <a asp-controller="Home" asp-action="Index" class="flex items-baseline gap-3 no-underline shrink-0">
-                    <span class="font-serif font-semibold text-[20px] tracking-[.14em] text-stone-900">WORLD BUILDER</span>
-                    <span class="hidden md:inline font-sans text-xs tracking-[.2em] uppercase text-stone-600">the world registry</span>
+                    <span class="font-serif font-semibold text-[20px] tracking-[.14em] uppercase text-teal-900">WORLD BUILDER</span>
+                    <span class="hidden md:inline font-sans text-xs tracking-[.2em] uppercase text-teal-600">the world registry</span>
                 </a>
             </div>
 
@@ -48,14 +48,21 @@
             </nav>
 
             <div class="flex items-center gap-3">
-                <form asp-controller="World" asp-action="Index" method="get"
-                      class="hidden md:flex items-center gap-2 border border-stone-300 bg-stone-100 px-3 py-1.5">
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
-                        <circle cx="5.5" cy="5.5" r="4" stroke="#57534e" stroke-width="1.4" />
-                        <line x1="8.5" y1="8.5" x2="12" y2="12" stroke="#57534e" stroke-width="1.4" stroke-linecap="round" />
-                    </svg>
-                    <input name="q" class="font-sans text-xs bg-transparent outline-none w-40 placeholder-stone-400" placeholder="Search worlds…" />
-                </form>
+                <div class="relative hidden md:block">
+                    <form asp-controller="World" asp-action="Index" method="get"
+                          class="flex items-center gap-2 border border-stone-300 bg-stone-100 px-3 py-1.5 hover:border-teal-900">
+                        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                            <circle cx="5.5" cy="5.5" r="4" stroke="#57534e" stroke-width="1.4" />
+                            <line x1="8.5" y1="8.5" x2="12" y2="12" stroke="#57534e" stroke-width="1.4" stroke-linecap="round" />
+                        </svg>
+                        <input id="globalSearch" name="q" autocomplete="off"
+                               class="font-sans text-xs bg-transparent outline-none w-40 placeholder-stone-400"
+                               placeholder="Search worlds…" />
+                    </form>
+                    <div id="globalSearchResults"
+                         class="hidden absolute right-0 z-[60] mt-1 w-80 max-h-96 overflow-auto bg-stone-100 border border-stone-300 shadow-xl">
+                    </div>
+                </div>
                 <partial name="_LoginPartial" model="userInfoId" />
             </div>
         </div>
@@ -76,8 +83,8 @@
     <footer class="border-t border-stone-300 bg-stone-100/60">
         <div class="max-w-7xl mx-auto px-6 py-7 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div class="flex items-baseline gap-3">
-                <span class="font-serif font-semibold tracking-[.14em] text-stone-900">WORLD BUILDER</span>
-                <span class="font-sans text-xs tracking-[.2em] uppercase text-stone-500">the world registry</span>
+                <span class="font-serif font-semibold tracking-[.14em] text-teal-900">WORLD BUILDER</span>
+                <span class="font-sans text-xs tracking-[.2em] uppercase text-teal-600">the world registry</span>
             </div>
             <div class="font-sans text-xs text-stone-500 flex items-center gap-4">
                 <span>© 2026 WorldBuilder</span>

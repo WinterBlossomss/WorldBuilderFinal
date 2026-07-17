@@ -8,22 +8,25 @@
     var coverName = coverUrl != null ? System.IO.Path.GetFileName(cover.PicPath) : null;
 }
 
-<!-- Breadcrumb -->
-<div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
+<div class="p-5 m-5">
+
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
     <a asp-controller="World" asp-action="Index" class="text-gray-500 hover:text-gray-900 no-underline transition-colors">Public Worlds</a>
     <span>›</span>
     <a asp-controller="World" asp-action="Details" asp-route-id="@Model.WorldIDPK" class="text-gray-500 hover:text-gray-900 no-underline transition-colors">@Model.WorldName</a>
     <span>›</span>
     <span class="text-gray-700">Edit</span>
+    </div>
 </div>
 
 <h1 class="text-4xl font-bold">Edit World</h1>
 <p class="text-sm text-gray-500 mt-2 mb-2">Update the basics. Scripts, characters and lore live in the workspace.</p>
 
-<div class="flex flex-row">
+<div class="grid grid-cols-3 gap-5">
 
     <!-- Left: form -->
-    <div>
+    <div class="col-span-2 border p-5 rounded border-stone-900 bg-stone-100">
         <form asp-action="Edit" asp-route-id="@Model.WorldIDPK" enctype="multipart/form-data" id="editForm" novalidate>
             <div asp-validation-summary="ModelOnly" class="mb-4 p-3 rounded-lg border border-red-200 bg-red-50 text-sm text-red-600"></div>
 
@@ -120,7 +123,7 @@
                 <span class="text-xs text-gray-400"><span class="text-red-600">*</span> Required fields</span>
                 <div class="flex gap-2">
                     <a asp-action="Index" asp-controller="BuilderView" asp-route-id="@Model.WorldIDPK" class="inline-flex items-center px-4 py-2 rounded-lg border border-gray-200 bg-transparent text-gray-500 text-sm no-underline hover:border-gray-400 hover:text-gray-900 transition-colors">Cancel</a>
-                    <button type="submit" id="submitBtn"
+                    <button type="submit" id="submitBtn" disabled
                             class="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-gray-900 text-white text-sm font-semibold hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                         Save changes →
                     </button>
@@ -129,9 +132,8 @@
 
         </form>
     </div>
-    <div class="m-5"></div>
     <!-- Right: live preview -->
-    <div class="sticky shrink-0 w-96 top-16">
+    <div class="sticky shrink-0 w-96 top-16 justify-self-center">
         <div class="border border-gray-200 rounded-xl p-5 bg-gray-50">
             <div class="flex items-center justify-between mb-4">
                 <span class="text-sm font-semibold">Live preview</span>
@@ -174,8 +176,8 @@
             </div>
 
             <div class="mt-4 rounded-lg p-4 text-xs text-gray-500 leading-relaxed bg-white border border-gray-200">
-                <span class="font-semibold text-gray-700 block mb-0.5">Heads up:</span>
-                Changes go live as soon as you save. Removing the thumbnail can't be undone.
+                <span class="font-semibold text-gray-700 block mb-0.5">After saving:</span>
+                Changes are applied immediately. Your world's workspace keeps all scripts, characters and lore.
             </div>
         </div>
     </div>
@@ -213,9 +215,11 @@
         let thumb = EXISTING_THUMB;
         const touched = { name: false, genre: false };
 
-        const CHIP_OFF = 'px-4 py-1 rounded-full border border-sky-500 text-sm text-black bg-white cursor-pointer hover:text-sky-500 transition-colors';
-        const CHIP_ON  = 'px-4 py-1 rounded-full border border-sky-900 text-sm text-black bg-sky-500 font-medium cursor-pointer transition-colors';
+        const CHIP_OFF =
+        'font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-stone-300 bg-stone-200 text-stone-600 no-underline cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors';
 
+        const CHIP_ON =
+        'font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-stone-900 bg-stone-900 text-stone-50 no-underline cursor-pointer';
         [...genreSelect.options].forEach(opt => {
             if (!opt.value) return;
             const btn = document.createElement('button');
