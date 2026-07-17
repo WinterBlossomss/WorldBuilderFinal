@@ -33,7 +33,7 @@
                             <span class="text-red-500">&nbsp;*</span>
                         </label>
                         <div class="grow"></div>
-                        <span id="nameCount" class="text-xs text-gray-400 ">0 / 100</span>
+                        <span id="nameCount" class="text-xs text-gray-400">0 / 100</span>
                     </div>
                     <input asp-for="WorldName" id="WorldName" maxlength="100"
                            class="block w-full border border-gray-300 rounded-lg px-3 py-2 text-xl font-semibold tracking-tight text-gray-900 placeholder-gray-300 outline-none focus:border-gray-900 transition-colors"
@@ -72,12 +72,7 @@
                                 class="font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-dashed border-stone-300 text-stone-600 no-underline cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors">
                             + Request genre
                         </button>
-                        @if (TempData["GenreReqSent"] != null)
-                        {
-                            <span class="ml-2 text-xs text-green-700 italic">
-                                Sent “@TempData["GenreReqSent"]” for review — you'll find it under the genre list once an admin approves it.
-                            </span>
-                        }
+                        <span id="genreReqSent" class="hidden ml-2 text-xs text-green-700 italic"></span>
                     </div>
                     <div id="genreError" class="hidden mt-1 items-center gap-1 text-xs text-red-500">
                         <svg width="13" height="13" viewBox="0 0 13 13" fill="none" class="shrink-0">
@@ -134,6 +129,7 @@
 
             </form>
         </div>
+
         <!-- Right: live preview -->
         <div class="sticky shrink-0 w-96 top-16 justify-self-center">
             <div class="border border-gray-200 rounded-xl p-5 bg-gray-50">
@@ -199,7 +195,7 @@
         </div>
         <p class="text-sm text-gray-500 mb-4">Don't see your genre? Ask an admin to add it.</p>
 
-        <form asp-controller="World" asp-action="RequestGenre" method="post">
+        <form id="requestGenreForm">
             @Html.AntiForgeryToken()
             <label class="block text-sm font-semibold text-gray-800 mb-1">Genre name <span class="text-red-500">*</span></label>
             <input name="GenreReqName" maxlength="100" required
@@ -216,27 +212,26 @@
                 pick <b>Other</b> until this genre is approved.
             </div>
 
-            <div class="flex justify-end gap-2">
+            <div class="flex items-center justify-end gap-2">
+                <span id="genreReqStatus" class="mr-auto text-xs italic"></span>
                 <button type="button" onclick="document.getElementById('requestGenreModal').classList.add('hidden')"
                         class="border border-gray-300 rounded-lg px-4 py-2 text-sm">
                     Cancel
                 </button>
-                <button type="submit" class="bg-gray-900 text-white rounded-lg px-4 py-2 text-sm font-semibold">Send request →</button>
+                <button type="submit" id="genreReqSend"
+                        class="bg-gray-900 text-white rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-40">
+                    Send request →
+                </button>
             </div>
         </form>
     </div>
-
+</div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-
-                     document.getElementById('requestGenreChip')?.addEventListener('click', function () {
-                    document.getElementById('requestGenreModal').classList.remove('hidden');
-                });
-
         const $ = id => document.getElementById(id);
 
         ['dragover', 'drop'].forEach(evt =>
@@ -345,6 +340,7 @@
 
         function renderThumb() { thumb ? buildFilledZone() : buildDropZone(); }
         function revoke() { if (thumb) URL.revokeObjectURL(thumb.url); }
+
         function processFile(files) {
             const f = files && files[0];
             if (!f || !f.type.startsWith('image/')) { buildDropZone(false); return; }
@@ -353,6 +349,7 @@
             renderThumb();
             renderPreview();
         }
+
         fileInput.addEventListener('change', e => processFile(e.target.files));
 
         // Visibility toggle
@@ -447,6 +444,70 @@
             touched.genre = true;
             renderGenres();
             if (!validate()) e.preventDefault();
+        });
+
+        // ---- Request-genre modal (AJAX) ----
+        $('requestGenreChip')?.addEventListener('click', () => {
+            $('requestGenreModal').classList.remove('hidden');
+        });
+
+        const genreReqForm = $('requestGenreForm');
+
+        genreReqForm?.addEventListener('submit', async e => {
+            e.preventDefault();
+
+            const btn    = $('genreReqSend');
+            const status = $('genreReqStatus');
+            const name   = genreReqForm.GenreReqName.value.trim();
+            const reason = genreReqForm.GenreReqReason.value.trim();
+            if (!name) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Sending…';
+            status.textContent = '';
+
+            try {
+                const res = await fetch('@Url.Action("RequestGenre", "World")', {
+                    method: 'POST',
+                    redirect: 'error',          // a 302 now rejects instead of being followed
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'RequestVerificationToken': genreReqForm.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ name, reason })
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    status.className = 'mr-auto text-xs italic text-red-600';
+                    status.textContent = err.error || `Could not send request (${res.status}).`;
+                    return;
+                }
+
+                const data = await res.json();
+
+                // Paint the confirmation on the page BEFORE hiding the modal.
+                const sent = $('genreReqSent');
+                if (sent) {
+                    sent.textContent = `Sent “${data.name}” for review — it'll appear here once an admin approves it.`;
+                    sent.classList.remove('hidden');
+                }
+
+                $('requestGenreModal').classList.add('hidden');
+                genreReqForm.reset();
+                status.textContent = '';
+                status.className = 'mr-auto text-xs italic';
+            } catch (err) {
+                console.error('RequestGenre failed:', err);
+                status.className = 'mr-auto text-xs italic text-red-600';
+                status.textContent = err instanceof TypeError
+                    ? 'Network error — please try again.'
+                    : 'Something went wrong — check the console.';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Send request →';
+            }
         });
 
         // Init: restore counts if the server round-tripped values after a validation failure

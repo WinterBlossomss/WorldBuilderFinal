@@ -511,39 +511,38 @@ public class WorldController : Controller
         return Json(new { liked, count = world.WorldLikes ?? 0 });
     }
 
+    public record GenreRequestDto(string Name, string Reason);
+
     [HttpPost]
     [Microsoft.AspNetCore.Authorization.Authorize]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RequestGenre(string GenreReqName, string GenreReqReason)
+    public async Task<IActionResult> RequestGenre([FromBody] GenreRequestDto dto)
     {
-        if (string.IsNullOrWhiteSpace(GenreReqName))
-        {
-            TempData["GenreReqError"] = "Please enter a genre name.";
-            return RedirectToAction(nameof(Create));
-        }
+        var name = dto?.Name?.Trim();
+
+        if (string.IsNullOrWhiteSpace(name))
+            return BadRequest(new { error = "Please enter a genre name." });
+
+        if (await _context.Genres.AnyAsync(g => g.GenreName == name))
+            return BadRequest(new { error = "That genre already exists — pick it from the list." });
+
+        if (await _context.Set<WorldBuilder.Models.GenreRequest>()
+                          .AnyAsync(r => r.GenreReqName == name && r.GenreReqStatus == "pending"))
+            return BadRequest(new { error = "Already requested — it's awaiting review." });
 
         var me = await CurrentUserInfoAsync();
 
-        // Skip duplicates (already a genre, or already pending)
-        bool exists = await _context.Genres.AnyAsync(g => g.GenreName == GenreReqName)
-            || await _context.Set<WorldBuilder.Models.GenreRequest>()
-                     .AnyAsync(r => r.GenreReqName == GenreReqName && r.GenreReqStatus == "pending");
-
-        if (!exists)
+        _context.Add(new WorldBuilder.Models.GenreRequest
         {
-            _context.Add(new WorldBuilder.Models.GenreRequest
-            {
-                GenreReqName = GenreReqName.Trim(),
-                GenreReqReason = GenreReqReason,
-                GenreReqUserFK = me?.UserInfoIDPK,
-                GenreReqStatus = "pending",
-                GenreReqCreatedAt = DateTime.Today
-            });
-            await _context.SaveChangesAsync();
-        }
+            GenreReqName = name,
+            GenreReqReason = string.IsNullOrWhiteSpace(dto.Reason) ? null : dto.Reason.Trim(),
+            GenreReqUserFK = me?.UserInfoIDPK,
+            GenreReqStatus = "pending",
+            GenreReqCreatedAt = DateTime.UtcNow
+        });
+        await _context.SaveChangesAsync();
 
-        TempData["GenreReqSent"] = GenreReqName.Trim();
-        return RedirectToAction(nameof(Create));
+        return Json(new { name });
     }
 
     // GET: /World/Liked — worlds the signed-in user has liked (drawer "Liked worlds")

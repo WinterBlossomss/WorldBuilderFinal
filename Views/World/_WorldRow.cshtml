@@ -1,9 +1,15 @@
 @model (string Title, string Count, List<WorldBuilder.Models.World> Items)
 
-@* A horizontally-scrolling "carousel" row of world cards.
-   Registry aesthetic — matches Home/Index.cshtml. Used by World/Index.cshtml. *@
+@* A horizontally-scrolling, paginated row of world cards.
+   Registry aesthetic — matches Home/Index.cshtml. Used by World/Index.cshtml.
+   Requires ~/js/world-row.js, registered by the host view. *@
 
-<div class="mb-9">
+@if (Model.Items is null || Model.Items.Count == 0)
+{
+    return;
+}
+
+<div class="mb-9" data-world-row>
     <div class="flex items-end justify-between mb-3">
         <div class="flex items-baseline gap-3">
             <h3 class="font-serif font-medium text-2xl tracking-[-.01em] leading-[1.05] whitespace-nowrap">@Model.Title</h3>
@@ -11,15 +17,18 @@
         </div>
         <div class="flex items-center gap-2">
             <span class="font-sans text-xs tracking-[.05em] text-teal-900">See all</span>
-            <div class="w-7 h-7 border border-stone-300 flex items-center justify-center bg-stone-100 hover:border-teal-900 transition-colors">
+            <button type="button" data-row-prev aria-label="Previous @Model.Title"
+                    class="w-7 h-7 border border-stone-300 flex items-center justify-center bg-stone-100 cursor-pointer hover:border-teal-900 disabled:opacity-30 disabled:cursor-default disabled:hover:border-stone-300 transition-colors">
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M7 1 L 3 5 L 7 9" stroke="#57534e" stroke-width="1.6" fill="none" /></svg>
-            </div>
-            <div class="w-7 h-7 border border-stone-300 flex items-center justify-center bg-stone-100 hover:border-teal-900 transition-colors">
+            </button>
+            <button type="button" data-row-next aria-label="Next @Model.Title"
+                    class="w-7 h-7 border border-stone-300 flex items-center justify-center bg-stone-100 cursor-pointer hover:border-teal-900 disabled:opacity-30 disabled:cursor-default disabled:hover:border-stone-300 transition-colors">
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 1 L 7 5 L 3 9" stroke="#57534e" stroke-width="1.6" fill="none" /></svg>
-            </div>
+            </button>
         </div>
     </div>
-    <div class="flex gap-4 overflow-x-auto pb-2">
+    <div data-row-track
+         class="flex gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         @foreach (var w in Model.Items)
         {
             <partial name="_WorldCard" model="w" />
