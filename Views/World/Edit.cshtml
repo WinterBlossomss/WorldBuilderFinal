@@ -9,179 +9,231 @@
 }
 
 <div class="p-5 m-5">
-
     <!-- Breadcrumb -->
     <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-    <a asp-controller="World" asp-action="Index" class="text-gray-500 hover:text-gray-900 no-underline transition-colors">Public Worlds</a>
-    <span>›</span>
-    <a asp-controller="World" asp-action="Details" asp-route-id="@Model.WorldIDPK" class="text-gray-500 hover:text-gray-900 no-underline transition-colors">@Model.WorldName</a>
-    <span>›</span>
-    <span class="text-gray-700">Edit</span>
+        <a asp-controller="World" asp-action="Index" class="text-gray-500 hover:text-gray-900 no-underline transition-colors">Public Worlds</a>
+        <span>›</span>
+        <a asp-controller="World" asp-action="Details" asp-route-id="@Model.WorldIDPK" class="text-gray-500 hover:text-gray-900 no-underline transition-colors">@Model.WorldName</a>
+        <span>›</span>
+        <span class="text-gray-700">Edit</span>
+    </div>
+
+    <h1 class="text-4xl font-semibold">Edit World</h1>
+    <p class="text-sm text-gray-500 mt-2 mb-2">Update the basics. Scripts, characters and lore live in the workspace.</p>
+
+    <div class="grid grid-cols-3">
+
+        <!-- Left: form -->
+        <div class="col-span-2 border p-5 rounded border-stone-900 bg-stone-100">
+            <form asp-action="Edit" asp-route-id="@Model.WorldIDPK" enctype="multipart/form-data" id="editForm" novalidate>
+                <div asp-validation-summary="ModelOnly" class="mb-4 p-3 rounded-lg border border-red-200 bg-red-50 text-sm text-red-600"></div>
+
+                <!-- Hidden system fields -->
+                <input type="hidden" asp-for="WorldIDPK" />
+                <!-- Cover-removal flag (set to true by the Clear button) -->
+                <input type="hidden" name="RemoveCover" id="removeCover" value="false" />
+
+                <!-- World name -->
+                <div class="flex flex-col mb-5">
+                    <div class="flex flex-row mb-2">
+                        <label asp-for="WorldName" class="font-semibold flex flex-row text-sm text-gray-800">
+                            Name
+                            <span class="text-red-500">&nbsp;*</span>
+                        </label>
+                        <div class="grow"></div>
+                        <span id="nameCount" class="text-xs text-gray-400">0 / 100</span>
+                    </div>
+                    <input asp-for="WorldName" id="WorldName" maxlength="100"
+                           class="block w-full border border-gray-300 rounded-lg px-3 py-2 text-xl font-semibold tracking-tight text-gray-900 placeholder-gray-300 outline-none focus:border-gray-900 transition-colors"
+                           placeholder="e.g. Ashenmoor" autocomplete="off" autofocus />
+                    <span asp-validation-for="WorldName" class="mt-1 flex items-center gap-1 text-xs text-red-600"></span>
+                </div>
+
+                <!-- Description -->
+                <div class="flex flex-col mb-5">
+                    <div class="flex flex-row mb-2">
+                        <label asp-for="WorldDesc" class="font-semibold text-sm text-gray-800">Short Description</label>
+                        <div class="grow"></div>
+                        <span id="descCount" class="text-xs text-gray-400">0 / 200</span>
+                    </div>
+                    <input asp-for="WorldDesc" id="WorldDesc" maxlength="200"
+                           class="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-300 outline-none focus:border-gray-900 transition-colors"
+                           placeholder="Pitch your world in 1-2 sentences" />
+                    <span asp-validation-for="WorldDesc" class="mt-1 flex items-center gap-1 text-xs text-red-600"></span>
+                </div>
+
+                <!-- Genre -->
+                <div class="flex flex-col mb-5">
+                    <div class="flex flex-row mb-2">
+                        <label asp-for="WorldGenFK" class="font-semibold text-sm text-gray-800">
+                            Genre <span class="text-red-500 text-xs">*</span>
+                        </label>
+                        <div class="grow"></div>
+                        <span class="text-xs text-gray-400">single select · drives discovery</span>
+                    </div>
+                    <!-- Hidden select keeps model binding and server-side validation -->
+                    <select asp-for="WorldGenFK" asp-items="ViewBag.WorldGenFK" id="WorldGenFK" class="hidden"></select>
+                    <!-- Visual chip list, driven by JS from the select options -->
+                    <div id="genreWrap" class="flex flex-wrap gap-2 rounded-lg transition-all"></div>
+                    <div class="mt-2">
+                        <button type="button" id="requestGenreChip"
+                                class="font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-dashed border-stone-300 text-stone-600 no-underline cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors">
+                            + Request genre
+                        </button>
+                        <span id="genreReqSent" class="hidden ml-2 text-xs text-green-700 italic"></span>
+                    </div>
+                    <div id="genreError" class="hidden mt-1 items-center gap-1 text-xs text-red-500">
+                        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" class="shrink-0">
+                            <circle cx="6.5" cy="6.5" r="5.5" stroke="#dc2626" stroke-width="1.3" />
+                            <line x1="6.5" y1="3.5" x2="6.5" y2="7.5" stroke="#dc2626" stroke-width="1.5" stroke-linecap="round" />
+                            <circle cx="6.5" cy="9.8" r=".8" fill="#dc2626" />
+                        </svg>
+                        Pick a genre to continue
+                    </div>
+                    <span asp-validation-for="WorldGenFK" class="mt-1 flex items-center gap-1 text-xs text-red-500"></span>
+                </div>
+
+                <!-- Thumbnail -->
+                <div class="mb-6">
+                    <div class="flex items-baseline justify-between mb-2">
+                        <span class="text-sm font-semibold text-gray-800">Thumbnail</span>
+                        <span class="text-xs text-gray-400">16:9 recommended · max 5 MB</span>
+                    </div>
+                    <div id="thumbZone" class="border border-gray-200 rounded-lg p-4 bg-gray-50"></div>
+                    <input asp-for="UploadedPicture" type="file" id="fileInput" accept="image/*" class="hidden" />
+                </div>
+
+                <!-- Visibility -->
+                <div class="mb-8">
+                    <span class="block text-sm font-semibold text-gray-800 mb-2">Visibility</span>
+                    <input type="hidden" name="WorldIsPublic" id="WorldIsPublic" value="@(Model.WorldIsPublic ? "true" : "false")" />
+                    <div id="visToggle" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 bg-gray-50 cursor-pointer select-none hover:border-gray-400 transition-colors">
+                        <div id="visTrack" class="relative w-10 h-6 rounded-full shrink-0 border bg-gray-900 border-gray-900 transition-all duration-200">
+                            <div id="visThumb" class="absolute top-1 left-5 w-4 h-4 rounded-full bg-white transition-all duration-200"></div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 text-sm font-semibold text-gray-900 mb-0.5">
+                                <span id="visTitle">Public world</span>
+                                <span id="visIcon" class="text-gray-500"></span>
+                            </div>
+                            <div id="visDesc" class="text-xs text-gray-500 leading-snug">
+                                Anyone can find, read and like this world. Listed in the public worlds browser.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="flex items-center justify-between pt-5 border-t border-gray-200">
+                    <span class="text-xs text-gray-400"><span class="text-red-600">*</span> Required fields</span>
+                    <div class="flex gap-2">
+                        <a asp-action="Index" asp-controller="BuilderView" asp-route-id="@Model.WorldIDPK"
+                           class="inline-flex items-center px-4 py-2 rounded-lg border border-gray-200 bg-transparent text-gray-500 text-sm no-underline hover:border-gray-400 hover:text-gray-900 transition-colors">Cancel</a>
+                        <button type="submit" id="submitBtn" disabled
+                                class="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-gray-900 text-white text-sm font-semibold hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                            Save changes →
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- Right: live preview -->
+        <div class="sticky shrink-0 w-96 top-16 justify-self-center">
+            <div class="border border-gray-200 rounded-xl p-5 bg-gray-50">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm font-semibold">Live preview</span>
+                    <span class="text-xs text-gray-400">how it shows in browse</span>
+                </div>
+
+                <div class="rounded-lg overflow-hidden border border-gray-200 bg-white">
+                    <div id="pvThumb" class="aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                        <svg width="36" height="36" viewBox="0 0 38 38" fill="none" class="opacity-20">
+                            <path d="M4 30L13 18l8 9 6-7 8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            <circle cx="27" cy="11" r="3.5" stroke="currentColor" stroke-width="1.5" />
+                        </svg>
+                    </div>
+                    <div class="p-4">
+                        <div id="pvName" class="text-base text-ellipsis font-bold mb-1 tracking-tight text-pretty text-gray-300">Your world title</div>
+                        <div id="pvDesc" class="text-xs text-wrap leading-relaxed mb-3 line-clamp-2 text-pretty text-gray-300 overflow-hidden text-truncate">Your description will appear here as you type.</div>
+                        <div class="flex items-center justify-between">
+                            <span id="pvGenre" class="px-2 py-0.5 rounded-full text-xs border border-gray-200 text-gray-400 bg-gray-100">No genre</span>
+                            <div class="flex gap-3 text-xs text-gray-400"><span>♡ @(Model.WorldLikes ?? 0)</span><span>0 scripts</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 flex flex-col gap-2 border-t border-gray-200 text-xs">
+                    <div class="flex items-center gap-2 text-gray-500">
+                        <span class="w-14 shrink-0">URL</span>
+                        <span id="pvUrl" class="text-gray-400">—</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-500">
+                        <span class="w-14 shrink-0">Genre</span>
+                        <span id="pvGenreMeta" class="text-gray-400">—</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-500">
+                        <span class="w-14 shrink-0">Visibility</span>
+                        <span class="flex items-center gap-1 font-medium text-gray-900">
+                            <span id="pvVisIcon" class="text-gray-500"></span>
+                            <span id="pvVis">Public</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mt-4 rounded-lg p-4 text-xs text-gray-500 leading-relaxed bg-white border border-gray-200">
+                    <span class="font-semibold text-gray-700 block mb-0.5">After saving:</span>
+                    Changes are applied immediately. Your world's workspace keeps all scripts, characters and lore.
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
-<h1 class="text-4xl font-bold">Edit World</h1>
-<p class="text-sm text-gray-500 mt-2 mb-2">Update the basics. Scripts, characters and lore live in the workspace.</p>
+<div id="requestGenreModal" class="hidden fixed inset-0 z-[150] flex items-center justify-center bg-black/40 p-4"
+     onclick="if(event.target===this) this.classList.add('hidden')">
+    <div class="w-full max-w-md bg-white border border-gray-200 rounded-xl p-6 shadow-2xl">
+        <div class="flex items-start justify-between mb-1">
+            <h2 class="text-2xl font-bold">Request a new genre</h2>
+            <button type="button" onclick="document.getElementById('requestGenreModal').classList.add('hidden')"
+                    class="material-symbols-outlined text-gray-400 hover:text-gray-900">
+                close
+            </button>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">Don't see your genre? Ask an admin to add it.</p>
 
-<div class="grid grid-cols-3 gap-5">
+        <form id="requestGenreForm">
+            @Html.AntiForgeryToken()
+            <label class="block text-sm font-semibold text-gray-800 mb-1">Genre name <span class="text-red-500">*</span></label>
+            <input name="GenreReqName" maxlength="100" required
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-lg font-semibold outline-none focus:border-gray-900 mb-4"
+                   placeholder="Solarpunk" />
 
-    <!-- Left: form -->
-    <div class="col-span-2 border p-5 rounded border-stone-900 bg-stone-100">
-        <form asp-action="Edit" asp-route-id="@Model.WorldIDPK" enctype="multipart/form-data" id="editForm" novalidate>
-            <div asp-validation-summary="ModelOnly" class="mb-4 p-3 rounded-lg border border-red-200 bg-red-50 text-sm text-red-600"></div>
+            <label class="block text-sm font-semibold text-gray-800 mb-1">Why this genre? <span class="text-gray-400 font-normal">(optional)</span></label>
+            <textarea name="GenreReqReason" maxlength="500" rows="4"
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-900 mb-2"
+                      placeholder="Hopeful near-future fiction grounded in renewable tech, communal living…"></textarea>
 
-            <!-- Hidden system fields -->
-            <input type="hidden" asp-for="WorldIDPK" />
-            <!-- Cover-removal flag (set to true by the Clear button) -->
-            <input type="hidden" name="RemoveCover" id="removeCover" value="false" />
-
-            <!-- World name -->
-            <div class="flex flex-col mb-5">
-                <div class="flex flex-row mb-2">
-                    <label asp-for="WorldName" class="font-semibold flex flex-row text-sm text-gray-800">
-                        Name
-                        <span class="text-red-500">&nbsp;*</span>
-                    </label>
-                    <div class="grow"></div>
-                    <span id="nameCount" class="text-xs text-gray-400 ">0 / 100</span>
-                </div>
-                <input asp-for="WorldName" id="WorldName" maxlength="100"
-                       class="block w-full border border-gray-300 rounded-lg px-3 py-2 text-xl font-semibold tracking-tight text-gray-900 placeholder-gray-300 outline-none focus:border-gray-900 transition-colors"
-                       placeholder="e.g. Ashenmoor" autocomplete="off" autofocus />
-                <span asp-validation-for="WorldName" class="mt-1 flex items-center gap-1 text-xs text-red-600"></span>
+            <div class="rounded-lg bg-gray-50 border border-gray-200 p-3 text-xs text-gray-500 mb-5">
+                Sent for review. Admins usually decide within 1–2 days. In the meantime you can keep your current genre —
+                switch once this one is approved.
             </div>
 
-            <!-- Description -->
-            <div class="flex flex-col mb-5">
-                <div class="flex flex-row mb-2">
-                    <label asp-for="WorldDesc" class="font-semibold text-sm text-gray-800">Short Description</label>
-                    <div class="grow"></div>
-                    <span id="descCount" class="text-xs text-gray-400">0 / 200</span>
-                </div>
-                <input asp-for="WorldDesc" id="WorldDesc" maxlength="200"
-                       class="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-300 outline-none focus:border-gray-900 transition-colors"
-                       placeholder="Pitch your world in 1-2 sentences" />
-                <span asp-validation-for="WorldDesc" class="mt-1 flex items-center gap-1 text-xs text-red-600"></span>
+            <div class="flex items-center justify-end gap-2">
+                <span id="genreReqStatus" class="mr-auto text-xs italic"></span>
+                <button type="button" onclick="document.getElementById('requestGenreModal').classList.add('hidden')"
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm">
+                    Cancel
+                </button>
+                <button type="submit" id="genreReqSend"
+                        class="bg-gray-900 text-white rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-40">
+                    Send request →
+                </button>
             </div>
-
-            <!-- Genre -->
-            <div class="flex flex-col mb-5">
-                <div class="flex flex-row mb-2">
-                    <label asp-for="WorldGenFK" class="font-semibold text-sm text-gray-800">
-                        Genre <span class="text-red-500 text-xs">*</span>
-                    </label>
-                    <div class="grow"></div>
-                    <span class="text-xs text-gray-400">single select · drives discovery</span>
-                </div>
-                <!-- Hidden select keeps model binding and server-side validation -->
-                <select asp-for="WorldGenFK" asp-items="ViewBag.WorldGenFK" id="WorldGenFK" class="hidden"></select>
-                <!-- Visual chip list, driven by JS from the select options -->
-                <div id="genreWrap" class="flex flex-wrap gap-2 rounded-lg transition-all"></div>
-                <div id="genreError" class="hidden mt-1 items-center gap-1 text-xs text-red-500">
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" class="shrink-0">
-                        <circle cx="6.5" cy="6.5" r="5.5" stroke="#dc2626" stroke-width="1.3" />
-                        <line x1="6.5" y1="3.5" x2="6.5" y2="7.5" stroke="#dc2626" stroke-width="1.5" stroke-linecap="round" />
-                        <circle cx="6.5" cy="9.8" r=".8" fill="#dc2626" />
-                    </svg>
-                    Pick a genre to continue
-                </div>
-                <span asp-validation-for="WorldGenFK" class="mt-1 flex items-center gap-1 text-xs text-red-500"></span>
-            </div>
-
-            <!-- Thumbnail -->
-            <div class="mb-6">
-                <div class="flex items-baseline justify-between mb-2">
-                    <span class="text-sm font-semibold text-gray-800">Thumbnail</span>
-                    <span class="text-xs text-gray-400">16:9 recommended · max 5 MB</span>
-                </div>
-                <div id="thumbZone" class="border border-gray-200 rounded-lg p-4 bg-gray-50"></div>
-                <input asp-for="UploadedPicture" type="file" id="fileInput" accept="image/*" class="hidden" />
-            </div>
-
-            <!-- Visibility -->
-            <div class="mb-8">
-                <span class="block text-sm font-semibold text-gray-800 mb-2">Visibility</span>
-                <input type="hidden" name="WorldIsPublic" id="WorldIsPublic" value="@(Model.WorldIsPublic ? "true" : "false")" />
-                <div id="visToggle" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 bg-gray-50 cursor-pointer select-none hover:border-gray-400 transition-colors">
-                    <div id="visTrack" class="relative w-10 h-6 rounded-full shrink-0 border bg-gray-900 border-gray-900 transition-all duration-200">
-                        <div id="visThumb" class="absolute top-1 left-5 w-4 h-4 rounded-full bg-white transition-all duration-200"></div>
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2 text-sm font-semibold text-gray-900 mb-0.5">
-                            <span id="visTitle">Public world</span>
-                            <span id="visIcon" class="text-gray-500"></span>
-                        </div>
-                        <div id="visDesc" class="text-xs text-gray-500 leading-snug">
-                            Anyone can find, read and like this world. Listed in the public worlds browser.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="flex items-center justify-between pt-5 border-t border-gray-200">
-                <span class="text-xs text-gray-400"><span class="text-red-600">*</span> Required fields</span>
-                <div class="flex gap-2">
-                    <a asp-action="Index" asp-controller="BuilderView" asp-route-id="@Model.WorldIDPK" class="inline-flex items-center px-4 py-2 rounded-lg border border-gray-200 bg-transparent text-gray-500 text-sm no-underline hover:border-gray-400 hover:text-gray-900 transition-colors">Cancel</a>
-                    <button type="submit" id="submitBtn" disabled
-                            class="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-gray-900 text-white text-sm font-semibold hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-                        Save changes →
-                    </button>
-                </div>
-            </div>
-
         </form>
     </div>
-    <!-- Right: live preview -->
-    <div class="sticky shrink-0 w-96 top-16 justify-self-center">
-        <div class="border border-gray-200 rounded-xl p-5 bg-gray-50">
-            <div class="flex items-center justify-between mb-4">
-                <span class="text-sm font-semibold">Live preview</span>
-                <span class="text-xs text-gray-400">how it shows in browse</span>
-            </div>
-
-            <div class="rounded-lg overflow-hidden border border-gray-200 bg-white">
-                <div id="pvThumb" class="aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                    <svg width="36" height="36" viewBox="0 0 38 38" fill="none" class="opacity-20">
-                        <path d="M4 30L13 18l8 9 6-7 8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <circle cx="27" cy="11" r="3.5" stroke="currentColor" stroke-width="1.5" />
-                    </svg>
-                </div>
-                <div class="p-4">
-                    <div id="pvName" class="text-base text-ellipsis font-bold mb-1 tracking-tight text-pretty text-gray-300">Your world title</div>
-                    <div id="pvDesc" class="text-xs text-wrap leading-relaxed mb-3 line-clamp-2 text-pretty text-gray-300 overflow-hidden text-truncate">Your description will appear here as you type.</div>
-                    <div class="flex items-center justify-between">
-                        <span id="pvGenre" class="px-2 py-0.5 rounded-full text-xs border border-gray-200 text-gray-400 bg-gray-100">No genre</span>
-                        <div class="flex gap-3 text-xs text-gray-400"><span>♡ @(Model.WorldLikes ?? 0)</span><span>0 scripts</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-4 pt-4 flex flex-col gap-2 border-t border-gray-200 text-xs">
-                <div class="flex items-center gap-2 text-gray-500">
-                    <span class="w-14 shrink-0">URL</span>
-                    <span id="pvUrl" class="text-gray-400">—</span>
-                </div>
-                <div class="flex items-center gap-2 text-gray-500">
-                    <span class="w-14 shrink-0">Genre</span>
-                    <span id="pvGenreMeta" class="text-gray-400">—</span>
-                </div>
-                <div class="flex items-center gap-2 text-gray-500">
-                    <span class="w-14 shrink-0">Visibility</span>
-                    <span class="flex items-center gap-1 font-medium text-gray-900">
-                        <span id="pvVisIcon" class="text-gray-500"></span>
-                        <span id="pvVis">Public</span>
-                    </span>
-                </div>
-            </div>
-
-            <div class="mt-4 rounded-lg p-4 text-xs text-gray-500 leading-relaxed bg-white border border-gray-200">
-                <span class="font-semibold text-gray-700 block mb-0.5">After saving:</span>
-                Changes are applied immediately. Your world's workspace keeps all scripts, characters and lore.
-            </div>
-        </div>
-    </div>
-
 </div>
 
 @section Scripts {
@@ -215,11 +267,11 @@
         let thumb = EXISTING_THUMB;
         const touched = { name: false, genre: false };
 
-        const CHIP_OFF =
-        'font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-stone-300 bg-stone-200 text-stone-600 no-underline cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors';
+        // Genre chips: built from the server-rendered hidden <select>,
+        // so ViewBag.WorldGenFK drives everything automatically.
+        const CHIP_OFF = 'font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-stone-300 bg-stone-200 text-stone-600 no-underline cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors';
+        const CHIP_ON  = 'font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-stone-900 bg-stone-900 text-stone-50 no-underline cursor-pointer';
 
-        const CHIP_ON =
-        'font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-stone-900 bg-stone-900 text-stone-50 no-underline cursor-pointer';
         [...genreSelect.options].forEach(opt => {
             if (!opt.value) return;
             const btn = document.createElement('button');
@@ -270,10 +322,13 @@
                 </div>`;
 
             dz.addEventListener('click', () => fileInput.click());
+
+            // Don't rebuild — just toggle the active styling on the existing element.
             dz.addEventListener('dragenter', e => { e.preventDefault(); e.stopPropagation(); dz.className = DZ_ACTIVE; });
             dz.addEventListener('dragover',  e => { e.preventDefault(); e.stopPropagation(); dz.className = DZ_ACTIVE; });
             dz.addEventListener('dragleave', e => {
                 e.preventDefault(); e.stopPropagation();
+                // Ignore leave events fired when moving onto a child element.
                 if (!dz.contains(e.relatedTarget)) dz.className = DZ_IDLE;
             });
             dz.addEventListener('drop', e => {
@@ -308,6 +363,7 @@
 
         function renderThumb() { thumb ? buildFilledZone() : buildDropZone(); }
         function revoke() { if (thumb && typeof thumb.url === 'string' && thumb.url.startsWith('blob:')) URL.revokeObjectURL(thumb.url); }
+
         function processFile(files) {
             const f = files && files[0];
             if (!f || !f.type.startsWith('image/')) { buildDropZone(); return; }
@@ -317,6 +373,7 @@
             renderThumb();
             renderPreview();
         }
+
         fileInput.addEventListener('change', e => processFile(e.target.files));
 
         // Visibility toggle
@@ -411,6 +468,70 @@
             touched.genre = true;
             renderGenres();
             if (!validate()) e.preventDefault();
+        });
+
+        // ---- Request-genre modal (AJAX) ----
+        $('requestGenreChip')?.addEventListener('click', () => {
+            $('requestGenreModal').classList.remove('hidden');
+        });
+
+        const genreReqForm = $('requestGenreForm');
+
+        genreReqForm?.addEventListener('submit', async e => {
+            e.preventDefault();
+
+            const btn    = $('genreReqSend');
+            const status = $('genreReqStatus');
+            const name   = genreReqForm.GenreReqName.value.trim();
+            const reason = genreReqForm.GenreReqReason.value.trim();
+            if (!name) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Sending…';
+            status.textContent = '';
+
+            try {
+                const res = await fetch('@Url.Action("RequestGenre", "World")', {
+                    method: 'POST',
+                    redirect: 'error',          // a 302 now rejects instead of being followed
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'RequestVerificationToken': genreReqForm.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ name, reason })
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    status.className = 'mr-auto text-xs italic text-red-600';
+                    status.textContent = err.error || `Could not send request (${res.status}).`;
+                    return;
+                }
+
+                const data = await res.json();
+
+                // Paint the confirmation on the page BEFORE hiding the modal.
+                const sent = $('genreReqSent');
+                if (sent) {
+                    sent.textContent = `Sent “${data.name}” for review — it'll appear here once an admin approves it.`;
+                    sent.classList.remove('hidden');
+                }
+
+                $('requestGenreModal').classList.add('hidden');
+                genreReqForm.reset();
+                status.textContent = '';
+                status.className = 'mr-auto text-xs italic';
+            } catch (err) {
+                console.error('RequestGenre failed:', err);
+                status.className = 'mr-auto text-xs italic text-red-600';
+                status.textContent = err instanceof TypeError
+                    ? 'Network error — please try again.'
+                    : 'Something went wrong — check the console.';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Send request →';
+            }
         });
 
         // Init: pre-fill counts, chips, thumbnail and preview from the existing values

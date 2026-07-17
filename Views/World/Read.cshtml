@@ -33,313 +33,346 @@
         return (days / 365) + "y ago";
     }
     var likeCount = w?.WorldLikes ?? 0;
+
+    // Registry-aesthetic tokens (mirrors Home/Index.cshtml)
+    const string hatch   = "bg-[repeating-linear-gradient(135deg,transparent_0_10px,rgba(26,26,26,0.08)_10px_11px)]";
+    const string iconBtn = "inline-flex items-center justify-center w-8 h-8 shrink-0 border border-stone-300 bg-stone-100 text-stone-700 cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors";
+    const string panel   = "bg-stone-100 border border-stone-300 p-5";
+    const string likeOff = "inline-flex items-center gap-2 font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border cursor-pointer transition-colors bg-stone-100 border-stone-300 text-stone-700 hover:border-teal-900 hover:text-teal-900";
+    const string likeOn  = "inline-flex items-center gap-2 font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border cursor-pointer transition-colors bg-stone-900 border-stone-900 text-stone-50";
 }
 
 @Html.AntiForgeryToken()
 
-<div class="m-5">
-    <div class=" text-[#1a1a1a] -mx-4 -my-3 px-[30px] pt-5 pb-16">
+<div class="max-w-7xl mx-auto px-6 py-10 text-stone-900">
 
-        <!-- Page toolbar -->
-        <div class="flex items-center gap-4 mb-6">
-            <div class="flex items-center gap-3 min-w-0">
-                <div class="w-9 h-9 border-1 border-[#1a1a1a] rounded-md bg-[repeating-linear-gradient(135deg,transparent_0_6px,rgba(26,26,26,0.08)_6px_7px)] shrink-0 overflow-hidden">
-                    @if (cover != null && !string.IsNullOrEmpty(cover.PicPath))
-                    {
-                        <img src="@Pic(cover.PicPath)" class="w-full h-full object-cover" alt="" />
-                    }
-                </div>
-                <div class="min-w-0">
-                    <div class=" text-[24px] font-bold leading-none truncate">@w?.WorldName</div>
-                    <div class="text-[11.5px] text-[#a89f8e] truncate">
-                        by <span class="text-[#1a1a1a]">@@@(author ?? "creator")</span>
-                        <span class="mx-1">·</span>@w?.WorldGenFK
-                        <span class="mx-1">·</span>updated @Ago(w?.WorldUpdatedAt ?? w?.WorldCreatedAt)
-                    </div>
+    <!-- Page toolbar -->
+    <div class="flex items-center gap-3 mb-8 pb-6 border-b border-stone-300">
+        <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 shrink-0 border border-stone-300 @hatch overflow-hidden">
+                @if (cover != null && !string.IsNullOrEmpty(cover.PicPath))
+                {
+                    <img src="@Pic(cover.PicPath)" class="w-full h-full object-cover" alt="" />
+                }
+            </div>
+            <div class="min-w-0">
+                <div class="font-serif font-semibold text-xl leading-none tracking-[-.01em] truncate">@w?.WorldName</div>
+                <div class="font-sans text-xs text-stone-500 mt-1 truncate">
+                    by <span class="text-stone-700">@@@(author ?? "creator")</span>
+                    <span class="mx-1">·</span>@w?.WorldGenFK
+                    <span class="mx-1">·</span>updated @Ago(w?.WorldUpdatedAt ?? w?.WorldCreatedAt)
                 </div>
             </div>
-
-            <div class="grow"></div>
-
-            <div class="md:block relative w-64">
-                <div class="flex items-center gap-2 border-[1.5px] border-[#1a1a1a] rounded-full px-3 py-1.5">
-                    <svg width="15" height="15" viewBox="0 0 14 14"><circle cx="6" cy="6" r="4" stroke="#1a1a1a" stroke-width="1.4" fill="none" /><line x1="9" y1="9" x2="13" y2="13" stroke="#1a1a1a" stroke-width="1.4" /></svg>
-                    <input id="worldSearch" data-id="@w?.WorldIDPK" autocomplete="off" placeholder="Search in @w?.WorldName…" class="flex-1 outline-none bg-transparent text-[13px]" />
-                </div>
-                <div id="worldSearchResults" class="hidden absolute z-20 mt-1 w-full max-h-80 overflow-auto bg-[#f7f3ea] border-[1.5px] border-[#1a1a1a] rounded-md" style="box-shadow:3px 3px 0 #1a1a1a"></div>
-            </div>
-
-            <button type="button" id="worldLikeBtn" data-id="@w?.WorldIDPK"
-                    class="inline-flex items-center gap-1.5 border-[1.5px] border-[#1a1a1a] px-3.5 py-1.5 rounded-full text-[13px] font-bold cursor-pointer transition-colors @(hasLiked ? "bg-[#1a1a1a] text-[#f7f3ea]" : "hover:bg-[#1a1a1a] hover:text-[#f7f3ea]")">
-                <svg width="13" height="12" viewBox="0 0 24 22" fill="none"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="currentColor" stroke-width="1.8" fill="@(hasLiked ? "currentColor" : "none")" /></svg>
-                <span>Like</span><span class="opacity-70">·</span><span id="worldLikeCount">@Kfmt(likeCount)</span>
-            </button>
-
-            <button type="button" title="Save"
-                    class="inline-flex items-center justify-center w-9 h-9 border-[1.5px] border-[#1a1a1a] rounded-full cursor-pointer hover:bg-[#1a1a1a] hover:text-[#f7f3ea] transition-colors">
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M4 2 h8 v12 l-4 -3 -4 3 z" stroke="currentColor" stroke-width="1.4" fill="none" /></svg>
-            </button>
-            <button type="button" title="Share"
-                    class="inline-flex items-center justify-center w-9 h-9 border-[1.5px] border-[#1a1a1a] rounded-full cursor-pointer hover:bg-[#1a1a1a] hover:text-[#f7f3ea] transition-colors">
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="4" cy="8" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="3.5" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="12.5" r="2" stroke="currentColor" stroke-width="1.4" /><line x1="5.7" y1="7" x2="10.3" y2="4.4" stroke="currentColor" stroke-width="1.2" /><line x1="5.7" y1="9" x2="10.3" y2="11.6" stroke="currentColor" stroke-width="1.2" /></svg>
-            </button>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-[230px_1fr] gap-8">
+        <div class="grow"></div>
 
-            <!-- LEFT: Contents tree -->
-            <aside>
-                <div class="flex items-baseline justify-between mb-2">
-                    <h2 class=" text-[24px] font-bold">Contents</h2>
-                    <span class="text-[11.5px] text-[#a89f8e]">@totalScripts scripts</span>
-                </div>
-                <div class="flex items-center gap-2 border rounded-full px-3 py-1.5 mb-3">
-                    <svg width="13" height="13" viewBox="0 0 14 14"><circle cx="6" cy="6" r="4" stroke="#1a1a1a" stroke-width="1.4" fill="none" /><line x1="9" y1="9" x2="13" y2="13" stroke="#1a1a1a" stroke-width="1.4" /></svg>
-                    <input id="tocFilter" placeholder="search through categories..." class="flex-1 outline-none bg-transparent text-[12.5px]" />
-                </div>
+        <div class="hidden md:block relative w-64">
+            <div class="flex items-center gap-2 border border-stone-300 bg-stone-100 px-3 py-1.5 hover:border-teal-900 transition-colors">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                    <circle cx="5.5" cy="5.5" r="4" stroke="#57534e" stroke-width="1.4" />
+                    <line x1="8.5" y1="8.5" x2="12" y2="12" stroke="#57534e" stroke-width="1.4" stroke-linecap="round" />
+                </svg>
+                <input id="worldSearch" data-id="@w?.WorldIDPK" autocomplete="off"
+                       placeholder="Search in @w?.WorldName…"
+                       class="flex-1 font-sans text-xs bg-transparent outline-none placeholder-stone-400" />
+            </div>
+            <div id="worldSearchResults"
+                 class="hidden absolute right-0 z-20 mt-1 w-full max-h-80 overflow-auto bg-stone-100 border border-stone-300 shadow-[0_10px_24px_rgba(33,28,20,0.10)]"></div>
+        </div>
 
-                <nav id="toc" class="text-[13.5px]">
-                    @if (cats.Any())
-                    {
-                        foreach (var cat in cats)
-                        {
-                            var count = catCounts.TryGetValue(cat.CatIDPK, out var cc) ? cc : 0;
-                            var subs = cat.SubCategories?.OrderBy(su => su.SubName).ToList() ?? new List<SubCategory>();
-                            <div class="toc-group mb-1.5" data-name="@cat.CatName.ToLower()">
-                                <a asp-action="Category" asp-route-id="@w.WorldIDPK" asp-route-catId="@cat.CatIDPK"
-                                   class="flex items-center justify-between py-1 no-underline text-[#1a1a1a] hover:text-[#a89f8e]">
-                                    <span class="flex items-center gap-1.5 font-bold">
-                                        <span class="w-2 h-2 rounded-full" style="background-color:@(cat.CatColor ?? "#a89f8e")"></span>
-                                        @cat.CatName
-                                    </span>
-                                    <span class="text-[#a89f8e] text-[12px]">@count</span>
-                                </a>
-                                @if (subs.Any())
-                                {
-                                    <div class="pl-3.5">
-                                        @foreach (var sub in subs)
-                                        {
-                                            <div class="toc-item flex gap-1.5 py-0.5 text-[#444444]" data-name="@sub.SubName.ToLower()">
-                                                <span class="text-[#a89f8e]">└</span><span>@sub.SubName</span>
-                                            </div>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <p class="text-[12.5px] text-[#a89f8e]">No contents yet.</p>
-                    }
-                </nav>
-            </aside>
+        <button type="button" id="worldLikeBtn" data-id="@w?.WorldIDPK" class="@(hasLiked ? likeOn : likeOff)">
+            <svg width="13" height="12" viewBox="0 0 24 22" fill="none" aria-hidden="true"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="currentColor" stroke-width="1.8" fill="@(hasLiked ? "currentColor" : "none")" /></svg>
+            <span>Like</span>
+            <span class="opacity-40">·</span>
+            <span id="worldLikeCount">@Kfmt(likeCount)</span>
+        </button>
 
-            <!-- MAIN -->
-            <div>
-                <!-- Hero -->
-                <div class="relative aspect-[16/6] w-full border-[1.5px] border-[#1a1a1a] bg-[repeating-linear-gradient(135deg,transparent_0_10px,rgba(26,26,26,0.08)_10px_11px)] overflow-hidden flex items-end mb-6">
-                    @if (cover != null && !string.IsNullOrEmpty(cover.PicPath))
-                    {
-                        <img src="@Pic(cover.PicPath)" class="absolute inset-0 w-full h-full object-cover" alt="" />
-                    }
-                    <div class="relative px-6 pb-4">
-                        <div class="text-5xl font-bold leading-none drop-shadow-[0_1px_0_#f7f3ea] w-full bg-white p-3 rounded-xl border">Welcome to @w?.WorldName</div>
-                    </div>
-                </div>
+        <button type="button" title="Save" class="@iconBtn">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2 h8 v12 l-4 -3 -4 3 z" stroke="currentColor" stroke-width="1.4" fill="none" /></svg>
+        </button>
+        <button type="button" title="Share" class="@iconBtn">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="4" cy="8" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="3.5" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="12.5" r="2" stroke="currentColor" stroke-width="1.4" /><line x1="5.7" y1="7" x2="10.3" y2="4.4" stroke="currentColor" stroke-width="1.2" /><line x1="5.7" y1="9" x2="10.3" y2="11.6" stroke="currentColor" stroke-width="1.2" /></svg>
+        </button>
+    </div>
 
-                <!-- About + At a glance -->
-                <div class="grid grid-cols-1 md:grid-cols-[1.6fr_1fr] gap-6 mb-8">
-                    <div>
-                        <div class="text-[11px] tracking-wide text-[#a89f8e] uppercase mb-1">About this world</div>
-                        @if (!string.IsNullOrEmpty(w?.WorldDesc))
-                        {
-                            <p class="text-[14px] text-[#333333] leading-relaxed max-w-prose">@w.WorldDesc</p>
-                        }
-                        else
-                        {
-                            <p class="text-[13px] text-[#a89f8e] italic">No description yet.</p>
-                        }
-                        <div class="flex items-center gap-1.5 text-[13px] text-[#1a1a1a] mt-3">
-                            <span>▸</span><span class="hover:text-[#a89f8e] cursor-default">Start from the contents on the left, or browse by category below.</span>
-                        </div>
-                    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-[230px_1fr] gap-10">
 
-                    <div class="border-[1.5px] border-[#1a1a1a] rounded-md p-4">
-                        <div class=" text-[22px] font-bold mb-2">At a glance</div>
-                        <div class="text-[13px] space-y-1.5">
-                            <div class="flex justify-between"><span class="text-[#a89f8e]">Genre</span><span>@w?.WorldGenFK</span></div>
-                            <div class="flex justify-between"><span class="text-[#a89f8e]">Scripts</span><span>@totalScripts across @totalCategories categories</span></div>
-                            <div class="flex justify-between"><span class="text-[#a89f8e]">Characters</span><span>@totalCharacters</span></div>
-                            <div class="flex justify-between"><span class="text-[#a89f8e]">Likes</span><span>@Kfmt(likeCount)</span></div>
-                            <div class="flex justify-between"><span class="text-[#a89f8e]">Updated</span><span>@Ago(w?.WorldUpdatedAt ?? w?.WorldCreatedAt)</span></div>
-                        </div>
-                    </div>
-                </div>
+        <!-- LEFT: Contents tree -->
+        <aside>
+            <div class="flex items-baseline justify-between mb-3">
+                <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Contents</span>
+                <span class="font-sans text-xs text-stone-500">@totalScripts scripts</span>
+            </div>
 
-                <!-- Browse by category -->
-                <div class="flex items-baseline justify-between mb-3">
-                    <h2 class=" text-[30px] font-bold">Browse by category</h2>
-                    <span class="text-[12px] text-[#a89f8e]">or jump straight from the contents on the left</span>
-                </div>
+            <div class="flex items-center gap-2 border border-stone-300 bg-stone-100 px-3 py-1.5 mb-5 hover:border-teal-900 transition-colors">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                    <circle cx="5.5" cy="5.5" r="4" stroke="#57534e" stroke-width="1.4" />
+                    <line x1="8.5" y1="8.5" x2="12" y2="12" stroke="#57534e" stroke-width="1.4" stroke-linecap="round" />
+                </svg>
+                <input id="tocFilter" placeholder="Search categories…"
+                       class="flex-1 font-sans text-xs bg-transparent outline-none placeholder-stone-400" />
+            </div>
 
+            <nav id="toc">
                 @if (cats.Any())
                 {
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        @foreach (var cat in cats)
-                        {
-                            var count = catCounts.TryGetValue(cat.CatIDPK, out var cc) ? cc : 0;
-                            var subs = cat.SubCategories?.OrderBy(su => su.SubName).ToList() ?? new List<SubCategory>();
+                    foreach (var cat in cats)
+                    {
+                        var count = catCounts.TryGetValue(cat.CatIDPK, out var cc) ? cc : 0;
+                        var subs = cat.SubCategories?.OrderBy(su => su.SubName).ToList() ?? new List<SubCategory>();
+                        <div class="toc-group mb-5" data-name="@cat.CatName.ToLower()">
                             <a asp-action="Category" asp-route-id="@w.WorldIDPK" asp-route-catId="@cat.CatIDPK"
-                               class="block border-[1.5px] border-[#1a1a1a] rounded-md p-4 no-underline text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-[#f7f3ea] transition-colors group">
-                                <div class="flex items-baseline justify-between">
-                                    <span class=" text-[24px] font-bold">@cat.CatName</span>
-                                    <span class="text-[12px] text-[#a89f8e] group-hover:text-[#f7f3ea]">@count scripts</span>
-                                </div>
-                                @if (subs.Any())
-                                {
-                                    <div class="text-[12.5px] text-[#a89f8e] group-hover:text-[#f7f3ea] mt-1 line-clamp-1">
-                                        @string.Join(", ", subs.Take(4).Select(su => su.SubName))
-                                    </div>
-                                }
-                                <div class="text-[13px] mt-2">Browse →</div>
+                               class="flex items-center gap-2 pb-2 mb-2 border-b border-stone-300 no-underline font-sans text-xs tracking-[.16em] font-semibold text-teal-900 hover:text-stone-900 transition-colors">
+                                <span class="w-2 h-2 rounded-full inline-block shrink-0" style="background-color:@(cat.CatColor ?? "#a89f8e")"></span>
+                                <span class="truncate">@cat.CatName.ToUpper()</span>
+                                <span class="ml-auto shrink-0 font-normal tracking-normal text-stone-500">@count</span>
                             </a>
-                        }
-                    </div>
+                            @if (subs.Any())
+                            {
+                                <ul class="list-none p-0 m-0">
+                                    @foreach (var sub in subs)
+                                    {
+                                        <li class="toc-item font-sans text-xs text-stone-600 py-1 truncate" data-name="@sub.SubName.ToLower()">
+                                            @sub.SubName
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    }
                 }
                 else
                 {
-                    <div class="border-[1.5px] border-dashed border-[#a89f8e] rounded-md px-6 py-12 text-center">
-                        <div class=" text-[24px] font-bold mb-1">Nothing to read here yet</div>
-                        <div class="text-[13px] text-[#a89f8e]">This world has no categories or entries yet.</div>
-                    </div>
+                    <p class="font-sans text-xs text-stone-500">No contents yet.</p>
                 }
+            </nav>
+        </aside>
+
+        <!-- MAIN -->
+        <div>
+            <!-- Hero -->
+            <div class="relative aspect-[16/6] w-full border border-stone-300 bg-stone-100 @hatch overflow-hidden flex items-end mb-8">
+                @if (cover != null && !string.IsNullOrEmpty(cover.PicPath))
+                {
+                    <img src="@Pic(cover.PicPath)" class="absolute inset-0 w-full h-full object-cover" alt="" />
+                }
+                <div class="relative z-10 m-5 bg-stone-100/95 border border-stone-300 px-5 py-3">
+                    <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">The world registry</span>
+                    <div class="font-serif font-semibold text-[clamp(24px,3.5vw,38px)] tracking-[-.02em] leading-[1.05] mt-1">@w?.WorldName</div>
+                </div>
             </div>
+
+            <!-- About + At a glance -->
+            <div class="grid grid-cols-1 md:grid-cols-[1.6fr_1fr] gap-6 mb-10">
+                <div>
+                    <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">About this world</span>
+                    @if (!string.IsNullOrEmpty(w?.WorldDesc))
+                    {
+                        <p class="text-sm text-stone-600 leading-relaxed max-w-prose mt-2">@w.WorldDesc</p>
+                    }
+                    else
+                    {
+                        <p class="text-sm text-stone-500 italic mt-2">No description yet.</p>
+                    }
+                    <p class="font-sans text-xs text-stone-500 mt-4">
+                        Start from the contents on the left, or browse by category below.
+                    </p>
+                </div>
+
+                <div class="@panel">
+                    <h2 class="font-serif font-medium text-xl tracking-[-.01em] mb-3 pb-3 border-b border-stone-300">At a glance</h2>
+                    <dl class="font-sans text-xs m-0">
+                        <div class="flex justify-between gap-3 py-1.5 border-b border-stone-200">
+                            <dt class="text-stone-500 shrink-0">Genre</dt><dd class="m-0 text-right">@w?.WorldGenFK</dd>
+                        </div>
+                        <div class="flex justify-between gap-3 py-1.5 border-b border-stone-200">
+                            <dt class="text-stone-500 shrink-0">Scripts</dt><dd class="m-0 text-right">@totalScripts across @totalCategories categories</dd>
+                        </div>
+                        <div class="flex justify-between gap-3 py-1.5 border-b border-stone-200">
+                            <dt class="text-stone-500 shrink-0">Characters</dt><dd class="m-0 text-right">@totalCharacters</dd>
+                        </div>
+                        <div class="flex justify-between gap-3 py-1.5 border-b border-stone-200">
+                            <dt class="text-stone-500 shrink-0">Likes</dt><dd class="m-0 text-right">@Kfmt(likeCount)</dd>
+                        </div>
+                        <div class="flex justify-between gap-3 py-1.5">
+                            <dt class="text-stone-500 shrink-0">Updated</dt><dd class="m-0 text-right">@Ago(w?.WorldUpdatedAt ?? w?.WorldCreatedAt)</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Browse by category -->
+            <div class="flex items-end justify-between mb-4">
+                <div>
+                    <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Registry entries</span>
+                    <h2 class="font-serif font-medium text-[clamp(24px,3.2vw,34px)] tracking-[-.01em] leading-[1.05]">Browse by category</h2>
+                </div>
+                <span class="hidden sm:inline font-sans text-xs tracking-[.16em] uppercase text-stone-500">@totalCategories categories</span>
+            </div>
+
+            @if (cats.Any())
+            {
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    @foreach (var cat in cats)
+                    {
+                        var count = catCounts.TryGetValue(cat.CatIDPK, out var cc) ? cc : 0;
+                        var subs = cat.SubCategories?.OrderBy(su => su.SubName).ToList() ?? new List<SubCategory>();
+                        <a asp-action="Category" asp-route-id="@w.WorldIDPK" asp-route-catId="@cat.CatIDPK"
+                           class="bg-stone-100 border border-stone-300 p-4 flex flex-col no-underline text-stone-900 group
+                                  transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_14px_26px_rgba(33,28,20,0.10)] hover:border-[#1c4551]">
+                            <div class="flex items-baseline justify-between gap-2">
+                                <span class="flex items-baseline gap-2 min-w-0">
+                                    <span class="w-2 h-2 rounded-full inline-block shrink-0" style="background-color:@(cat.CatColor ?? "#a89f8e")"></span>
+                                    <span class="font-serif font-semibold text-lg tracking-[-.01em] truncate">@cat.CatName</span>
+                                </span>
+                                <span class="font-sans text-xs tracking-[.06em] uppercase text-stone-500 shrink-0">@count script@(count == 1 ? "" : "s")</span>
+                            </div>
+                            @if (subs.Any())
+                            {
+                                <div class="font-sans text-xs text-stone-500 mt-2 line-clamp-1">
+                                    @string.Join(" · ", subs.Take(4).Select(su => su.SubName))
+                                </div>
+                            }
+                            <div class="font-sans text-xs tracking-[.06em] uppercase text-teal-900 mt-auto pt-3">Browse →</div>
+                        </a>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="border border-dashed border-stone-400 px-6 py-16 text-center">
+                    <div class="font-serif text-2xl mb-1">Nothing to read here yet</div>
+                    <div class="font-sans text-sm text-stone-600">This world has no categories or entries on record.</div>
+                </div>
+            }
         </div>
     </div>
 </div>
 
 @section Scripts {
-<script>
-    // Contents filter
-    (function () {
-        var f = document.getElementById('tocFilter');
-        if (!f) return;
-        f.addEventListener('input', function () {
-            var q = this.value.trim().toLowerCase();
-            document.querySelectorAll('#toc .toc-group').forEach(function (g) {
-                var name = g.getAttribute('data-name') || '';
-                var subHit = Array.from(g.querySelectorAll('.toc-item'))
-                    .some(function (i) { return (i.getAttribute('data-name') || '').includes(q); });
-                g.style.display = (!q || name.includes(q) || subHit) ? '' : 'none';
-            });
-        });
-    })();
-
-    // World like toggle
-    (function () {
-        var btn = document.getElementById('worldLikeBtn');
-        if (!btn) return;
-        var tokenEl = document.querySelector('input[name="__RequestVerificationToken"]');
-        btn.addEventListener('click', async function () {
-            var id = btn.getAttribute('data-id');
-            btn.disabled = true;
-            try {
-                var res = await fetch('@Url.Action("ToggleLike", "World")/' + id, {
-                    method: 'POST',
-                    headers: { 'RequestVerificationToken': tokenEl ? tokenEl.value : '' }
+    <script>
+        // Contents filter
+        (function () {
+            var f = document.getElementById('tocFilter');
+            if (!f) return;
+            f.addEventListener('input', function () {
+                var q = this.value.trim().toLowerCase();
+                document.querySelectorAll('#toc .toc-group').forEach(function (g) {
+                    var name = g.getAttribute('data-name') || '';
+                    var subHit = Array.from(g.querySelectorAll('.toc-item'))
+                        .some(function (i) { return (i.getAttribute('data-name') || '').includes(q); });
+                    g.style.display = (!q || name.includes(q) || subHit) ? '' : 'none';
                 });
-                if (res.status === 401) { window.location.href = '/Identity/Account/Login'; return; }
-                if (!res.ok) throw new Error('failed');
-                var data = await res.json();
-                document.getElementById('worldLikeCount').textContent =
-                    data.count >= 1000 ? (data.count / 1000).toFixed(1) + 'k' : data.count;
+            });
+        })();
+
+        // World like toggle
+        (function () {
+            var btn = document.getElementById('worldLikeBtn');
+            if (!btn) return;
+
+            var ON  = ['bg-stone-900', 'border-stone-900', 'text-stone-50'];
+            var OFF = ['bg-stone-100', 'border-stone-300', 'text-stone-700',
+                       'hover:border-teal-900', 'hover:text-teal-900'];
+
+            function paint(liked) {
+                btn.classList.remove.apply(btn.classList, liked ? OFF : ON);
+                btn.classList.add.apply(btn.classList, liked ? ON : OFF);
                 var heart = btn.querySelector('path');
-                if (data.liked) {
-                    btn.classList.add('bg-[#1a1a1a]', 'text-[#f7f3ea]');
-                    if (heart) heart.setAttribute('fill', 'currentColor');
-                } else {
-                    btn.classList.remove('bg-[#1a1a1a]', 'text-[#f7f3ea]');
-                    if (heart) heart.setAttribute('fill', 'none');
+                if (heart) heart.setAttribute('fill', liked ? 'currentColor' : 'none');
+            }
+
+            var tokenEl = document.querySelector('input[name="__RequestVerificationToken"]');
+            btn.addEventListener('click', async function () {
+                var id = btn.getAttribute('data-id');
+                btn.disabled = true;
+                try {
+                    var res = await fetch('@Url.Action("ToggleLike", "World")/' + id, {
+                        method: 'POST',
+                        headers: { 'RequestVerificationToken': tokenEl ? tokenEl.value : '' }
+                    });
+                    if (res.status === 401) { window.location.href = '/Identity/Account/Login'; return; }
+                    if (!res.ok) throw new Error('failed');
+                    var data = await res.json();
+                    document.getElementById('worldLikeCount').textContent =
+                        data.count >= 1000 ? (data.count / 1000).toFixed(1) + 'k' : data.count;
+                    paint(data.liked);
+                } catch (e) {
+                    console.error(e);
+                } finally {
+                    btn.disabled = false;
                 }
-            } catch (e) {
-                console.error(e);
-            } finally {
-                btn.disabled = false;
-            }
-        });
-    })();
-
-    // Toolbar search — live "search in this world" dropdown (entries + categories)
-    (function () {
-        var input = document.getElementById('worldSearch');
-        var panel = document.getElementById('worldSearchResults');
-        if (!input || !panel) return;
-
-        var worldId    = input.getAttribute('data-id');
-        var searchBase = '@Url.Action("Search", "World")';    // /World/Search
-        var catBase    = '@Url.Action("Category", "World")';  // /World/Category
-        var scriptBase = '@Url.Action("Details", "Script")';  // /Script/Details
-
-        var timer = null, seq = 0;
-
-        function esc(s) {
-            return (s || '').replace(/[&<>"]/g, function (c) {
-                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
             });
-        }
-        function hide() { panel.classList.add('hidden'); panel.innerHTML = ''; }
+        })();
 
-        function render(data) {
-            var html = '';
+        // Toolbar search — live "search in this world" dropdown (entries + categories)
+        (function () {
+            var input = document.getElementById('worldSearch');
+            var panel = document.getElementById('worldSearchResults');
+            if (!input || !panel) return;
 
-            var headCls = 'text-[10px] tracking-wider uppercase text-[#a89f8e] pt-1.5 px-3 pb-0.5';
-            // `group` so the meta span can react to the item's hover
-            var itemCls = 'group flex items-center gap-2 py-[7px] px-3 border-b border-dashed border-[#e5ddcb] '
-                        + 'last:border-b-0 no-underline text-[#1a1a1a] text-[13px] '
-                        + 'hover:bg-[#1a1a1a] hover:text-[#f7f3ea]';
-            var titleCls = 'font-bold whitespace-nowrap overflow-hidden text-ellipsis';
-            var metaCls  = 'ml-auto shrink-0 text-[11px] text-[#a89f8e] group-hover:text-[#c9bfa9]';
+            var worldId    = input.getAttribute('data-id');
+            var searchBase = '@Url.Action("Search", "World")';    // /World/Search
+            var catBase    = '@Url.Action("Category", "World")';  // /World/Category
+            var scriptBase = '@Url.Action("Details", "Script")';  // /Script/Details
 
-            if (data.categories && data.categories.length) {
-                html += '<div class="' + headCls + '">Categories</div>';
-                data.categories.forEach(function (c) {
-                    html += '<a class="' + itemCls + '" href="' + catBase + '/' + worldId + '?catId=' + c.id + '">'
-                          +   '<span class="' + titleCls + '">' + esc(c.name) + '</span>'
-                          +   '<span class="' + metaCls + '">category</span></a>';
+            var timer = null, seq = 0;
+
+            function esc(s) {
+                return (s || '').replace(/[&<>"]/g, function (c) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
                 });
             }
-            if (data.scripts && data.scripts.length) {
-                html += '<div class="' + headCls + '">Entries</div>';
-                data.scripts.forEach(function (s) {
-                    var meta = s.cat || (s.isChar ? 'character' : 'entry');
-                    html += '<a class="' + itemCls + '" href="' + scriptBase + '?scriptidpk=' + s.id + '">'
-                          +   '<span class="' + titleCls + '">' + esc(s.title) + '</span>'
-                          +   '<span class="' + metaCls + '">' + esc(meta) + '</span></a>';
-                });
-            }
-            if (!html) html = '<div class="py-2.5 px-3 text-[12.5px] text-[#a89f8e]">No matches in this world</div>';
-            panel.innerHTML = html;
-            panel.classList.remove('hidden');
-        }
+            function hide() { panel.classList.add('hidden'); panel.innerHTML = ''; }
 
-        input.addEventListener('input', function () {
-            var q = this.value.trim();
-            clearTimeout(timer);
-            if (q.length < 1) { hide(); return; }
-            timer = setTimeout(function () {
-                var mine = ++seq;
-                fetch(searchBase + '/' + worldId + '?q=' + encodeURIComponent(q))
-                    .then(function (res) { return res.ok ? res.json() : null; })
-                    .then(function (data) { if (data && mine === seq) render(data); })
-                    .catch(function () { /* ignore */ });
-            }, 180);
-        });
-        input.addEventListener('focus', function () { if (this.value.trim()) input.dispatchEvent(new Event('input')); });
-        input.addEventListener('keydown', function (e) { if (e.key === 'Escape') { hide(); this.blur(); } });
-        document.addEventListener('click', function (e) {
-            if (e.target !== input && !panel.contains(e.target)) hide();
-        });
-    })();
-</script>
+            function render(data) {
+                var html = '';
+
+                var headCls = 'font-sans text-xs tracking-[.16em] uppercase text-stone-500 pt-2 px-3 pb-1';
+                var itemCls = 'flex items-center gap-2 py-2 px-3 border-b border-stone-200 last:border-b-0 '
+                            + 'no-underline text-stone-900 font-sans text-sm hover:bg-stone-200 transition-colors';
+                var metaCls = 'ml-auto shrink-0 font-sans text-xs tracking-[.06em] uppercase text-stone-500';
+
+                if (data.categories && data.categories.length) {
+                    html += '<div class="' + headCls + '">Categories</div>';
+                    data.categories.forEach(function (c) {
+                        html += '<a class="' + itemCls + '" href="' + catBase + '/' + worldId + '?catId=' + c.id + '">'
+                              +   '<span class="truncate">' + esc(c.name) + '</span>'
+                              +   '<span class="' + metaCls + '">category</span></a>';
+                    });
+                }
+                if (data.scripts && data.scripts.length) {
+                    html += '<div class="' + headCls + '">Entries</div>';
+                    data.scripts.forEach(function (s) {
+                        var meta = s.cat || (s.isChar ? 'character' : 'entry');
+                        html += '<a class="' + itemCls + '" href="' + scriptBase + '?scriptidpk=' + s.id + '">'
+                              +   '<span class="truncate">' + esc(s.title) + '</span>'
+                              +   '<span class="' + metaCls + '">' + esc(meta) + '</span></a>';
+                    });
+                }
+                if (!html) html = '<div class="px-3 py-3 font-sans text-sm text-stone-500">No matches in this world</div>';
+                panel.innerHTML = html;
+                panel.classList.remove('hidden');
+            }
+
+            input.addEventListener('input', function () {
+                var q = this.value.trim();
+                clearTimeout(timer);
+                if (q.length < 1) { hide(); return; }
+                timer = setTimeout(function () {
+                    var mine = ++seq;
+                    fetch(searchBase + '/' + worldId + '?q=' + encodeURIComponent(q))
+                        .then(function (res) { return res.ok ? res.json() : null; })
+                        .then(function (data) { if (data && mine === seq) render(data); })
+                        .catch(function () { /* ignore */ });
+                }, 180);
+            });
+            input.addEventListener('focus', function () { if (this.value.trim()) input.dispatchEvent(new Event('input')); });
+            input.addEventListener('keydown', function (e) { if (e.key === 'Escape') { hide(); this.blur(); } });
+            document.addEventListener('click', function (e) {
+                if (e.target !== input && !panel.contains(e.target)) hide();
+            });
+        })();
+    </script>
 }
