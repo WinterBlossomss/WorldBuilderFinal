@@ -5,131 +5,144 @@
     var status = Model.SelectedWorld.WorldIsPublic ? "public" : "private";
     var catSubCount = Model.SelectedWorld.Categories.Count > 0 ? Model.SelectedWorld.Categories.Sum(c => c.SubCategories.Count) : 0;
 }
-<div class="flex flex-col h-screen">
-    <div class="grid grid-cols-3 items-center border-y gap-2">
-        <div class="ms-3">
-            <div class="flex flex-col">
-                <h1 class="text-2xl pt-5 text-left truncate">
-                    @Model.SelectedWorld.WorldName
-                </h1>
+
+<div class="flex flex-col h-screen bg-stone-200 text-stone-900 antialiased">
+
+    <!-- ───────── top toolbar ───────── -->
+    <div class="grid grid-cols-3 items-center gap-2 border-y border-stone-300 bg-stone-200">
+        <!-- world identity -->
+        <div class="ms-6 py-4 min-w-0">
+            <div class="flex items-baseline gap-3">
+                <span class="font-sans text-[11px] tracking-[.16em] uppercase text-stone-500 shrink-0">WLD-@Model.SelectedWorld.WorldIDPK.ToString("D4")</span>
+                <h1 class="font-serif font-semibold text-2xl tracking-tight truncate">@Model.SelectedWorld.WorldName</h1>
             </div>
-            <div class="pt-2 pb-5 indent-8">
-                your world * @Model.WorldGenre.GenreName * @Model.TotalScripts scripts * @status
+            <div class="font-sans text-xs tracking-[.04em] text-stone-500 mt-1">
+                your world <span class="text-stone-400">·</span> @Model.WorldGenre.GenreName <span class="text-stone-400">·</span> @Model.TotalScripts scripts <span class="text-stone-400">·</span> @status
             </div>
         </div>
-        <div class=" flex flex-row justify-center">
-            <div class="inline-flex items-center gap-1 rounded-full border border-stone-800 bg-stone-50 p-1.5">
+
+        <!-- view switcher -->
+        <div class="flex flex-row justify-center">
+            <div class="inline-flex items-center gap-1 border border-stone-300 bg-stone-100 p-1">
                 <button data-view="board"
-                        class="view-btn flex items-center gap-2 rounded-full px-4 py-1.5 text-sm transition-colors">
+                        class="view-btn flex items-center gap-2 px-4 py-1.5 text-sm font-sans text-stone-600 transition-colors">
                     <span>⊹</span> Board
                 </button>
                 <button data-view="cards"
-                        class="view-btn flex items-center gap-2 rounded-full px-4 py-1.5 text-sm transition-colors">
+                        class="view-btn flex items-center gap-2 px-4 py-1.5 text-sm font-sans text-stone-600 transition-colors">
                     <span>▦</span> Cards
                 </button>
                 <button data-view="outline"
-                        class="view-btn flex items-center gap-2 rounded-full px-4 py-1.5 text-sm transition-colors">
+                        class="view-btn flex items-center gap-2 px-4 py-1.5 text-sm font-sans text-stone-600 transition-colors">
                     <span>☰</span> Outline
                 </button>
             </div>
         </div>
-        <div class="flex flex-row-reverse gap-2 me-3">
-            <a class="bg-sky-500 text-white border rounded-xl p-3 cursor-pointer" onclick="showScriptModal()">
+
+        <!-- actions -->
+        <div class="flex flex-row-reverse items-center gap-2 me-6">
+            <a onclick="showScriptModal()"
+               class="inline-flex items-center gap-2 font-sans text-sm px-4 py-2.5 border border-stone-900 bg-stone-900 text-[#f0ebdf] no-underline cursor-pointer transition-colors hover:bg-[#1c4551] hover:border-[#1c4551]">
                 + New Script
             </a>
-            
-            <a asp-action="Edit" asp-controller="World" asp-route-id="@Model.SelectedWorld.WorldIDPK" class="border border-sky-500 bg-white text-black border rounded-full p-3 cursor-pointer">
+            <a asp-action="Edit" asp-controller="World" asp-route-id="@Model.SelectedWorld.WorldIDPK"
+               class="inline-flex items-center font-sans text-sm px-4 py-2.5 border border-stone-300 bg-stone-100 text-stone-900 no-underline cursor-pointer transition-colors hover:border-[#1c4551] hover:text-[#1c4551]">
                 Edit World
             </a>
-            <select class="border border-sky-500 bg-white text-black border rounded-full p-3">
+            <select class="font-sans text-sm px-3 py-2.5 border border-stone-300 bg-stone-100 text-stone-700 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-2">
                 <option>Status</option>
                 <option>Public</option>
                 <option>Private</option>
             </select>
         </div>
     </div>
-    <div class="flex flex-row flex-1 min-h-0 scrollbar-auto">
-        <!-- sidebar -->
-        <div class="border-r w-80 flex flex-col min-h-0 overflow-y-auto scroll-smooth gap-3">
-            <div class="flex flex-row items-center justify-between mt-2 me-5">
-                <h1 class="text-2xl indent-8 mt-3">
-                    Scripts
-                </h1>
-                <button class="mt-1">
-                    @Model.TotalScripts
-                </button>
-            </div>
-            <div id="categoryList" class="p-5 mx-5 mt-2 border rounded-xl border-dashed overflow-y-auto max-h-64">
-                @if (Model.TotalCategories == 0)
-                {
-                    <div id="noCatTxt" class="text-center">
-                        <p>no categories yet</p>
-                        <p>Categories hold sub-categories and scripts - whatever scheme fits your world!</p>
-                    </div>
-                }
-                else
-                {
-                    foreach (var cat in Model.SelectedWorld.Categories)
-                    {
-                        <div class="py-2">
-                            <div class="flex flex-row items-center gap-2">
-                                <button class="flex flex-row gap-2 items-center cursor-pointer" onclick="loadSubCategories(@cat.CatIDPK, 'subCatContainer-@cat.CatIDPK',this)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-down text-black flex-shrink-0 hidden">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                    </svg>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-right text-black flex-shrink-0">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                                    </svg>
 
-                                    <div class="w-4 h-4 rounded-md border-2 border-dashed flex-shrink-0" style="background-color:@cat.CatColor"></div>
-                                    <h2 class="text-md">@cat.CatName</h2>
-                                </button>
-                            </div>
-                            <div id="subCatContainer-@cat.CatIDPK" class="hidden pl-5">
-                            </div>
+    <!-- ───────── body ───────── -->
+    <div class="flex flex-row flex-1 min-h-0">
+
+        <!-- ───────── sidebar ───────── -->
+        <div class="border-r border-stone-300 bg-stone-200 w-80 flex flex-col min-h-0 overflow-y-auto scroll-smooth gap-4 py-4">
+
+            <!-- scripts -->
+            <div class="flex flex-row items-center justify-between px-6">
+                <div>
+                    <span class="font-sans text-[11px] tracking-[.22em] uppercase text-teal-900">Contents</span>
+                    <h2 class="font-serif font-semibold text-2xl tracking-tight leading-none mt-0.5">Scripts</h2>
+                </div>
+                <span class="font-sans text-sm tabular-nums text-stone-500 border border-stone-300 px-2.5 py-1">@Model.TotalScripts</span>
+            </div>
+
+            <!-- categories -->
+            <div class="px-6">
+                <span class="font-sans text-[11px] tracking-[.18em] uppercase text-stone-500">Categories</span>
+                <div id="categoryList" class="mt-2 p-4 border border-dashed border-stone-400 bg-stone-100 overflow-y-auto max-h-72">
+                    @if (Model.TotalCategories == 0)
+                    {
+                        <div id="noCatTxt" class="text-center py-2">
+                            <p class="font-serif text-stone-700">no categories yet</p>
+                            <p class="text-xs text-stone-500 mt-1">Categories hold sub-categories and scripts — whatever scheme fits your world.</p>
                         </div>
                     }
-                }
-            </div>
-            <div class="flex justify-center mt-2">
-                <button onclick="showCategoryModal()" class="bg-black text-white rounded-full p-3 hover:bg-blue-500">
-                    + New Category
-                </button>
-            </div>
-            <div class="flex flex-row items-center justify-between mt-2 me-5">
-                <h1 class="text-2xl indent-8">
-                    Tags
-                </h1>
-                <button class="mt-1">
-                    @Model.TotalTags
-                </button>
-            </div>
-            <div class="p-5 mx-5 mt-2 border rounded-xl border-dashed items-center gap-3 flex flex-row flex-wrap">
-                @if (Model.TotalTags == 0)
-                {
-                    <div class="text-center">
-                        <p>no tags yet - tag scripts as you add them</p>
-                    </div>
-                    @* <div class="flex justify-center mt-2">
-                        <button class="bg-black text-white rounded-full p-3 hover:bg-blue-500">
-                            + New Tag
-                        </button>
-                    </div> *@
-                }
-                else
-                {
-                    @foreach(var tag in Model.Tags)
+                    else
                     {
-                        <div class="p-2 border rounded-xl" style="border-color:@tag.TagColor">
-                            @tag.TagName
+                        foreach (var cat in Model.SelectedWorld.Categories)
+                        {
+                            <div class="py-1.5" data-cat-id="@cat.CatIDPK">
+                                <div class="flex flex-row items-center gap-2">
+                                    <button class="flex flex-row gap-2 items-center cursor-pointer text-stone-800 hover:text-[#1c4551] transition-colors" onclick="loadSubCategories(@cat.CatIDPK, 'subCatContainer-@cat.CatIDPK',this)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-down flex-shrink-0 hidden">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                        </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-right flex-shrink-0">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                        </svg>
+
+                                        <span class="w-3.5 h-3.5 border border-stone-400 flex-shrink-0" style="background-color:@cat.CatColor"></span>
+                                        <span class="font-sans text-sm">@cat.CatName</span>
+                                    </button>
+                                </div>
+                                <div id="subCatContainer-@cat.CatIDPK" class="hidden pl-5">
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="flex justify-center mt-3">
+                    <button onclick="showCategoryModal()"
+                            class="inline-flex items-center gap-2 font-sans text-sm px-4 py-2 border border-stone-900 bg-stone-900 text-[#f0ebdf] cursor-pointer transition-colors hover:bg-[#a3712a] hover:border-[#a3712a] hover:text-stone-900">
+                        + New Category
+                    </button>
+                </div>
+            </div>
+
+            <!-- tags -->
+            <div class="px-6">
+                <div class="flex flex-row items-center justify-between">
+                    <span class="font-sans text-[11px] tracking-[.18em] uppercase text-stone-500">Tags</span>
+                    <span class="font-sans text-sm tabular-nums text-stone-500 border border-stone-300 px-2.5 py-0.5">@Model.TotalTags</span>
+                </div>
+                <div class="mt-2 p-4 border border-dashed border-stone-400 bg-stone-100 items-center gap-2 flex flex-row flex-wrap">
+                    @if (Model.TotalTags == 0)
+                    {
+                        <div class="text-center w-full py-1">
+                            <p class="text-xs text-stone-500">no tags yet — tag scripts as you add them</p>
                         </div>
                     }
-                }
-
-
+                    else
+                    {
+                        @foreach (var tag in Model.Tags)
+                        {
+                            <div class="font-sans text-xs tracking-[.04em] px-2.5 py-1 border" style="border-color:@tag.TagColor; color:@tag.TagColor">
+                                @tag.TagName
+                            </div>
+                        }
+                    }
+                </div>
             </div>
         </div>
-        <div class="flex-1 min-h-0 overflow-y-auto">
+
+        <!-- ───────── panels ───────── -->
+        <div class="flex-1 min-h-0 overflow-y-auto bg-stone-200">
             <div data-panel="cards" class="view-panel hidden">
                 <partial name="_CardView" model="Model" />
             </div>
@@ -139,186 +152,178 @@
             <div data-panel="board" class="view-panel">
                 <partial name="_BoardView" model="Model" />
             </div>
-        
+        </div>
     </div>
 </div>
 
-<!-- Modals -->
-    <div id="catModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center z-100">
-    <!--Modal-->
-        <div class="bg-white rounded-md shadow-md p-8 w-[40%] opacity-100 z-100">
-        <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-2">
-            <h2 class="text-2xl">Create New Category</h2>
-            <button onclick="hideCategoryModal()" class="text-gray-500 hover:text-gray-700 border rounded-full py-3 px-5">
-                x
-            </button>
-        </div>
-        <div class="text-xl text-semibold pb-1 pt-2">
-            <div class="flex flex-row">
-                <div class="text-xl text-semibold">
-                    Name
-                </div>
-                <div class="text-red-500">
-                    *
-                </div>
-            </div>
-        </div>
-        <input id="nameInput" class="border w-full py-1" />
-        <div class="flex flex-row justify-between mt-3">
-            <div class="flex flex-row">
-                <div class="text-xl text-semibold">
-                    Color
-                </div>
-                <div class="text-red-500">
-                    *
-                </div>
-            </div>
-            <div class="italic">
-                categorises cards on the board
-            </div>
-        </div>
-        <div class="p-5 border">
-            <div id="colorContainer" class="items-center flex flex-wrap mb-3">
+<!-- ═════════ Modals ═════════ -->
 
-            </div>
-            <div id="colorHex">
-            </div>
-        </div>
-        
-        <div class="my-3 p-3 border border-dashed flex flex-row justify-between items-center">
-            <div class="flex flex-row items-center justify-center">
-                <div>
-                    preview:
-                </div>
-                <div id="colorPreview" class="items-center justify-center">
-
-                </div>
-                <div id="namePreview">
-                    Name...
-                </div>
-            </div>
+<!-- Category modal -->
+<div id="catModal" class="hidden fixed left-0 top-0 bg-black/30 w-screen h-screen justify-center items-center z-[100]">
+    <div class="bg-stone-100 border border-stone-300 shadow-[0_20px_60px_rgba(33,28,20,0.25)] p-8 w-[40%] z-[100]">
+        <div class="flex flex-row justify-between items-center border-b border-dashed border-stone-300 pb-3">
             <div>
-                @Model.TotalScripts scripts
+                <span class="font-sans text-[11px] tracking-[.22em] uppercase text-teal-900">New Entry</span>
+                <h2 class="font-serif font-semibold text-2xl tracking-tight">Create New Category</h2>
+            </div>
+            <button onclick="hideCategoryModal()" class="text-stone-500 hover:text-stone-900 border border-stone-300 hover:bg-stone-200 w-10 h-10 grid place-items-center transition-colors">
+                ✕
+            </button>
+        </div>
+
+        <div class="pb-1 pt-4">
+            <div class="flex flex-row items-center gap-1">
+                <div class="font-sans text-sm tracking-[.1em] uppercase text-stone-600">Name</div>
+                <div class="text-[#a3712a]">*</div>
             </div>
         </div>
-        <div>
-            <div class="flex flex-row justify-between">
-                <button class="border cursor-pointer text-black p-4 rounded-xl">
-                    Cancel
-                </button>
-                <button onclick="saveCategory()" class="border cursor-pointer bg-black text-white p-4 rounded-xl">
-                    Save
-                </button>
+        <input id="nameInput" class="border border-stone-300 bg-white w-full px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-2" />
+
+        <div class="flex flex-row justify-between items-center mt-4">
+            <div class="flex flex-row items-center gap-1">
+                <div class="font-sans text-sm tracking-[.1em] uppercase text-stone-600">Color</div>
+                <div class="text-[#a3712a]">*</div>
             </div>
+            <div class="text-xs italic text-stone-500">categorises cards on the board</div>
+        </div>
+        <div class="p-4 border border-stone-300 bg-white mt-1">
+            <div id="colorContainer" class="items-center flex flex-wrap gap-1 mb-3"></div>
+            <div id="colorHex"></div>
+        </div>
+
+        <div class="my-4 p-3 border border-dashed border-stone-300 flex flex-row justify-between items-center">
+            <div class="flex flex-row items-center gap-2">
+                <div class="font-sans text-xs tracking-[.1em] uppercase text-stone-500">preview:</div>
+                <div id="colorPreview" class="items-center justify-center"></div>
+                <div id="namePreview" class="font-serif text-stone-700">Name...</div>
+            </div>
+            <div class="font-sans text-xs text-stone-500">@Model.TotalScripts scripts</div>
+        </div>
+
+        <div class="flex flex-row justify-between mt-2">
+            <button onclick="hideCategoryModal()" class="font-sans text-sm border border-stone-300 text-stone-700 hover:bg-stone-200 px-5 py-2.5 cursor-pointer transition-colors">
+                Cancel
+            </button>
+            <button onclick="saveCategory()" class="font-sans text-sm border border-stone-900 bg-stone-900 text-[#f0ebdf] hover:bg-[#1c4551] hover:border-[#1c4551] px-5 py-2.5 cursor-pointer transition-colors">
+                Save
+            </button>
         </div>
     </div>
 </div>
-    <div id="subCatModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center z-100">
-    <!--Modal-->
-        <div class="bg-white rounded-md shadow-md p-8 w-[40%] opacity-100 z-100">
-        <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-2">
-            <h2 class="text-2xl">Create New Sub-Category</h2>
-            <button onclick="hideSubCategoryModal()" class="text-gray-500 hover:text-gray-700 border rounded-full py-3 px-5">
-                x
+
+<!-- Sub-category modal -->
+<div id="subCatModal" class="hidden fixed left-0 top-0 bg-black/30 w-screen h-screen justify-center items-center z-[100]">
+    <div class="bg-stone-100 border border-stone-300 shadow-[0_20px_60px_rgba(33,28,20,0.25)] p-8 w-[40%] z-[100]">
+        <div class="flex flex-row justify-between items-center border-b border-dashed border-stone-300 pb-3">
+            <div>
+                <span class="font-sans text-[11px] tracking-[.22em] uppercase text-teal-900">New Entry</span>
+                <h2 class="font-serif font-semibold text-2xl tracking-tight">Create New Sub-Category</h2>
+            </div>
+            <button onclick="hideSubCategoryModal()" class="text-stone-500 hover:text-stone-900 border border-stone-300 hover:bg-stone-200 w-10 h-10 grid place-items-center transition-colors">
+                ✕
             </button>
         </div>
-        <div class="text-xl text-semibold pb-1 pt-2">
-            <div class="flex flex-row">
-                <div class="text-xl text-semibold">
-                    Name
-                </div>
-                <div class="text-red-500">
-                    *
-                </div>
+
+        <div class="pb-1 pt-4">
+            <div class="flex flex-row items-center gap-1">
+                <div class="font-sans text-sm tracking-[.1em] uppercase text-stone-600">Name</div>
+                <div class="text-[#a3712a]">*</div>
             </div>
         </div>
-        <input id="subNameInput" class="border w-full py-1 mb-2" />
-        
-        <div>
-            <div class="flex flex-row justify-between">
-                <button onclick="hideSubCategoryModal()" class="border cursor-pointer text-black p-4 rounded-xl">
-                    Cancel
-                </button>
-                <button onclick="saveSubCategory()" class="border cursor-pointer bg-black text-white p-4 rounded-xl">
-                    Save
-                </button>
-            </div>
+        <input id="subNameInput" class="border border-stone-300 bg-white w-full px-3 py-2 mb-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-2" />
+
+        <div class="flex flex-row justify-between mt-2">
+            <button onclick="hideSubCategoryModal()" class="font-sans text-sm border border-stone-300 text-stone-700 hover:bg-stone-200 px-5 py-2.5 cursor-pointer transition-colors">
+                Cancel
+            </button>
+            <button onclick="saveSubCategory()" class="font-sans text-sm border border-stone-900 bg-stone-900 text-[#f0ebdf] hover:bg-[#1c4551] hover:border-[#1c4551] px-5 py-2.5 cursor-pointer transition-colors">
+                Save
+            </button>
         </div>
     </div>
 </div>
-    <div id="scriptModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center z-100">
-    <!--Modal-->
-        <div class="bg-white rounded-md shadow-md p-4 w-[40%] opacity-100 z-100">
-        <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-1">
-            <h2 class="text-2xl">Where does this Script live?</h2>
-            <button onclick="hideScriptModal()" class="text-gray-500 hover:text-gray-700 border rounded-full py-3 px-5">
-                x
+
+<!-- Script placement modal -->
+<div id="scriptModal" class="hidden fixed left-0 top-0 bg-black/30 w-screen h-screen justify-center items-center z-[100]">
+    <div class="bg-stone-100 border border-stone-300 shadow-[0_20px_60px_rgba(33,28,20,0.25)] p-6 w-[40%] z-[100]">
+        <div class="flex flex-row justify-between items-center border-b border-dashed border-stone-300 pb-3">
+            <div>
+                <span class="font-sans text-[11px] tracking-[.22em] uppercase text-teal-900">Place Entry</span>
+                <h2 class="font-serif font-semibold text-2xl tracking-tight">Where does this Script live?</h2>
+            </div>
+            <button onclick="hideScriptModal()" class="text-stone-500 hover:text-stone-900 border border-stone-300 hover:bg-stone-200 w-10 h-10 grid place-items-center transition-colors">
+                ✕
             </button>
         </div>
-        <div id="scriptModalContent" class="border m-2 grid grid-cols-2">
-            <div class="border-r">
-                <div class="text-xl font-semibold p-2 border-b border-dashed">
+
+        <div id="scriptModalContent" class="border border-stone-300 bg-white mt-4 grid grid-cols-2">
+            <!-- category column -->
+            <div class="border-r border-stone-300">
+                <div class="font-sans text-xs tracking-[.14em] uppercase text-stone-600 p-3 border-b border-dashed border-stone-300">
                     Category
                 </div>
                 <div id="scriptModalCatList" class="overflow-y-auto max-h-72">
                     @foreach (var cat in Model.SelectedWorld.Categories)
                     {
-                        <div class="p-1.5">
+                        <div class="p-2" data-cat-id="@cat.CatIDPK">
                             <div class="flex flex-row items-center justify-between">
-                                <button class="flex flex-row gap-1.5 items-center cursor-pointer" onclick="selectCategoryForScript(@cat.CatIDPK, '@cat.CatName')">
-                                    <div class="w-3 h-3 rounded-sm border-2 border-dashed flex-shrink-0 p-3 rounded-xl" style="background-color:@cat.CatColor"></div>
-                                    <h2 class="text-sm">@cat.CatName</h2>
+                                <button class="flex flex-row gap-2 items-center cursor-pointer hover:text-[#1c4551] transition-colors" onclick="selectCategoryForScript(@cat.CatIDPK, '@cat.CatName')">
+                                    <span class="w-3.5 h-3.5 border border-stone-400 flex-shrink-0" style="background-color:@cat.CatColor"></span>
+                                    <span class="font-sans text-sm">@cat.CatName</span>
                                 </button>
-                                <div class="text-xs text-gray-500" id="subCatCount-@cat.CatIDPK">
+                                <div class="font-sans text-xs text-stone-500" id="subCatCount-@cat.CatIDPK">
                                     @cat.SubCategoryCount
                                 </div>
                             </div>
                         </div>
                     }
                 </div>
-                <div class="p-3 border-y-1 border-dashed">
+                <div class="p-3 border-t border-dashed border-stone-300">
                     <div class="flex flex-row items-center gap-2">
-                        <button class="flex flex-row gap-2 items-center cursor-pointer" onclick="showCategoryModal()">
-                            <h2 class="text-md italic">+ New category</h2>
+                        <button class="flex flex-row gap-2 items-center cursor-pointer text-stone-600 hover:text-[#1c4551] transition-colors" onclick="showCategoryModal()">
+                            <span class="font-sans text-sm italic">+ New category</span>
                         </button>
                     </div>
                 </div>
             </div>
+
+            <!-- sub-category column -->
             <div id="subCategoryDisplay" class="hidden">
-                <div id="subCategoryName" class="text-xl font-semibold p-2 border-b border-dashed">
+                <div id="subCategoryName" class="font-sans text-xs tracking-[.14em] uppercase text-stone-600 p-3 border-b border-dashed border-stone-300">
                     Sub-Category in
                 </div>
                 <div id="subCategoryContainer" class="overflow-y-auto max-h-72">
                 </div>
             </div>
         </div>
-        <div>
-            <div class="flex flex-row justify-between p-1">
-                <button class="border cursor-pointer text-black p-2 text-sm rounded-lg">
-                    Cancel
-                </button>
-            </div>
+
+        <div class="flex flex-row justify-between mt-3">
+            <button onclick="hideScriptModal()" class="font-sans text-sm border border-stone-300 text-stone-700 hover:bg-stone-200 px-4 py-2 cursor-pointer transition-colors">
+                Cancel
+            </button>
         </div>
     </div>
-    <div id="deleteModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center z-100">
-         <div class="bg-white rounded-md shadow-md p-8 w-[30%] opacity-100 z-100">
-            <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-2">
-                <h2 class="text-2xl">Confirm delete</h2>
-                <button onclick="hideDeleteModal()" class="text-gray-500 hover:text-gray-700 border rounded-full py-3 px-5">x</button>
-            </div>
-                <p id="deleteModalText" class="py-4">Are you sure?</p>
-                <p class="text-sm text-red-500 italic pb-4">This can't be undone.</p>
-            <div class="flex flex-row justify-between">
-                <button onclick="hideDeleteModal()" class="border cursor-pointer text-black p-4 rounded-xl">Cancel</button>
-                <button id="deleteConfirmBtn" class="border cursor-pointer bg-red-600 text-white p-4 rounded-xl">Delete</button>
-            </div>
-         </div>   
-    </div>    
+</div>
+
+<!-- Delete confirm modal -->
+<div id="deleteModal" class="hidden fixed left-0 top-0 bg-black/30 w-screen h-screen justify-center items-center z-[100]">
+    <div class="bg-stone-100 border border-stone-300 shadow-[0_20px_60px_rgba(33,28,20,0.25)] p-8 w-[30%] z-[100]">
+        <div class="flex flex-row justify-between items-center border-b border-dashed border-stone-300 pb-3">
+            <h2 class="font-serif font-semibold text-2xl tracking-tight">Confirm delete</h2>
+            <button onclick="hideDeleteModal()" class="text-stone-500 hover:text-stone-900 border border-stone-300 hover:bg-stone-200 w-10 h-10 grid place-items-center transition-colors">✕</button>
+        </div>
+        <p id="deleteModalText" class="py-4 font-sans text-stone-700">Are you sure?</p>
+        <p class="text-sm text-[#8a2f2a] italic pb-4">This can't be undone.</p>
+        <div class="flex flex-row justify-between">
+            <button onclick="hideDeleteModal()" class="font-sans text-sm border border-stone-300 text-stone-700 hover:bg-stone-200 px-5 py-2.5 cursor-pointer transition-colors">Cancel</button>
+            <button id="deleteConfirmBtn" class="font-sans text-sm border border-[#8a2f2a] bg-[#8a2f2a] text-[#f0ebdf] hover:bg-[#6f2621] px-5 py-2.5 cursor-pointer transition-colors">Delete</button>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     <script>
-            window.builderConfig = {
+        window.builderConfig = {
             worldId: @Model.SelectedWorld.WorldIDPK,
             urls: {
                 subCategories: "@Url.Action("Index", "SubCategorie")",
@@ -337,14 +342,13 @@
                 relTypes:      "@Url.Action("TypesAjax", "Connection")",
                 relCreateType: "@Url.Action("CreateTypeAjax", "Connection")",
                 cardData: "@Url.Action("CardData", "BuilderView")",
+                moveScript: "@Url.Action("MoveScript", "BuilderView")",
             }
         };
     </script>
     <script src="~/js/builder-tree.js" asp-append-version="true"></script>
     <script src="~/js/builder-modal.js" asp-append-version="true"></script>
-    <script src="~/js/builder-views.js" as
-    
-    p-append-version="true"></script>
+    <script src="~/js/builder-views.js" asp-append-version="true"></script>
     <script src="~/js/outline.js" asp-append-version="true"></script>
     <script src="~/js/board-view.js" asp-append-version="true"></script>
     <script src="~/js/cards.js" asp-append-version="true"></script>
@@ -372,16 +376,16 @@
             modal.addEventListener("click", e => { if (e.target === modal) hideDeleteModal(); });
 
             confirmBtn.addEventListener("click", async () => {
-                if (!action) 
+                if (!action)
                     return;
                 confirmBtn.disabled = true;
-                try 
-                { 
-                    await action(); 
+                try
+                {
+                    await action();
                 }
-                finally 
-                { 
-                    confirmBtn.disabled = false; hideDeleteModal(); 
+                finally
+                {
+                    confirmBtn.disabled = false; hideDeleteModal();
                 }
             });
 
@@ -389,6 +393,28 @@
                 const el = document.querySelector('input[name="__RequestVerificationToken"]');
                 return el ? el.value : "";
             }
+
+            // Re-parent a script to a category and/or sub-category. Used by both the
+            // Outline and the sidebar drag-and-drop. Returns true on success.
+            window.moveScript = async function (scriptId, catId, subId) {
+                try {
+                    const res = await fetch(window.builderConfig.urls.moveScript, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "RequestVerificationToken": token()
+                        },
+                        body: JSON.stringify({
+                            scriptId: Number(scriptId),
+                            catId: catId ? Number(catId) : null,
+                            subId: subId ? Number(subId) : null
+                        })
+                    });
+                    return res.ok;
+                } catch {
+                    return false;
+                }
+            };
 
             async function postDelete(url, key, id) {
                 return fetch(url, {
@@ -404,9 +430,14 @@
             window.deleteCategory = function (id) {
                 openDeleteModal("Delete this category? Its sub-categories and scripts go with it.", async () => {
                     const res = await postDelete(window.builderConfig.urls.catDeleteAjax, "catidpk", id);
-                    if 
-                        (res.ok) document.querySelector(`.outline-cat[data-id="${id}"]`)?.remove();
-                    else 
+                    if (res.ok) {
+                        // remove the category everywhere it appears
+                        document.querySelector(`.outline-cat[data-id="${id}"]`)?.remove();          // Outline tree
+                        document.querySelector(`#categoryList [data-cat-id="${id}"]`)?.remove();      // sidebar list
+                        document.querySelector(`#scriptModalCatList [data-cat-id="${id}"]`)?.remove(); // "New Script" modal list
+                        document.querySelector(`#cardTree [data-id="${id}"]`)?.remove();              // Cards view section (if rendered)
+                    }
+                    else
                         alert(await res.text() || "Couldn't delete this category.");
                 });
             };
@@ -414,13 +445,12 @@
             window.deleteSubCategory = function (id) {
             openDeleteModal("Delete this sub-category and its scripts?", async () => {
                 const res = await postDelete(window.builderConfig.urls.subDeleteAjax, "subidpk", id);
-                if (res.ok) 
+                if (res.ok)
                     document.querySelector(`.outline-sub[data-id="${id}"]`)?.remove();
-                else 
+                else
                     alert(await res.text() || "Couldn't delete this sub-category.");
                     });
                 };
-            })();
+        })();
     </script>
 }
-

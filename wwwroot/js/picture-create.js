@@ -139,7 +139,39 @@
         $drop.addEventListener(ev, e => { e.preventDefault(); $drop.classList.add("bg-gray-50"); }));
     ["dragleave", "drop"].forEach(ev =>
         $drop.addEventListener(ev, e => { e.preventDefault(); $drop.classList.remove("bg-gray-50"); }));
-    $drop.addEventListener("drop", e => addFiles(e.dataTransfer.files));
+    dz.addEventListener('drop', async e => {
+        e.preventDefault(); e.stopPropagation();
+        dz.className = DZ_IDLE;
+
+        // 1. Real file dropped from the OS
+        if (e.dataTransfer.files && e.dataTransfer.files.length) {
+            addFiles(e.dataTransfer.files);
+            return;
+        }
+
+        // 2. Image dragged from a web page — only a URL is available
+        const url = e.dataTransfer.getData('text/uri-list')
+            || e.dataTransfer.getData('text/plain');
+        if (!url) { buildDropZone(); return; }
+
+        try {
+            const res = await fetch(url);
+            const blob = await res.blob();
+            if (!blob.type.startsWith('image/')) { buildDropZone(); return; }
+
+            const name = (url.split('/').pop() || 'image').split('?')[0];
+            const file = new File([blob], name, { type: blob.type });
+
+            // processFile expects a FileList-like object
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            addFiles(dt.files);
+        } catch (err) {
+            console.error(err);
+            alert('Could not load that image from the web. Save it and drop the file, or use browse.');
+            buildDropZone();
+        }
+    });
     // $saveBtn?.addEventListener("click", handleSave);
 
     // seed existing pictures from the server-rendered data

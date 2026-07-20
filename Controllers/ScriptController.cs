@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using WorldBuilder.Models;
 
+[Authorize]
 public class ScriptController : Controller
 {
     private readonly WorldBuilderDBContext _context;
@@ -15,6 +18,17 @@ public class ScriptController : Controller
     public async Task<IActionResult> Index()
     {
         return View();
+    }
+
+    private async Task<int?> CurrentAuthorIdAsync()
+    {
+        var uid = User.FindFirstValue(ClaimTypes.NameIdentifier); // Identity user id (string)
+        if (string.IsNullOrEmpty(uid)) return null;
+
+        return await _context.UserInfos
+            .Where(u => u.UserInfoUserIDFK == uid)
+            .Select(u => (int?)u.UserInfoIDPK)
+            .FirstOrDefaultAsync();
     }
 
     // GET: SCRIPTS/Details/5
@@ -196,6 +210,7 @@ public class ScriptController : Controller
     // GET: SCRIPTS/Edit/5  — renders the SAME Create view, now with a real id
     public async Task<IActionResult> Edit(int? id)
     {
+
         if (id == null) return NotFound();
 
         var script = await _context.Scripts
@@ -203,6 +218,19 @@ public class ScriptController : Controller
             .Include(s => s.PicScriptPicFKs)
             .FirstOrDefaultAsync(s => s.ScriptIDPK == id);
         if (script == null) return NotFound();
+
+        var me = await CurrentAuthorIdAsync();
+
+        var ownerId = await _context.Categories
+            .Where(c => c.CatIDPK == script.ScriptCatFK)
+            .Join(_context.Worlds,
+                  c => c.CatWorldFK,
+                  w => w.WorldIDPK,
+                  (c, w) => (int?)w.WorldUserFK)
+            .FirstOrDefaultAsync();
+
+        if (me == null || ownerId == null || ownerId != me)
+            return Forbid();
 
         var cat = await _context.Categories.FirstOrDefaultAsync(c => c.CatIDPK == script.ScriptCatFK);
 
@@ -240,6 +268,19 @@ public class ScriptController : Controller
             .Include(s => s.PicScriptPicFKs)
             .FirstOrDefaultAsync(s => s.ScriptIDPK == id);
         if (script == null) return NotFound();
+
+        var me = await CurrentAuthorIdAsync();
+
+        var ownerId = await _context.Categories
+            .Where(c => c.CatIDPK == script.ScriptCatFK)
+            .Join(_context.Worlds,
+                  c => c.CatWorldFK,
+                  w => w.WorldIDPK,
+                  (c, w) => (int?)w.WorldUserFK)
+            .FirstOrDefaultAsync();
+
+        if (me == null || ownerId == null || ownerId != me)
+            return Forbid();
 
         script.ScriptTitle = form.ScriptTitle;
         script.ScriptContent = form.ScriptContent;

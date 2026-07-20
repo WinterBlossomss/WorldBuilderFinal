@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using WorldBuilder.Models;
 
 public class WorldController : Controller
@@ -21,6 +22,47 @@ public class WorldController : Controller
         if (User?.Identity?.IsAuthenticated != true) return null;
         var uid = _userManager.GetUserId(User);
         return await _context.UserInfos.FirstOrDefaultAsync(u => u.UserInfoUserIDFK == uid);
+    }
+
+    private async Task<int?> CurrentAuthorIdAsync()
+    {
+        var uid = User.FindFirstValue(ClaimTypes.NameIdentifier); // Identity user id (string)
+        if (string.IsNullOrEmpty(uid)) return null;
+
+        return await _context.UserInfos
+            .Where(u => u.UserInfoUserIDFK == uid)
+            .Select(u => (int?)u.UserInfoIDPK)
+            .FirstOrDefaultAsync();
+    }
+
+    private async Task<string?> SaveCoverImageAsync(IFormFile? file)
+    {
+        if (file == null || file.Length == 0) return null;
+
+        string ext = Path.GetExtension(file.FileName);
+        if (string.IsNullOrEmpty(ext))
+        {
+            ext = file.ContentType switch
+            {
+                "image/jpeg" => ".jpg",
+                "image/png" => ".png",
+                "image/gif" => ".gif",
+                "image/webp" => ".webp",
+                _ => ".img"
+            };
+        }
+
+        string newName = Guid.NewGuid().ToString("N") + ext;
+        string dir = Path.Combine(Path.GetFullPath("wwwroot"), "Images");
+        Directory.CreateDirectory(dir);                 // make sure the folder exists
+        string fullPath = Path.Combine(dir, newName);
+
+        using (var stream = new FileStream(fullPath, FileMode.Create, FileAccess.Write))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        return "Images/" + newName;
     }
 
     // GET: WORLDS
@@ -189,29 +231,14 @@ public class WorldController : Controller
             .FirstOrDefaultAsync(m => m.UserInfoUserIDFK == id);
             world.WorldUserFK = user.UserInfoIDPK;
 
-            if (world.UploadedPicture != null)
+            if (world.UploadedPicture != null && world.UploadedPicture.Length > 0)
             {
-                string[] fileParts = world.UploadedPicture.FileName.Split('.');
-                if (fileParts.Length != 2)
+                var picPath = await SaveCoverImageAsync(world.UploadedPicture);
+                if (picPath != null)
                 {
-                    return View(world);
+                    world.Pictures ??= new List<Picture>();     // guard against a null collection
+                    world.Pictures.Add(new Picture { PicPath = picPath });
                 }
-
-                string newName = Math.Abs(Guid.NewGuid().GetHashCode()).ToString() + "." + fileParts[1];
-
-                var newPic = new Picture
-                {
-                    PicPath = "Images/" + newName,
-                };
-
-                string wwwroot = Path.Combine(Path.GetFullPath("wwwroot"), "Images", newName);
-
-                using (var stream = new FileStream(wwwroot, FileMode.Create, FileAccess.Write))
-                {
-                    await world.UploadedPicture.CopyToAsync(stream);
-                }
-
-                world.Pictures.Add(newPic);
             }
 
             _context.Add(world);
@@ -232,6 +259,10 @@ public class WorldController : Controller
         var world = await _context.Worlds
             .Include(w => w.Pictures)
             .FirstOrDefaultAsync(w => w.WorldIDPK == id);
+
+        var me = await CurrentAuthorIdAsync();
+        if (me == null || world.WorldUserFK != me)
+            return Forbid();   // 403; use NotFound() instead if you'd rather not reveal the world exists
 
         if (world == null)
         {
@@ -264,6 +295,10 @@ public class WorldController : Controller
             return NotFound();
         }
 
+        var me = await CurrentAuthorIdAsync();
+        if (me == null || world.WorldUserFK != me)
+            return Forbid();   // 403; use NotFound() instead if you'd rather not reveal the world exists
+
         if (!ModelState.IsValid)
         {
             world.WorldName = input.WorldName;
@@ -282,27 +317,15 @@ public class WorldController : Controller
 
         var cover = world.Pictures.FirstOrDefault(p => p.PicWorldFK == world.WorldIDPK);
 
-        if (UploadedPicture != null)
+        if (UploadedPicture != null && UploadedPicture.Length > 0)
         {
-            string[] fileParts = input.UploadedPicture.FileName.Split('.');
-            if (fileParts.Length == 2)
+            var picPath = await SaveCoverImageAsync(UploadedPicture);
+            if (picPath != null)
             {
-                string newName = Math.Abs(Guid.NewGuid().GetHashCode()).ToString() + "." + fileParts[1];
-                string wwwroot = Path.Combine(Path.GetFullPath("wwwroot"), "Images", newName);
-
-                using (var stream = new FileStream(wwwroot, FileMode.Create, FileAccess.Write))
-                {
-                    await input.UploadedPicture.CopyToAsync(stream);
-                }
-
                 if (cover != null)
-                {
-                    cover.PicPath = "Images/" + newName;
-                }
+                    cover.PicPath = picPath;
                 else
-                {
-                    world.Pictures.Add(new Picture { PicPath = "Images/" + newName, PicWorldFK = world.WorldIDPK });
-                }
+                    world.Pictures.Add(new Picture { PicPath = picPath, PicWorldFK = world.WorldIDPK });
             }
         }
         else if (RemoveCover && cover != null)

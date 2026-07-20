@@ -17,7 +17,7 @@
             @* <span class="font-serif font-semibold text-[22px] tracking-[.14em]">WORLD BUILDER</span>
             <span class="font-sans text-xs tracking-[.2em] uppercase text-stone-600">the world registry</span> *@
         </a>
-        <nav aria-label="Primary" class="hidden sm:flex items-center gap-7 font-sans text-xs tracking-[.04em]">
+        <nav class="flex sm:flex items-center gap-4 text-sm overflow-x-auto whitespace-nowrap">
             <a href="#worlds" class="no-underline text-stone-600 hover:text-stone-900 transition-colors">Worlds</a>
             <a href="#index" class="no-underline text-stone-600 hover:text-stone-900 transition-colors">Genres</a>
         </nav>
@@ -25,7 +25,7 @@
     <hr class="border-none border-t border-stone-300 max-w-7xl mx-auto" aria-hidden="true">
 
     <!-- hero -->
-    <header id="top" class="relative text-center px-6 pt-20 pb-16 overflow-hidden">
+    <header class="relative text-center px-4 sm:px-6 pt-14 sm:pt-20 pb-12 sm:pb-16">
         <svg class="hidden sm:block absolute top-8 right-[max(28px,calc((100vw-1160px)/2+6px))] opacity-50 pointer-events-none" width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden="true">
             <circle cx="60" cy="60" r="52" stroke="#1c4551" stroke-width="1" />
             <circle cx="60" cy="60" r="40" stroke="#1c4551" stroke-width=".6" stroke-dasharray="2 4" />
@@ -35,10 +35,10 @@
             <text x="60" y="9" font-family="IBM Plex Mono" font-size="8" fill="#5a5142" text-anchor="middle">N</text>
         </svg>
         <div class="relative z-10 max-w-3xl mx-auto">
-            <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Est. 2019 · @Model.TotalWorlds.ToString("N0") worlds on record</span>
-            <h1 class="font-serif font-semibold text-[clamp(52px,9vw,104px)] leading-[.94] tracking-[-.02em] mt-5">Build your <span class="italic font-medium text-teal-900">world.</span></h1>
-            <p class="text-[clamp(16px,2vw,19px)] text-stone-600 max-w-xl mx-auto mt-[22px] leading-[1.55]">Create, catalogue, and explore invented worlds and the characters who live in them — fantasy, sci-fi, modern, and everything past the edge of the map.</p>
-            <div class="flex gap-4 justify-center flex-wrap mt-[34px]">
+            <span class="block text-[10px] sm:text-xs tracking-[.12em] sm:tracking-[.22em] uppercase">Est. 2019 · @Model.TotalWorlds.ToString("N0") worlds on record</span>
+            <h1 class="font-serif font-semibold text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[.94] tracking-[-.02em] mt-5">Build your <span class="italic font-medium text-teal-900">world.</span></h1>
+            <p class="text-base sm:text-lg max-w-xl text-stone-600 max-w-xl mx-auto mt-[22px] leading-[1.55]">Create, catalogue, and explore invented worlds and the characters who live in them — fantasy, sci-fi, modern, and everything past the edge of the map.</p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center mt-8">
                 <a asp-controller="World" asp-action="Create" class="inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-[#211c14] bg-[#211c14] text-[#f0ebdf] no-underline cursor-pointer transition-all duration-150 hover:bg-[#1c4551] hover:border-[#1c4551] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(33,28,20,0.10)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-[3px]">Start building <span class="text-base leading-none">→</span></a>
                 <a asp-controller="World" asp-action="Index" class="inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-[#211c14] no-underline cursor-pointer transition-all duration-150 hover:bg-[#211c14] hover:text-[#f0ebdf] hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-[3px]">Explore worlds</a>
             </div>
@@ -47,7 +47,7 @@
 
     <!-- stats (counts animate up from @Model totals) -->
     <div class="border-y border-stone-300 bg-stone-100/50">
-        <div class="grid grid-cols-2 sm:grid-cols-4 max-w-7xl mx-auto">
+        <div class="grid grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
             <div class="text-center px-6 py-[34px] border-b sm:border-b-0 border-r border-stone-200">
                 <div class="font-serif font-medium text-[clamp(30px,4vw,44px)] leading-none tracking-[-.01em] num" data-count="@Model.TotalWorlds">0</div>
                 <div class="font-sans text-xs tracking-[.16em] uppercase text-stone-600 mt-3">Worlds on record</div>
@@ -70,7 +70,7 @@
     <!-- latest worlds -->
     <section id="worlds" class="py-16">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-8">
+            <div class="flex flex-col sm:flex-row items-start sm:items-end sm:justify-between gap-3 mb-8">
                 <div>
                     <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Newest entries</span>
                     <h2 class="font-serif font-medium text-[clamp(26px,3.4vw,38px)] tracking-[-.01em] leading-[1.05]">Latest worlds</h2>
@@ -80,7 +80,7 @@
 
             @if (latest.Any())
             {
-                <div class="grid grid-cols-1 min-[440px]:grid-cols-2 md:grid-cols-3 min-[1000px]:grid-cols-5 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                     @for (int i = 0; i < latest.Count; i++)
                     {
                         var w = latest[i];
@@ -99,7 +99,7 @@
                                 }
                                 <span class="absolute top-[9px] left-[10px] font-sans text-xs tracking-[.08em] text-[#153640] bg-stone-100/80 px-[7px] py-[2px] border border-stone-200 z-10">WLD-@w.WorldIDPK.ToString("D4")</span>
                             </div>
-                            <div class="p-[15px] pb-[17px] flex flex-col flex-1">
+                            <div class="p-4 pb-[17px] flex flex-col flex-1">
                                 <h3 class="font-serif font-semibold text-lg leading-[1.1] tracking-[-.01em]">@w.WorldName</h3>
                                 <p class="text-xs text-stone-600 leading-[1.45] mt-2 mb-[14px] flex-1 line-clamp-3">@w.WorldDesc</p>
                                 <div class="flex gap-1.5 flex-wrap">
@@ -139,10 +139,10 @@
                         <a asp-controller="World" asp-action="Index" class="font-sans text-xs tracking-[.05em] text-teal-900 no-underline border-b border-transparent hover:border-[#1c4551] transition-colors whitespace-nowrap">All @genres.Count genres →</a>
                     </div>
 
-                    <div class="grid grid-cols-2 min-[1000px]:grid-cols-6 gap-x-0 gap-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-x-0 gap-y-6">
                         @foreach (var genre in genres)
                         {
-                            <div class="px-5 first:pl-0 last:pr-0 border-r last:border-r-0 border-stone-200">
+                            <div class="px-5 first:pl-0 last:pr-0 border-r lg:border-b-0 lg:border-r last:border-r-0 border-stone-200">
                                 <h4 class="font-sans text-xs tracking-[.16em] text-teal-900 font-semibold pb-3 mb-3 border-b border-stone-300 flex items-center gap-2">
                                     @if (!string.IsNullOrEmpty(genre.Color))
                                     {
@@ -153,9 +153,9 @@
                                 <ul class="list-none">
                                     @foreach (var world in genre.Worlds)
                                     {
-                                        <li class="flex justify-between items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0">
+                                        <li class="flex items-center justify-between gap-3 items-baseline gap-2 py-2 border-b border-dotted border-stone-200 last:border-b-0">
                                             <a asp-controller="World" asp-action="Details" asp-route-id="@world.Id"
-                                               class="font-serif text-base no-underline text-stone-900 hover:text-teal-900 transition-colors">@world.Name</a>
+                                               class="font-serif text-base no-underline text-stone-900 hover:text-teal-900 transition-colors truncate flex-1">@world.Name</a>
                                             <span class="font-sans text-xs text-stone-600">@Kfmt(world.Likes)</span>
                                         </li>
                                     }
@@ -175,9 +175,9 @@
                 <h2 class="font-serif font-medium text-[clamp(28px,4vw,44px)] tracking-[-.01em] leading-[1.02] max-w-[520px]">Ready to build your own world?</h2>
                 <p class="text-[#c8c1af] mt-3.5 max-w-[460px] text-sm">Start from a blank map — most writers get their first world on record in about five minutes.</p>
             </div>
-            <div class="flex gap-4 flex-wrap">
-                <a asp-controller="World" asp-action="Create" class="inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-[#f0ebdf] bg-stone-100 text-stone-900 no-underline cursor-pointer transition-all duration-150 hover:bg-[#a3712a] hover:border-[#a3712a] hover:text-stone-900 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-[3px]">Create a world <span class="text-base leading-none">→</span></a>
-                <a asp-controller="World" asp-action="Index" class="inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-[#f0ebdf] text-[#f0ebdf] no-underline cursor-pointer transition-all duration-150 hover:bg-stone-100 hover:text-stone-900 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-[3px]">Browse all worlds</a>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <a asp-controller="World" asp-action="Create" class="w-full sm:w-auto justify-center inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-[#f0ebdf] bg-stone-100 text-stone-900 no-underline cursor-pointer transition-all duration-150 hover:bg-[#a3712a] hover:border-[#a3712a] hover:text-stone-900 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-[3px]">Create a world <span class="text-base leading-none">→</span></a>
+                <a asp-controller="World" asp-action="Index" class="w-full sm:w-auto justify-center inline-flex items-center gap-2 font-sans text-sm px-6 py-3 border border-[#f0ebdf] text-[#f0ebdf] no-underline cursor-pointer transition-all duration-150 hover:bg-stone-100 hover:text-stone-900 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-[3px]">Browse all worlds</a>
             </div>
         </div>
     </div>

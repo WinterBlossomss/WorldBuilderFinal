@@ -24,17 +24,17 @@
 
 <div class="flex flex-col h-full">
     <!-- ───────── board toolbar ───────── -->
-    <div class="sticky top-0 z-50 bg-white flex flex-row items-center justify-between gap-3 px-5 py-3 border-b">
+    <div class="sticky top-0 z-50 bg-stone-200/95 backdrop-blur flex flex-row items-center justify-between gap-3 px-5 py-3 border-b border-stone-300">
         <!-- category filters -->
-        <div class="flex flex-row flex-wrap items-center gap-2">
-            <span class="text-sm text-stone-500 me-1">view:</span>
-            <button class="filter-chip is-active rounded-full border border-stone-800 bg-stone-900 text-white px-3 py-1 text-sm"
+        <div id="boardFilters" class="flex flex-row flex-wrap items-center gap-2">
+            <span class="font-sans text-[11px] tracking-[.18em] uppercase text-stone-500 me-1">view</span>
+            <button class="filter-chip is-active border border-stone-900 bg-stone-900 text-[#f0ebdf] px-3 py-1 text-sm font-sans transition-colors"
                     data-cat="all">
                 All (@Model.TotalScripts)
             </button>
             @foreach (var cat in cats)
             {
-                <button class="filter-chip rounded-full border px-3 py-1 text-sm transition-colors"
+                <button class="filter-chip border px-3 py-1 text-sm font-sans transition-colors"
                         data-cat="@cat.CatIDPK"
                         style="border-color:@cat.CatColor; color:@cat.CatColor">
                     @cat.CatName <span class="opacity-60">@CountFor(cat.CatIDPK)</span>
@@ -42,22 +42,22 @@
             }
         </div>
 
-        <!-- legend + zoom -->
+        <!-- link + zoom + reset -->
         <div class="flex flex-row items-center gap-5 shrink-0">
             <div class="flex items-center gap-2">
                 <button id="linkModeBtn"
-                        class="rounded-full border border-stone-300 px-3 py-1 text-sm hover:bg-stone-100 transition-colors">
-                    🔗 Link cards
+                        class="border border-stone-300 px-3 py-1 text-sm font-sans text-stone-600 hover:bg-stone-100 transition-colors">
+                    Link cards
                 </button>
-                <span id="linkHint" class="text-xs text-sky-600 hidden">select two cards…</span>
+                <span id="linkHint" class="font-sans text-xs text-[#a3712a] hidden">select two cards…</span>
             </div>
-            <div class="inline-flex items-center gap-1 rounded-full border border-stone-300 px-1 py-0.5">
-                <button id="zoomOut" class="w-7 h-7 rounded-full hover:bg-stone-100">−</button>
-                <span id="zoomLabel" class="text-sm w-12 text-center tabular-nums">100%</span>
-                <button id="zoomIn" class="w-7 h-7 rounded-full hover:bg-stone-100">+</button>
+            <div class="inline-flex items-center gap-1 border border-stone-300 bg-stone-100 px-1 py-0.5">
+                <button id="zoomOut" class="w-7 h-7 text-stone-600 hover:bg-stone-200 transition-colors">−</button>
+                <span id="zoomLabel" class="text-sm w-12 text-center tabular-nums font-sans text-stone-600">100%</span>
+                <button id="zoomIn" class="w-7 h-7 text-stone-600 hover:bg-stone-200 transition-colors">+</button>
             </div>
             <button id="resetBoardBtn"
-                    class="rounded-full border border-stone-300 px-3 py-1 text-sm hover:bg-stone-100 transition-colors"
+                    class="border border-stone-300 px-3 py-1 text-sm font-sans text-stone-600 hover:bg-stone-100 transition-colors"
                     title="Reset zoom, filter, and restore removed cards">
                 ↺ Reset
             </button>
@@ -65,7 +65,8 @@
     </div>
 
     <!-- ───────── board canvas (pan via scroll) ───────── -->
-    <div id="boardViewport" class="relative flex-1 min-h-0 overflow-auto bg-stone-50">
+    <div id="boardViewport" class="relative flex-1 min-h-0 overflow-auto bg-stone-50"
+         style="background-image:radial-gradient(circle,#d6d3cc 1px,transparent 1px); background-size:26px 26px;">
         <!-- #boardWorld is the zoom/transform target; geometry is computed in its unscaled space -->
         <div id="boardWorld" class="relative" style="width:3200px; height:2200px; transform-origin:0 0;">
             <!-- connection lines are drawn here by board-view.js -->
@@ -83,27 +84,27 @@
                                 ? $"{catName} · {subById[s.ScriptSubFK]}"
                                 : catName;
 
-                <div class="board-card absolute w-56 bg-white border border-stone-300 rounded-md shadow-sm"
+                <div class="board-card absolute w-56 bg-stone-100 border border-stone-300 shadow-[0_2px_8px_rgba(33,28,20,0.06)] transition-shadow hover:shadow-[0_10px_22px_rgba(33,28,20,0.12)]"
                      style="left:@s.ScriptBoardX.ToString(System.Globalization.CultureInfo.InvariantCulture)px; top:@s.ScriptBoardY.ToString(System.Globalization.CultureInfo.InvariantCulture)px; border-top:4px solid @color; z-index:10;"
                      data-script-id="@s.ScriptIDPK"
                      data-cat-id="@s.ScriptCatFK">
                     <div class="flex items-center justify-between gap-2 px-3 pt-2">
-                        <span class="text-[10px] font-semibold uppercase tracking-wide truncate"
+                        <span class="font-sans text-[10px] font-semibold uppercase tracking-[.1em] truncate"
                               style="color:@color">@label</span>
                         <div class="flex items-center gap-1 shrink-0">
-                            <button class="card-edit w-5 h-5 grid place-items-center rounded border border-stone-300 text-stone-500 hover:bg-stone-100 text-xs"
+                            <button class="card-edit w-5 h-5 grid place-items-center border border-stone-300 text-stone-500 hover:bg-stone-200 text-xs transition-colors"
                                     title="Edit">
                                 ✎
                             </button>
-                            <button class="card-remove w-5 h-5 grid place-items-center rounded border border-stone-300 text-stone-500 hover:bg-stone-100 text-xs"
+                            <button class="card-remove w-5 h-5 grid place-items-center border border-stone-300 text-stone-500 hover:bg-stone-200 text-xs transition-colors"
                                     title="Remove from board">
                                 ✕
                             </button>
                         </div>
                     </div>
                     <div class="px-3 pb-3 pt-1 cursor-grab card-body">
-                        <div class="text-lg leading-tight">@s.ScriptTitle</div>
-                        <div class="board-desc text-xs text-stone-500 mt-1">@Plain(s.ScriptContent)</div>
+                        <div class="font-serif font-semibold text-lg leading-tight tracking-tight">@s.ScriptTitle</div>
+                        <div class="board-desc text-xs text-stone-500 leading-[1.45] mt-1">@Plain(s.ScriptContent)</div>
                     </div>
                 </div>
             }

@@ -53,14 +53,14 @@ const colorHex = document.getElementById("colorHex");
 // preview swatch (declared before the focus handlers that reference it)
 const preview = document.getElementById('colorPreview');
 const colorPreview = document.createElement('div');
-colorPreview.className = 'w-8 h-8 mt-2 ms-2 me-2 inline-block border border-dashed rounded-md';
+colorPreview.className = 'w-8 h-8 mt-2 ms-2 me-2 inline-block border border-dashed border-stone-400';
 preview.appendChild(colorPreview);
 
 colors.forEach((color, i) => {
     const colorDiv = document.createElement("button");
     colorDiv.style.backgroundColor = color;
     colorDiv.style.borderColor = borders[i];
-    colorDiv.className = "w-8 h-8 p-5 inline-block m-1 border-2 rounded-xl border-dashed cursor-pointer";
+    colorDiv.className = "w-8 h-8 p-5 inline-block m-1 border-2 border-dashed cursor-pointer";
     colorDiv.addEventListener('mouseenter', () => colorDiv.style.opacity = '0.75');
     colorDiv.addEventListener('mouseleave', () => colorDiv.style.opacity = '1');
 
@@ -71,7 +71,7 @@ colors.forEach((color, i) => {
         colorDiv.style.borderColor = darkBorder;
         colorPreview.style.backgroundColor = color;
         colorHex.textContent = color;
-        colorHex.className = "inline-block p-1 border rounded-full";
+        colorHex.className = "inline-block p-1 border border-stone-300 font-sans text-xs";
     });
     colorDiv.addEventListener('blur', () => {
         colorDiv.style.backgroundColor = color;
@@ -83,10 +83,10 @@ colors.forEach((color, i) => {
 
 // custom color picker (rainbow "+" button)
 const colorPickerLabel = document.createElement("label");
-colorPickerLabel.className = "inline-flex items-center justify-center m-1 border-2 border-dashed cursor-pointer text-center rounded-xl";
+colorPickerLabel.className = "inline-flex items-center justify-center m-1 border-2 border-dashed cursor-pointer text-center";
 colorPickerLabel.style.width = "3rem";
 colorPickerLabel.style.height = "3rem";
-colorPickerLabel.style.borderColor = "#000000";
+colorPickerLabel.style.borderColor = "#211c14";
 colorPickerLabel.textContent = "+";
 colorPickerLabel.style.backgroundImage = "url('/images/rainbow_gradient.jpg')";
 colorPickerLabel.style.backgroundSize = "cover";
@@ -106,7 +106,7 @@ container.appendChild(colorPickerLabel);
 colorPickerInput.addEventListener('input', () => {
     colorPreview.style.backgroundColor = colorPickerInput.value;
     colorHex.textContent = colorPickerInput.value;
-    colorHex.className = "inline-block p-1 border rounded-full";
+    colorHex.className = "inline-block p-1 border border-stone-300 font-sans text-xs";
 });
 
 // ---- Live name preview ----
@@ -135,41 +135,55 @@ function saveCategory() {
             __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
         }
     }).done(function (res) {
+        if (txt) txt.remove();
         const html = `
-            <div class="py-2">
+            <div class="py-1.5" data-cat-id="${res.catIDPK}">
                 <div class="flex flex-row items-center gap-2">
-                    <button class="flex flex-row gap-2 items-center cursor-pointer"
+                    <button class="flex flex-row gap-2 items-center cursor-pointer text-stone-800 hover:text-[#1c4551] transition-colors"
                             onclick="loadSubCategories(${res.catIDPK}, 'subCatContainer-${res.catIDPK}', this)">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-down text-black flex-shrink-0 hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-down flex-shrink-0 hidden">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                         </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-right text-black flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-right flex-shrink-0">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                         </svg>
-                        <div class="w-4 h-4 rounded-md border-2 border-dashed flex-shrink-0" style="background-color:${res.catColor}"></div>
-                        <h2 class="text-md">${res.catName}</h2>
+                        <span class="w-3.5 h-3.5 border border-stone-400 flex-shrink-0" style="background-color:${res.catColor}"></span>
+                        <span class="font-sans text-sm">${res.catName}</span>
                     </button>
                 </div>
+                <div id="subCatContainer-${res.catIDPK}" class="hidden pl-5"></div>
             </div>
-            <div id="subCatContainer-${res.catIDPK}" class="hidden"></div>
         `;
 
         const listCat = `
-            <div class="p-1.5">
-                            <div class="flex flex-row items-center justify-between">
-                                <button class="flex flex-row gap-1.5 items-center cursor-pointer" onclick="selectCategoryForScript(${res.catIDPK}, '${res.catName}')">
-                                    <div class="w-3 h-3 rounded-sm border-2 border-dashed flex-shrink-0 p-3 rounded-xl" style="background-color:${res.catColor}"></div>
-                                    <h2 class="text-sm">${res.catName}</h2>
-                                </button>
-                                <div class="text-xs text-gray-500"  id="subCatCount-${res.catIDPK}">
-                                    0
-                                </div>
-                            </div>
+            <div class="p-2" data-cat-id="${res.catIDPK}">
+                <div class="flex flex-row items-center justify-between">
+                    <button class="flex flex-row gap-2 items-center cursor-pointer hover:text-[#1c4551] transition-colors" onclick="selectCategoryForScript(${res.catIDPK}, '${res.catName}')">
+                        <span class="w-3.5 h-3.5 border border-stone-400 flex-shrink-0" style="background-color:${res.catColor}"></span>
+                        <span class="font-sans text-sm">${res.catName}</span>
+                    </button>
+                    <div class="font-sans text-xs text-stone-500" id="subCatCount-${res.catIDPK}">
+                        0
+                    </div>
+                </div>
             </div>
         `;
 
         document.getElementById('categoryList').insertAdjacentHTML('beforeend', html);
-        scriptModalCatList.insertAdjacentHTML('beforeend', listCat)
+        scriptModalCatList.insertAdjacentHTML('beforeend', listCat);
+
+        // --- add a filter chip to the relationship board toolbar ---
+        const boardFilters = document.getElementById('boardFilters');
+        if (boardFilters) {
+            const chipHtml = `
+                <button class="filter-chip rounded-full border px-3 py-1 text-sm transition-colors"
+                        data-cat="${res.catIDPK}"
+                        style="border-color:${res.catColor}; color:${res.catColor}">
+                    ${res.catName} <span class="opacity-60">0</span>
+                </button>`;
+            boardFilters.insertAdjacentHTML('beforeend', chipHtml);
+        }
+
         nameInput.value = "";
         namePreview.textContent = "Name...";
         hideCategoryModal();
@@ -192,17 +206,17 @@ function saveSubCategory() {
     }).done(function (res) {
         const containerId = `subCatContainer-${currentSubCatParentId}`;
         const html = `
-            <div class="p-3 ms-5 border-l-2 border-dashed">
+            <div class="sidebar-sub p-3 ms-5 border-l border-dashed border-stone-300" data-sub-id="${res.subIDPK}">
                 <div class="flex flex-row items-center gap-2">
-                    <button class="flex flex-row gap-2 items-center cursor-pointer"
+                    <button class="flex flex-row gap-2 items-center cursor-pointer text-stone-700 hover:text-[#1c4551] transition-colors"
                             onclick="loadScripts(${res.subIDPK}, 'scriptContainer-${res.subIDPK}', this)">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-down text-black flex-shrink-0 hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-down text-stone-500 flex-shrink-0 hidden">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                         </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-right text-black flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:12px;height:12px;" class="chevron-right text-stone-500 flex-shrink-0">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                         </svg>
-                        <h2 class="text-md">${res.subName}</h2>
+                        <h2 class="font-sans text-sm">${res.subName}</h2>
                     </button>
                 </div>
                 <div id="scriptContainer-${res.subIDPK}" class="hidden"></div>
@@ -241,14 +255,14 @@ function selectCategoryForScript(catID, catName) {
         //All Sub-Categories
         res.forEach(sub => {
             let div = document.createElement('div');
-            div.className = "ms-1 text-sm text-gray-700 py-2";
+            div.className = "ms-1 font-sans text-sm text-stone-700 py-2";
             div.innerHTML = `
                 <div class="flex flex-row items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:15px;height:15px;" class="text-gray-500 flex-shrink-0 mb-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:15px;height:15px;" class="text-stone-400 flex-shrink-0 mb-1">
                       <path stroke-linecap="round" stroke-linejoin="round" d="m16.49 12 3.75 3.75m0 0-3.75 3.75m3.75-3.75H3.74V4.499" />
                     </svg>
-                    <button onclick="navigateToScriptCreate(${sub.subIDPK}, ${catID})">
-                        <div class="text-base">${sub.subName}</div>
+                    <button class="hover:text-[#1c4551] transition-colors cursor-pointer" onclick="navigateToScriptCreate(${sub.subIDPK}, ${catID})">
+                        <div class="font-sans text-sm">${sub.subName}</div>
                     </button>
                 </div>
             `;
@@ -257,14 +271,14 @@ function selectCategoryForScript(catID, catName) {
 
         //Button for creating Script under the Category itself
         let skipSubDiv = document.createElement('div');
-        skipSubDiv.className = "p-3 border-y-1 border-dashed";
+        skipSubDiv.className = "p-3 border-y border-dashed border-stone-300";
         skipSubDiv.innerHTML = `
             <div class="flex flex-row items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:15px;height:15px;" class="text-gray-500 flex-shrink-0 mb-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:15px;height:15px;" class="text-stone-400 flex-shrink-0 mb-1">
                       <path stroke-linecap="round" stroke-linejoin="round" d="m16.49 12 3.75 3.75m0 0-3.75 3.75m3.75-3.75H3.74V4.499" />
                     </svg>
-                <button class="flex flex-row gap-2 items-center cursor-pointer" onclick="navigateToScriptCreate(0, ${catID})">
-                    <h2 class="text-md italic"> (directly under ${catName})</h2>
+                <button class="flex flex-row gap-2 items-center cursor-pointer text-stone-600 hover:text-[#1c4551] transition-colors" onclick="navigateToScriptCreate(0, ${catID})">
+                    <h2 class="font-sans text-sm italic"> (directly under ${catName})</h2>
                 </button>
             </div>
         `;
@@ -273,11 +287,11 @@ function selectCategoryForScript(catID, catName) {
         //Button for creating a new Sub-Category
 
         let newSubBtn = document.createElement('div');
-        newSubBtn.className = "p-3 border-y-1 border-dashed";
+        newSubBtn.className = "p-3 border-y border-dashed border-stone-300";
         newSubBtn.innerHTML = `
                 <div class="flex flex-row items-center gap-2">
-                        <button class="flex flex-row gap-2 items-center cursor-pointer" onclick="showSubCategoryModal(${catID})">
-                            <h2 class="text-md italic">+ New sub-category</h2>
+                        <button class="flex flex-row gap-2 items-center cursor-pointer text-stone-600 hover:text-[#1c4551] transition-colors" onclick="showSubCategoryModal(${catID})">
+                            <h2 class="font-sans text-sm italic">+ New sub-category</h2>
                         </button>
                     </div>
         `;

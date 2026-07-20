@@ -56,7 +56,7 @@
             const line = document.createElementNS(SVGNS, 'line');
             line.setAttribute('x1', p1.x); line.setAttribute('y1', p1.y);
             line.setAttribute('x2', p2.x); line.setAttribute('y2', p2.y);
-            line.setAttribute('stroke', '#44403c');
+            line.setAttribute('stroke', '#1c4551');
             line.setAttribute('stroke-width', '1.5');
             if (link.loose) line.setAttribute('stroke-dasharray', '5 4');
             svg.appendChild(line);
@@ -64,7 +64,7 @@
             if (link.label) {
                 const lab = document.createElement('div');
                 lab.className = 'link-label absolute -translate-x-1/2 -translate-y-1/2 ' +
-                    'bg-stone-50 border border-stone-300 rounded px-1.5 py-0.5 text-[10px] text-stone-600 pointer-events-none';
+                    'bg-stone-100 border border-stone-300 px-1.5 py-0.5 font-sans text-[10px] tracking-[.04em] text-stone-600 pointer-events-none';
                 lab.style.left = ((p1.x + p2.x) / 2) + 'px';
                 lab.style.top = ((p1.y + p2.y) / 2) + 'px';
                 lab.style.zIndex = '5';
@@ -80,8 +80,8 @@
         if (!n) {
             n = document.createElement('div');
             n.id = 'boardNote';
-            n.className = 'absolute top-2 left-2 z-50 bg-amber-50 border border-amber-300 ' +
-                'text-amber-800 text-xs rounded px-2 py-1 max-w-xs';
+            n.className = 'absolute top-2 left-2 z-50 bg-[#f5eede] border border-[#a3712a]/50 ' +
+                'text-[#7a5320] font-sans text-xs px-2 py-1 max-w-xs';
             n.onclick = () => n.remove();
             viewport.appendChild(n);
         }
@@ -215,15 +215,18 @@
         }
     });
 
-    // ---------- filtering ----------
-    document.querySelectorAll('.filter-chip').forEach(chip => {
-        chip.addEventListener('click', () => {
+    // ---------- filtering (delegated so chips added later still work) ----------
+    const filterBar = document.getElementById('boardFilters');
+    if (filterBar) {
+        filterBar.addEventListener('click', e => {
+            const chip = e.target.closest('.filter-chip');
+            if (!chip) return;
             const cat = chip.dataset.cat;
             activeCat = (activeCat === cat && cat !== 'all') ? 'all' : cat; // click again => show all
             applyFilter();
             styleChips();
         });
-    });
+    }
 
     function applyFilter() {
         cards().forEach(c => {
@@ -238,12 +241,12 @@
             const on = chip.dataset.cat === activeCat;
             if (chip.dataset.cat === 'all') {
                 chip.classList.toggle('bg-stone-900', on);
-                chip.classList.toggle('text-white', on);
-                chip.classList.toggle('bg-white', !on);
+                chip.classList.toggle('text-[#f0ebdf]', on);
+                chip.classList.toggle('bg-stone-100', !on);
                 chip.classList.toggle('text-stone-700', !on);
             } else {
                 chip.style.backgroundColor = on ? chip.style.borderColor : 'transparent';
-                chip.style.color = on ? '#fff' : chip.style.borderColor;
+                chip.style.color = on ? '#f0ebdf' : chip.style.borderColor;
             }
         });
     }
@@ -294,15 +297,17 @@
 
     function setLinkMode(on) {
         linkMode = on;
-        linkBtn?.classList.toggle('bg-sky-500', on);
-        linkBtn?.classList.toggle('text-white', on);
+        linkBtn?.classList.toggle('bg-[#a3712a]', on);
+        linkBtn?.classList.toggle('border-[#a3712a]', on);
+        linkBtn?.classList.toggle('text-stone-900', on);
+        linkBtn?.classList.toggle('text-stone-600', !on);
         linkHint?.classList.toggle('hidden', !on);
         viewport.classList.toggle('cursor-crosshair', on);
         if (!on) clearSelection();
     }
 
     function clearSelection() {
-        selected.forEach(c => c.classList.remove('ring-2', 'ring-sky-500'));
+        selected.forEach(c => c.classList.remove('ring-2', 'ring-[#a3712a]'));
         selected = [];
         chosenType = null;
         closePopover();
@@ -313,10 +318,10 @@
         if (popover) return;                       // resolve the open link first
         const i = selected.indexOf(card);
         if (i >= 0) {
-            card.classList.remove('ring-2', 'ring-sky-500');
+            card.classList.remove('ring-2', 'ring-[#a3712a]');
             selected.splice(i, 1);
         } else if (selected.length < 2) {
-            card.classList.add('ring-2', 'ring-sky-500');
+            card.classList.add('ring-2', 'ring-[#a3712a]');
             selected.push(card);
         }
         if (linkHint) linkHint.textContent = selected.length === 1 ? 'select one more…' : 'select two cards…';
@@ -331,7 +336,7 @@
         } catch { relTypes = []; }
     }
 
-    function titleOf(card) { return card.querySelector('.text-lg')?.textContent.trim() || 'script'; }
+    function titleOf(card) { return card.querySelector('.font-serif')?.textContent.trim() || 'script'; }
 
     async function openPopover() {
         if (!urls.relLink || !urls.relTypes) {
@@ -342,15 +347,15 @@
         closePopover();
 
         popover = document.createElement('div');
-        popover.className = 'fixed z-[60] bg-white border border-stone-300 rounded-lg shadow-xl p-3 w-72 text-sm';
+        popover.className = 'fixed z-[60] bg-stone-100 border border-stone-300 shadow-[0_20px_60px_rgba(33,28,20,0.25)] p-3 w-72 text-sm font-sans';
         popover.innerHTML =
-            `<div class="font-semibold mb-2 leading-snug">Link “${esc(titleOf(selected[0]))}” ↔ “${esc(titleOf(selected[1]))}”</div>
-             <div class="text-xs text-stone-500 mb-1">HOW:</div>
+            `<div class="font-serif font-semibold text-base mb-2 leading-snug">Link “${esc(titleOf(selected[0]))}” ↔ “${esc(titleOf(selected[1]))}”</div>
+             <div class="font-sans text-[11px] tracking-[.14em] uppercase text-stone-500 mb-1">How:</div>
              <div id="lkPills" class="flex flex-wrap gap-1.5 mb-2"></div>
-             <div id="lkErr" class="text-xs text-red-500 mb-2 hidden"></div>
+             <div id="lkErr" class="text-xs text-[#8a2f2a] mb-2 hidden"></div>
              <div class="flex justify-between">
-                 <button id="lkCancel" class="border rounded-lg px-3 py-1 hover:bg-stone-100">Cancel</button>
-                 <button id="lkSave" class="bg-black text-white rounded-lg px-3 py-1 disabled:opacity-40" disabled>Link</button>
+                 <button id="lkCancel" class="border border-stone-300 px-3 py-1 hover:bg-stone-200 transition-colors">Cancel</button>
+                 <button id="lkSave" class="bg-stone-900 text-[#f0ebdf] px-3 py-1 hover:bg-[#1c4551] transition-colors disabled:opacity-40" disabled>Link</button>
              </div>`;
         document.body.appendChild(popover);
         positionPopover();
@@ -380,7 +385,7 @@
             const b = document.createElement('button');
             b.type = 'button';
             b.textContent = t.descr;
-            b.className = 'rounded-full px-2.5 py-0.5 border text-xs';
+            b.className = 'px-2.5 py-0.5 border text-xs font-sans';
             b.style.background = chosenType === t.id ? c.bg : 'transparent';
             b.style.color = c.fg;
             b.style.borderColor = c.fg;
@@ -390,7 +395,7 @@
         const add = document.createElement('button');
         add.type = 'button';
         add.textContent = '+ new';
-        add.className = 'rounded-full px-2.5 py-0.5 border border-dashed text-stone-500 text-xs';
+        add.className = 'px-2.5 py-0.5 border border-dashed border-stone-400 text-stone-500 text-xs font-sans';
         add.onclick = createType;
         wrap.appendChild(add);
         positionPopover();

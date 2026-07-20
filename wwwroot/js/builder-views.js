@@ -6,14 +6,11 @@ const viewPanels = document.querySelectorAll('.view-panel');
 function selectView(view) {
     viewButtons.forEach(btn => {
         const isActive = btn.dataset.view === view;
+        // active: solid ink chip with cream text · inactive: muted, hover warms
         btn.classList.toggle('bg-stone-900', isActive);
-        btn.classList.toggle('text-stone-50', isActive);
+        btn.classList.toggle('text-[#f0ebdf]', isActive);
         btn.classList.toggle('font-semibold', isActive);
-        btn.classList.toggle('not-italic', isActive);
-        btn.classList.toggle('bg-sky-500', isActive);
-        btn.classList.toggle('bg-stone-50', !isActive);
-        btn.classList.toggle('text-white', isActive);
-        btn.classList.toggle('text-stone-800', !isActive);
+        btn.classList.toggle('text-stone-600', !isActive);
         btn.classList.toggle('hover:bg-stone-200', !isActive);
     });
     viewPanels.forEach(p => p.classList.toggle('hidden', p.dataset.panel !== view));

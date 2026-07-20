@@ -26,16 +26,15 @@
 <body class="min-h-screen flex flex-col bg-stone-200 text-stone-900 antialiased">
 
     <!-- top bar -->
-    <header class="sticky top-0 z-50 bg-stone-200 backdrop-blur border-b border-stone-300">
-        <div class="flex items-center justify-between max-w-7xl mx-auto px-6 py-3.5 gap-4">
+    <header class="sticky top-0 z-50 bg-stone-200/95 backdrop-blur supports-[backdrop-filter]:bg-stone-200/80 border-b border-stone-300">
+        <div class="flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 gap-3">
 
-            <div class="flex items-center gap-3 min-w-0">
-                <button type="button" onclick="showDrawer()"
-                        class="material-symbols-outlined cursor-pointer text-stone-600 hover:text-stone-900 transition-colors sm:hidden">
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                <button onclick="showDrawer()" class="material-symbols-outlined sm:hidden p-2 -ml-2 rounded-md text-stone-600 hover:bg-stone-300/50 hover:text-stone-900 transition">
                     menu
                 </button>
-                <a asp-controller="Home" asp-action="Index" class="flex items-baseline gap-3 no-underline shrink-0">
-                    <span class="font-serif font-semibold text-[20px] tracking-[.14em] uppercase text-teal-900">WORLD BUILDER</span>
+                <a asp-controller="Home" asp-action="Index" class="flex items-baseline gap-2 sm:gap-3 no-underline min-w-0">
+                    <span class="font-serif font-semibold text-lg sm:text-[20px] tracking-[.08em] sm:tracking-[.14em] uppercase text-teal-900">WORLD BUILDER</span>
                     <span class="hidden md:inline font-sans text-xs tracking-[.2em] uppercase text-teal-600">the world registry</span>
                 </a>
             </div>
@@ -47,8 +46,8 @@
 
             </nav>
 
-            <div class="flex items-center gap-3">
-                <div class="relative hidden md:block">
+            <div class="flex items-center gap-2 shrink-0">
+                <div class="relative hidden lg:block">
                     <form asp-controller="World" asp-action="Index" method="get"
                           class="flex items-center gap-2 border border-stone-300 bg-stone-100 px-3 py-1.5 hover:border-teal-900">
                         <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
@@ -60,7 +59,7 @@
                                placeholder="Search worlds…" />
                     </form>
                     <div id="globalSearchResults"
-                         class="hidden absolute right-0 z-[60] mt-1 w-80 max-h-96 overflow-auto bg-stone-100 border border-stone-300 shadow-xl">
+                         class="hidden absolute right-0 z-[60] mt-1 w-[calc(100vw-2rem)] max-w-80 max-h-96 overflow-auto bg-stone-100 border border-stone-300 shadow-xl">
                     </div>
                 </div>
                 <partial name="_LoginPartial" model="userInfoId" />
@@ -70,7 +69,7 @@
 
     <!-- Drawer -->
     <div id="drawer"
-         class="hidden fixed inset-0 z-[100] flex justify-start bg-black/30 opacity-0 transition-opacity duration-200"
+         class="hidden fixed inset-0 z-[100] flex justify-start overflow-hidden bg-black/30 opacity-0 transition-opacity duration-200"
          onclick="hideDrawer()">
         @await Component.InvokeAsync("Drawer")
     </div>
@@ -81,12 +80,12 @@
 
     <!-- footer -->
     <footer class="border-t border-stone-300 bg-stone-100/60">
-        <div class="max-w-7xl mx-auto px-6 py-7 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div class="flex items-baseline gap-3">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3">
                 <span class="font-serif font-semibold tracking-[.14em] text-teal-900">WORLD BUILDER</span>
                 <span class="font-sans text-xs tracking-[.2em] uppercase text-teal-600">the world registry</span>
             </div>
-            <div class="font-sans text-xs text-stone-500 flex items-center gap-4">
+            <div class="font-sans text-xs text-stone-500 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                 <span>© 2026 WorldBuilder</span>
                 <a asp-area="" asp-controller="Home" asp-action="Privacy"
                    class="no-underline text-stone-500 hover:text-teal-900 transition-colors">Privacy</a>

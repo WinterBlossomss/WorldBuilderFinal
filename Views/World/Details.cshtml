@@ -31,11 +31,11 @@
     }
 }
 
-<div class="max-w-7xl mx-auto px-6 py-8 text-stone-900">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 text-stone-900">
     @Html.AntiForgeryToken()
 
     <!-- Breadcrumb -->
-    <div class="flex items-center gap-1.5 font-sans text-xs text-stone-500 mb-5">
+    <div class="flex flex-wrap items-center gap-1.5 text-xs font-sans text-xs text-stone-500 mb-5">
         <a asp-action="Index" class="no-underline hover:text-teal-900 transition-colors">Public Worlds</a>
         <span>›</span>
         <a asp-action="Index" asp-route-genre="@Model?.WorldGenFK" class="no-underline hover:text-teal-900 transition-colors">@Model?.WorldGenFK</a>
@@ -44,7 +44,7 @@
     </div>
 
     <!-- ── Hero ── -->
-    <div class="border border-stone-300 bg-stone-100 p-5 mb-10 grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-6">
+    <div class="border border-stone-300 bg-stone-100 p-4 sm:p-5 mb-8 sm:mb-10 grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-5 sm:gap-6">
 
         <!-- Cover -->
         <div class="aspect-[16/9] w-full border border-stone-300 bg-[repeating-linear-gradient(135deg,transparent_0_10px,rgba(28,69,81,0.06)_10px_11px)] flex items-center justify-center overflow-hidden">
@@ -64,7 +64,7 @@
                 @Model?.WorldGenFK · @(Model != null && Model.WorldIsPublic ? "public world" : "private world")
             </div>
 
-            <h1 class="font-serif font-semibold text-[clamp(30px,4vw,44px)] tracking-[-.01em] leading-[1.02] mb-1.5">@Model?.WorldName</h1>
+            <h1 class="font-serif font-semibold text-[clamp(26px,7vw,44px)] tracking-[-.01em] leading-[1.02] mb-1.5">@Model?.WorldName</h1>
 
             <div class="font-sans text-sm text-stone-600 mb-3">
                 by <span class="text-stone-900">@@@(author ?? "creator")</span>
@@ -73,11 +73,11 @@
 
             @if (!string.IsNullOrEmpty(Model?.WorldDesc))
             {
-                <p class="text-[15px] text-stone-600 leading-relaxed mb-4 max-w-prose">@Model.WorldDesc</p>
+                <p class="text-sm sm:text-[15px] text-stone-600 leading-relaxed mb-4 max-w-prose">@Model.WorldDesc</p>
             }
 
             <!-- Stats -->
-            <div class="flex items-center gap-2 font-sans text-sm text-stone-600 mb-1">
+            <div class="flex flex-wrap items-center gap-2 text-sm font-sans text-stone-600 mb-1">
                 <span class="inline-flex items-center gap-1.5">
                     <svg width="12" height="11" viewBox="0 0 24 22" fill="none"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="#1c4551" stroke-width="1.8" fill="none" /></svg>
                     <span id="worldLikeCountStat">@Kfmt(Model?.WorldLikes ?? 0)</span>
@@ -91,10 +91,10 @@
             <!-- Tags -->
             @if (Model?.Tags != null && Model.Tags.Any())
             {
-                <div class="flex flex-wrap gap-1.5 mt-2">
+                <div class="flex flex-wrap gap-2 mt-2">
                     @foreach (var tag in Model.Tags)
                     {
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 font-sans text-xs text-stone-700 border border-stone-300">
+                        <span class="inline-flex justify-center w-full sm:w-auto items-center gap-1.5 px-2.5 py-0.5 font-sans text-xs text-stone-700 border border-stone-300">
                             <span class="w-2 h-2 rounded-full" style="background-color:@tag.TagColor"></span>
                             @tag.TagName
                         </span>
@@ -103,37 +103,46 @@
             }
 
             <!-- Actions -->
-            <div class="flex items-center gap-2.5 mt-auto pt-6">
+            <div class="flex flex-col sm:flex-row gap-3 mt-auto pt-6">
                 @if (isOwner)
                 {
                     <a asp-action="Edit" asp-route-id="@Model?.WorldIDPK"
-                       class="inline-flex items-center font-sans text-sm font-medium px-6 py-3 bg-stone-900 text-stone-50 no-underline hover:bg-teal-900 transition-colors">Edit world</a>
+                       class="inline-flex justify-center w-full sm:w-auto items-center font-sans text-sm font-medium px-6 py-3 bg-stone-900 text-stone-50 no-underline hover:bg-teal-900 transition-colors">Edit world</a>
                     <a asp-controller="BuilderView" asp-action="Index" asp-route-id="@Model?.WorldIDPK"
-                       class="inline-flex items-center font-sans text-sm font-medium px-5 py-3 border border-stone-300 text-stone-900 no-underline hover:border-teal-900 hover:text-teal-900 transition-colors">Open workspace →</a>
+                       class="inline-flex justify-center w-full sm:w-auto items-center font-sans text-sm font-medium px-5 py-3 border border-stone-300 text-stone-900 no-underline hover:border-teal-900 hover:text-teal-900 transition-colors">Open workspace →</a>
                 }
                 else
                 {
                     <a asp-action="Read" asp-route-id="@Model?.WorldIDPK"
-                       class="inline-flex items-center font-sans text-sm font-medium px-6 py-3 bg-stone-900 text-stone-50 no-underline hover:bg-teal-900 transition-colors">Enter the world →</a>
+                       class="inline-flex justify-center w-full sm:w-auto items-center font-sans text-sm font-medium px-6 py-3 bg-stone-900 text-stone-50 no-underline hover:bg-teal-900 transition-colors">Enter the world →</a>
                 }
 
                 <!-- Like button — works for anyone signed in, owner or not -->
                 <button type="button" id="worldLikeBtn" data-id="@Model?.WorldIDPK"
-                        class="inline-flex items-center gap-1.5 border px-4 py-3 font-sans text-sm font-medium cursor-pointer transition-colors @(hasLiked ? "bg-teal-900 text-stone-50 border-teal-900" : "border-stone-300 text-stone-900 hover:border-teal-900 hover:text-teal-900")">
+                        class="inline-flex justify-center w-full sm:w-auto items-center gap-1.5 border px-4 py-3 font-sans text-sm font-medium cursor-pointer transition-colors @(hasLiked ? "bg-teal-900 text-stone-50 border-teal-900" : "border-stone-300 text-stone-900 hover:border-teal-900 hover:text-teal-900")">
                     <svg width="13" height="12" viewBox="0 0 24 22" fill="none"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="currentColor" stroke-width="1.8" fill="@(hasLiked ? "currentColor" : "none")" /></svg>
                     <span>Like</span><span class="opacity-60">·</span><span id="worldLikeCount">@(Model?.WorldLikes ?? 0)</span>
                 </button>
 
                 <button type="button" title="Share"
-                        class="inline-flex items-center justify-center w-11 h-11 border border-stone-300 text-stone-900 cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors">
+                        class="inline-flex justify-center w-full sm:w-auto items-center justify-center w-11 h-11 border border-stone-300 text-stone-900 cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors">
                     <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="4" cy="8" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="3.5" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="12.5" r="2" stroke="currentColor" stroke-width="1.4" /><line x1="5.7" y1="7" x2="10.3" y2="4.4" stroke="currentColor" stroke-width="1.2" /><line x1="5.7" y1="9" x2="10.3" y2="11.6" stroke="currentColor" stroke-width="1.2" /></svg>
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- ── Bottom carousel: more in genre ── -->
+    @if (moreInGenre.Any())
+    {
+        <div class="mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-stone-300">
+            <partial name="_WorldRow"
+                     model='new ValueTuple<string, string, List<WorldBuilder.Models.World>>("More " + Model.WorldGenFK + " worlds", genreCount.ToString("N0") + " worlds", moreInGenre)' />
+        </div>
+    }
+
     <!-- ── Body + Sidebar ── -->
-    <div class="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-10">
+    <div class="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-8 lg:gap-10">
 
         <!-- Left: readable body -->
         <div>
@@ -144,7 +153,7 @@
                     <section id="cat-@cat.CatIDPK" class="mb-9 scroll-mt-6">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="w-2.5 h-2.5 rounded-full" style="background-color:@cat.CatColor"></span>
-                            <h2 class="font-serif font-semibold text-2xl tracking-[-.01em] leading-none">@cat.CatName</h2>
+                            <h2 class="font-serif font-semibold text-xl sm:text-2xl tracking-[-.01em] leading-none">@cat.CatName</h2>
                         </div>
                         @if (!string.IsNullOrEmpty(cat.CatDescription))
                         {
@@ -155,7 +164,7 @@
                             <ul class="space-y-1.5 max-w-prose">
                                 @foreach (var sub in cat.SubCategories.OrderBy(s => s.SubName))
                                 {
-                                    <li class="flex gap-2 text-sm">
+                                    <li class="flex items-start gap-2 text-sm">
                                         <span class="text-stone-400">└</span>
                                         <div>
                                             <span class="font-semibold">@sub.SubName</span>
@@ -181,7 +190,7 @@
         </div>
 
         <!-- Right: contents sidebar + other worlds -->
-        <aside>
+        <aside class="mt-10 lg:mt-0">
             <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">Index</span>
             <h2 class="font-serif font-semibold text-2xl tracking-[-.01em] mt-1 mb-3">Contents</h2>
 
@@ -196,7 +205,7 @@
                     @foreach (var cat in categories)
                     {
                         <div class="toc-group" data-name="@cat.CatName.ToLower()">
-                            <a href="#cat-@cat.CatIDPK" class="flex items-center justify-between py-1 no-underline text-stone-900 hover:text-teal-900 transition-colors">
+                            <a href="#cat-@cat.CatIDPK" class="flex items-center gap-2 p-3 justify-between py-1 no-underline text-stone-900 hover:text-teal-900 transition-colors">
                                 <span class="font-semibold">@cat.CatName</span>
                                 <span class="font-sans text-xs text-stone-500">@(cat.SubCategories?.Count ?? 0)</span>
                             </a>
@@ -227,8 +236,8 @@
                     @foreach (var w in moreByAuthor)
                     {
                         <a asp-action="Details" asp-route-id="@w.WorldIDPK"
-                           class="flex items-center justify-between text-sm no-underline text-stone-900 hover:text-teal-900 transition-colors">
-                            <span class="flex gap-1.5"><span class="text-stone-400">└</span>@w.WorldName</span>
+                           class="lex items-center justify-between gap-3 text-sm no-underline text-stone-900 hover:text-teal-900 transition-colors">
+                            <span class="flex-1 truncate flex gap-1.5"><span class="text-stone-400">└</span>@w.WorldName</span>
                             <span class="inline-flex items-center gap-1 font-sans text-xs text-stone-500">
                                 <svg width="11" height="10" viewBox="0 0 24 22" fill="none"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="#a8a29e" stroke-width="1.8" fill="none" /></svg>
                                 @Kfmt(w.WorldLikes ?? 0)
@@ -240,14 +249,7 @@
         </aside>
     </div>
 
-    <!-- ── Bottom carousel: more in genre ── -->
-    @if (moreInGenre.Any())
-    {
-        <div class="mt-12 pt-8 border-t border-stone-300">
-            <partial name="_WorldRow"
-                     model='new ValueTuple<string, string, List<WorldBuilder.Models.World>>("More " + Model.WorldGenFK + " worlds", genreCount.ToString("N0") + " worlds", moreInGenre)' />
-        </div>
-    }
+    
 </div>
 
 

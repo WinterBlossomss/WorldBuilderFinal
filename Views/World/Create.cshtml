@@ -315,11 +315,35 @@
                 // Ignore leave events fired when moving onto a child element.
                 if (!dz.contains(e.relatedTarget)) dz.className = DZ_IDLE;
             });
-            dz.addEventListener('drop', e => {
-                e.preventDefault(); e.stopPropagation();
-                dz.className = DZ_IDLE;
-                processFile(e.dataTransfer.files);
-            });
+
+
+        // Drop handler (replaces the old one)
+        dz.addEventListener('drop', async e => {
+            e.preventDefault(); e.stopPropagation();
+            dz.className = DZ_IDLE;
+
+            // OS file drop
+            if (e.dataTransfer.files && e.dataTransfer.files.length) {
+                setFile(e.dataTransfer.files[0]);
+                return;
+            }
+
+            // Image dragged from a web page — only a URL is available
+            const url = e.dataTransfer.getData('text/uri-list')
+                     || e.dataTransfer.getData('text/plain');
+            if (!url) { buildDropZone(); return; }
+
+            try {
+                const res  = await fetch(url);
+                const blob = await res.blob();
+                const name = (url.split('/').pop() || 'image').split('?')[0];
+                setFile(new File([blob], name, { type: blob.type }));
+            } catch (err) {
+                console.error(err);
+                alert('Could not load that image from the web (likely CORS). Save it and drop the file, or use browse.');
+                buildDropZone();
+            }
+        });
 
             thumbZone.appendChild(dz);
         }
@@ -341,16 +365,23 @@
         function renderThumb() { thumb ? buildFilledZone() : buildDropZone(); }
         function revoke() { if (thumb) URL.revokeObjectURL(thumb.url); }
 
-        function processFile(files) {
-            const f = files && files[0];
-            if (!f || !f.type.startsWith('image/')) { buildDropZone(false); return; }
+        function setFile(file) {
+            if (!file || !file.type.startsWith('image/')) { buildDropZone(); return; }
+
+            // Put the file into the actual form field so it posts with the form
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            fileInput.files = dt.files;
+
             revoke();
-            thumb = { url: URL.createObjectURL(f), name: f.name };
+            thumb = { url: URL.createObjectURL(file), name: file.name };
             renderThumb();
             renderPreview();
         }
+        fileInput.addEventListener('change', e => {
+            if (e.target.files[0]) setFile(e.target.files[0]);
+        });
 
-        fileInput.addEventListener('change', e => processFile(e.target.files));
 
         // Visibility toggle
         const GLOBE = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 7h11M7 1.5Q10.5 7 7 12.5M7 1.5Q3.5 7 7 12.5" stroke="currentColor" stroke-width=".9"/></svg>`;

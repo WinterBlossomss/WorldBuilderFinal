@@ -237,6 +237,47 @@ namespace WorldBuilder.Controllers
             return Ok();
         }
 
+        public class MoveScriptDto
+        {
+            public int ScriptId { get; set; }
+            public int? CatId { get; set; }   // set when dropped directly on a category
+            public int? SubId { get; set; }   // set when dropped on a sub-category
+        }
+
+        // POST: /BuilderView/MoveScript   body: { scriptId, catId, subId }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MoveScript([FromBody] MoveScriptDto dto)
+        {
+            var script = await _context.Scripts.FirstOrDefaultAsync(s => s.ScriptIDPK == dto.ScriptId);
+            if (script == null) return NotFound();
+
+            if (dto.SubId is > 0)
+            {
+                // dropped on a sub-category: inherit that sub's parent category too
+                var sub = await _context.SubCategories.FirstOrDefaultAsync(s => s.SubIDPK == dto.SubId);
+                if (sub == null) return NotFound();
+                script.ScriptSubFK = sub.SubIDPK;
+                script.ScriptCatFK = sub.SubCatFK;
+            }
+            else if (dto.CatId is > 0)
+            {
+                // dropped directly on a category (no sub-category)
+                var cat = await _context.Categories.FirstOrDefaultAsync(c => c.CatIDPK == dto.CatId);
+                if (cat == null) return NotFound();
+                script.ScriptCatFK = cat.CatIDPK;
+                script.ScriptSubFK = 0;
+            }
+            else
+            {
+                return BadRequest("No target category or sub-category supplied.");
+            }
+
+            script.ScriptUpdateAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
         // GET: BuilderViewController/Details/5
         public ActionResult Details(int id)
         {

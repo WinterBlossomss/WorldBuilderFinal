@@ -28,16 +28,17 @@
     function scriptCard(catColor, s, catName) {
         const label = s.subName ? `${catName} · ${s.subName}` : catName;
         return `
-        <a href="/Script/Edit?id=${s.id}" class="border rounded-lg pb-4 flex flex-col justify-between hover:shadow-sm bg-white h-full">
+        <a href="/Script/Edit?id=${s.id}"
+           class="group border border-stone-300 bg-stone-100 pb-4 flex flex-col justify-between h-full no-underline text-stone-900 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_24px_rgba(33,28,20,0.10)] hover:border-[#1c4551]">
             <div>
-                <div class="border-b-1 border-dashed p-2 w-full" style="background:${catColor}"></div>
+                <div class="h-1.5 w-full" style="background:${catColor}"></div>
                 <div class="px-4 pt-3">
-                    <div class="text-xs uppercase tracking-wide text-gray-400 mb-1">${label}</div>
-                    <div class="text-lg font-semibold italic mb-1">${s.title || "Untitled"}</div>
-                    <div class="text-sm text-gray-500 line-clamp-2">${s.snippet || ""}</div>
+                    <div class="font-sans text-[11px] uppercase tracking-[.14em] text-stone-500 mb-1">${label}</div>
+                    <div class="font-serif text-lg font-semibold tracking-tight leading-tight mb-1">${s.title || "Untitled"}</div>
+                    <div class="text-sm text-stone-500 leading-[1.45] line-clamp-2">${s.snippet || ""}</div>
                 </div>
             </div>
-            <div class="flex flex-row justify-between text-xs text-gray-400 mt-4 px-4">
+            <div class="flex flex-row justify-between font-sans text-[11px] tracking-[.04em] text-stone-400 mt-4 px-4">
                 <span>edited ${ago(s.edited)}</span>
                 <span>↔ ${s.links} mentions</span>
             </div>
@@ -46,30 +47,31 @@
 
     function newScriptCard(catId, catName) {
         return `
-        <a href="/Script/Create?catID=${catId}" class="border border-dashed rounded-lg p-4 flex items-center justify-center text-gray-400 hover:bg-gray-50 min-h-[120px]">
+        <a href="/Script/Create?catID=${catId}"
+           class="border border-dashed border-stone-400 p-4 flex items-center justify-center text-stone-400 hover:border-[#a3712a] hover:text-[#a3712a] transition-colors min-h-[120px] no-underline">
             <div class="text-center">
-                <div class="text-2xl">+</div>
-                <div class="text-sm italic">new ${catName.toLowerCase()} script</div>
+                <div class="text-2xl leading-none">+</div>
+                <div class="font-sans text-sm italic mt-1">new ${catName.toLowerCase()} script</div>
             </div>
         </a>`;
     }
 
     function categorySection(c) {
         return `
-        <div class="mb-8" data-id="${c.id}">
-            <div class="flex flex-row items-center justify-between mb-2">
-                <div class="flex flex-row items-center gap-2">
-                    <span class="w-4 h-4 rounded-sm border" style="background:${c.color}"></span>
-                    <h2 class="text-2xl italic">${c.name}</h2>
-                    <span class="text-sm text-gray-400">${c.scripts.length} scripts</span>
+        <div class="mb-10" data-id="${c.id}">
+            <div class="flex flex-row items-center justify-between mb-3 pb-2 border-b border-stone-300">
+                <div class="flex flex-row items-center gap-2.5">
+                    <span class="w-4 h-4 border border-stone-400" style="background:${c.color}"></span>
+                    <h2 class="font-serif text-2xl font-semibold tracking-tight">${c.name}</h2>
+                    <span class="font-sans text-xs tracking-[.06em] text-stone-400">${c.scripts.length} scripts</span>
                 </div>
                 <div class="flex flex-row items-center gap-2">
                     <button type="button"
-                            class="border rounded-full px-3 py-1 text-sm text-gray-600 hover:bg-gray-50 cursor-pointer"
+                            class="border border-stone-300 px-3 py-1 text-sm font-sans text-stone-600 hover:bg-stone-100 cursor-pointer transition-colors"
                             onclick="navigateToScriptCreate(0, ${c.id})">
                         + new ${c.name.toLowerCase()}
                     </button>
-                    <button type="button" class="border rounded-full w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer">
+                    <button type="button" class="border border-stone-300 w-8 h-8 flex items-center justify-center text-stone-500 hover:bg-stone-100 cursor-pointer transition-colors">
                         ⋯
                     </button>
                 </div>
@@ -84,9 +86,13 @@
     function emptyStateHtml() {
         return `
         <div class="flex flex-col items-center text-center py-16 px-8">
-            <h2 class="text-3xl italic mb-2">Nothing to show yet</h2>
-            <p class="text-gray-400 italic mb-6 max-w-md">Add a category, then create scripts under it.</p>
-            <button type="button" onclick="showCategoryModal()" class="bg-black text-white px-5 py-2.5 rounded-lg">+ Add a category</button>
+            <span class="font-sans text-[11px] tracking-[.22em] uppercase text-teal-900 mb-2">The Registry</span>
+            <h2 class="font-serif text-3xl font-semibold tracking-tight mb-2">Nothing to show yet</h2>
+            <p class="text-stone-500 mb-6 max-w-md">Add a category, then create scripts under it.</p>
+            <button type="button" onclick="showCategoryModal()"
+                    class="font-sans text-sm border border-stone-900 bg-stone-900 text-[#f0ebdf] px-5 py-2.5 hover:bg-[#1c4551] hover:border-[#1c4551] transition-colors">
+                + Add a category
+            </button>
         </div>`;
     }
 
@@ -96,7 +102,7 @@
             ? emptyStateHtml()
             : data.cats.map(categorySection).join("") + `
                 <button type="button" onclick="showCategoryModal()"
-                        class="w-full border border-dashed rounded-xl py-3 text-gray-400 hover:bg-gray-50">
+                        class="w-full border border-dashed border-stone-400 py-3 font-sans text-sm text-stone-400 hover:border-[#a3712a] hover:text-[#a3712a] transition-colors">
                     + New category
                 </button>`;
     }
