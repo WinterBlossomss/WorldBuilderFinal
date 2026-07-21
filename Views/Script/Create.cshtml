@@ -350,19 +350,21 @@
             worldId: @Model.SelectedWorld.WorldIDPK,
             scriptId: @scriptId,
             urls: {
-                list:            "@Url.Action("List", "Tag")",
-                create:          "@Url.Action("CreateAjax", "Tag")",
-                picUpload:       "@Url.Action("UploadAjax", "Picture")",
-                picCaption:      "@Url.Action("UpdateCaptionAjax", "Picture")",
-                picDelete:       "@Url.Action("DeleteAjax", "Picture")",
-                relForScript:    "@Url.Action("ForScript", "Relation")",
-                relSearch:       "@Url.Action("SearchScripts", "Relation")",
-                relLink:         "@Url.Action("LinkAjax", "Relation")",
-                relUnlink:       "@Url.Action("UnlinkAjax", "Relation")",
-                relTypes:        "@Url.Action("TypesAjax", "Connection")",
-                relCreateType:   "@Url.Action("CreateTypeAjax", "Connection")",
+                list:          "@Url.Action("List", "Tag")",
+                create:        "@Url.Action("CreateAjax", "Tag")",
+                picUpload:     "@Url.Action("UploadAjax", "Picture")",
+                picCaption:    "@Url.Action("UpdateCaptionAjax", "Picture")",
+                picDelete:     "@Url.Action("DeleteAjax", "Picture")",
+                relForScript:  "@Url.Action("ForScript", "Relation")",
+                relSearch:     "@Url.Action("SearchScripts", "Relation")",
+                relLink:       "@Url.Action("LinkAjax", "Relation")",
+                relUnlink:     "@Url.Action("UnlinkAjax", "Relation")",
+                relTypes:      "@Url.Action("TypesAjax", "Connection")",
+                relCreateType: "@Url.Action("CreateTypeAjax", "Connection")",
                 detailForScript: "@Url.Action("ForScript", "Detail")",
-                detailSave:      "@Url.Action("SaveAjax", "Detail")"
+                detailSave:      "@Url.Action("SaveAjax", "Detail")",
+                scriptsInWorld:  "@Url.Action("InWorldAjax", "World")",                     
+                detailPage:      "@Url.Action("Details", "Script", new { id = (string)null })" 
             }
         };
     </script>

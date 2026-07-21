@@ -370,7 +370,16 @@ if (saved && saved.innerHTML.trim()) {
 
     function applyLink(scriptId) {
         if (!savedRange || savedRange.length === 0) { closePanel(); return; }
-        const href = `${cfg.urls.detailPage}?scriptidpk=${scriptId}`;
+
+        const base = cfg.urls && cfg.urls.detailPage;
+        if (!base) {
+            console.error("Script link: detailPage URL missing from builderConfig", cfg.urls);
+            alert("Couldn't build the link — the detail page URL is missing.");
+            return;
+        }
+
+        // base is an absolute path ("/Script/Details"), so it can't resolve against the current page
+        const href = `${base}?scriptidpk=${encodeURIComponent(scriptId)}`;
         quill.formatText(savedRange.index, savedRange.length, "link", href, "user");
         quill.setSelection(savedRange.index + savedRange.length, 0);
         closePanel();

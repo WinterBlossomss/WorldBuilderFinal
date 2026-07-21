@@ -21,6 +21,7 @@ namespace WorldBuilder.Controllers
         // GET: BuilderViewController
         public async Task<ActionResult> Index(int id)
         {
+
             BuilderView builderView = new BuilderView();
 
             var world = await _context.Worlds

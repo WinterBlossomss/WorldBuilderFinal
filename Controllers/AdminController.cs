@@ -85,6 +85,15 @@ namespace WorldBuilder.Controllers
                 .OrderBy(r => r.GenreReqCreatedAt)
                 .ToListAsync();
 
+            // Requester usernames live on the Identity account; UserInfo only holds the FK to it.
+            var usernameByUid = identityUsers.ToDictionary(u => u.Id, u => u.UserName);
+            ViewData["RequesterUsernames"] = vm.PendingRequests
+                .Where(r => r.GenreReqUserFKNavigation?.UserInfoUserIDFK != null)
+                .ToDictionary(
+                    r => r.GenreReqIDPK,
+                    r => usernameByUid.TryGetValue(r.GenreReqUserFKNavigation.UserInfoUserIDFK, out var name)
+                         ? name : null);
+
             // most used genres (by world count)
             vm.MostUsedGenres = await _context.Worlds
                 .GroupBy(w => w.WorldGenFK)

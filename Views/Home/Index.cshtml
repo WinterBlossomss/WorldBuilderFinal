@@ -35,7 +35,7 @@
             <text x="60" y="9" font-family="IBM Plex Mono" font-size="8" fill="#5a5142" text-anchor="middle">N</text>
         </svg>
         <div class="relative z-10 max-w-3xl mx-auto">
-            <span class="block text-[10px] sm:text-xs tracking-[.12em] sm:tracking-[.22em] uppercase">Est. 2019 · @Model.TotalWorlds.ToString("N0") worlds on record</span>
+            <span class="block text-[10px] sm:text-xs tracking-[.12em] sm:tracking-[.22em] uppercase">Est. 2026 · @Model.TotalWorlds.ToString("N0") worlds on record</span>
             <h1 class="font-serif font-semibold text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[.94] tracking-[-.02em] mt-5">Build your <span class="italic font-medium text-teal-900">world.</span></h1>
             <p class="text-base sm:text-lg max-w-xl text-stone-600 max-w-xl mx-auto mt-[22px] leading-[1.55]">Create, catalogue, and explore invented worlds and the characters who live in them — fantasy, sci-fi, modern, and everything past the edge of the map.</p>
             <div class="flex flex-col sm:flex-row gap-3 justify-center mt-8">
@@ -104,10 +104,6 @@
                                 <p class="text-xs text-stone-600 leading-[1.45] mt-2 mb-[14px] flex-1 line-clamp-3">@w.WorldDesc</p>
                                 <div class="flex gap-1.5 flex-wrap">
                                     <span class="font-sans text-xs tracking-[.06em] uppercase px-2 py-[3px] border border-stone-300 text-stone-600">@w.WorldGenFK</span>
-                                    @foreach (var tag in (w.Tags ?? new List<WorldBuilder.Models.Tag>()).Take(1))
-                                    {
-                                        <span class="font-sans text-xs tracking-[.06em] uppercase px-2 py-[3px] border border-stone-300 text-stone-600">@tag.TagName</span>
-                                    }
                                 </div>
                             </div>
                         </a>

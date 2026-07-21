@@ -12,6 +12,12 @@
 <a asp-controller="World" asp-action="Details" asp-route-id="@Model.WorldIDPK"
    class="bg-stone-100 border border-stone-300 flex flex-col w-[240px] shrink-0 snap-start text-stone-900 no-underline group
     transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_14px_26px_rgba(33,28,20,0.10)] hover:border-[#1c4551]">
+    @if (!Model.WorldIsPublic)
+    {
+        <span class="absolute top-2 left-2 z-10 font-sans text-[10px] tracking-[.14em] uppercase bg-stone-900 text-stone-100 px-2 py-1">
+            Private
+        </span>
+    }
     <div class="aspect-[16/9] w-full shrink-0 border-b border-stone-300 bg-[repeating-linear-gradient(135deg,transparent_0_10px,rgba(26,26,26,0.08)_10px_11px)] flex items-center justify-center overflow-hidden">
         @if (cover != null && !string.IsNullOrEmpty(cover.PicPath))
         {

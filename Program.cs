@@ -19,9 +19,13 @@ namespace WorldBuilder
             builder.Services.AddDbContext<WorldBuilderDBContext>(
                 options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+                options.User.RequireUniqueEmail = true;
+            })
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddAntiforgery(o => o.HeaderName = "RequestVerificationToken");
             builder.Services.AddControllersWithViews();
             var app = builder.Build();

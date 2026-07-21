@@ -32,18 +32,21 @@ namespace WorldBuilder.Controllers
 
             if (user == null) return NotFound();
 
+            var myUid = _userManager.GetUserId(User);
+            bool isOwner = myUid != null && myUid == user.UserInfoUserIDFK;
+
             // Username lives on the Identity account, keyed by the profile's user id.
             var identityUser = await _userManager.FindByIdAsync(user.UserInfoUserIDFK);
             var username = identityUser?.UserName;
 
             // Public worlds by this builder (drafts/private excluded from the public profile)
             var worlds = await _context.Worlds
-                .Include(w => w.WorldUserFKNavigation)
-                .Include(w => w.Categories)
-                .Include(w => w.Pictures)
-                .Where(w => w.WorldUserFK == user.UserInfoIDPK && w.WorldIsPublic)
-                .OrderByDescending(w => w.WorldLikes ?? 0)
-                .ToListAsync();
+              .Include(w => w.WorldUserFKNavigation)
+              .Include(w => w.Categories)
+              .Include(w => w.Pictures)
+              .Where(w => w.WorldUserFK == user.UserInfoIDPK && (isOwner || w.WorldIsPublic))
+              .OrderByDescending(w => w.WorldLikes ?? 0)
+              .ToListAsync();
 
             var worldIds = worlds.Select(w => w.WorldIDPK).ToList();
 
@@ -83,7 +86,8 @@ namespace WorldBuilder.Controllers
                 Worlds = worlds,
                 Characters = characters,
                 TotalScripts = await _context.Scripts.CountAsync(s => catIds.Contains(s.ScriptCatFK)),
-                TotalLikes = worlds.Sum(w => w.WorldLikes ?? 0)
+                TotalLikes = worlds.Sum(w => w.WorldLikes ?? 0),
+                IsOwner = isOwner
             };
 
             ViewData["Pictures"] = await _context.Pictures.ToListAsync();
@@ -133,6 +137,7 @@ namespace WorldBuilder.Controllers
         public List<CharacterCard> Characters { get; set; } = new();
         public int TotalScripts { get; set; }
         public int TotalLikes { get; set; }
+        public bool IsOwner { get; set; }
     }
 
     public class CharacterCard

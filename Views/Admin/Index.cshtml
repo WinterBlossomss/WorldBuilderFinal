@@ -221,6 +221,7 @@
                 </div>
                 @if (Model.PendingRequests.Any())
                 {
+                    var requesterUsernames = ViewData["RequesterUsernames"] as Dictionary<int, string>;
                     <div class="space-y-5">
                         @foreach (var r in Model.PendingRequests)
                         {
@@ -232,8 +233,7 @@
                                         </h3>
                                         <p class="text-xs text-stone-500 mt-1">
                                             from
-                                            @@@(r.GenreReqUserFKNavigation?.UserInfoProN ?? "someone")
-
+                                            @(requesterUsernames != null && requesterUsernames.TryGetValue(r.GenreReqIDPK, out var uname) && uname != null ? uname : "someone")
                                             ·
                                             @r.GenreReqCreatedAt.ToString("MMM d")
                                         </p>

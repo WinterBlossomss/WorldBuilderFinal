@@ -54,6 +54,9 @@
         font-size: 16px;
         line-height: 1.7;
         color: var(--color-stone-800);
+        overflow-wrap: break-word;
+        word-break: break-word;
+        max-width: 100%;
     }
     .reader-body h1, .reader-body h2, .reader-body h3 {
         font-family: var(--font-serif);
@@ -111,15 +114,8 @@
 
         <div class="flex items-center gap-2 shrink-0">
             <span class="hidden sm:inline font-sans text-xs text-stone-500">
-                updated @Ago(lastTouch)@(author != null ? " by @" + author : "")
+                updated @Ago(lastTouch)
             </span>
-            <button type="button" class="@btnSmall">
-                <svg width="12" height="11" viewBox="0 0 24 22" fill="none" aria-hidden="true"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="currentColor" stroke-width="1.8" fill="none" /></svg>
-                Save
-            </button>
-            <button type="button" title="Share" class="@iconBtn">
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="4" cy="8" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="3.5" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="12.5" r="2" stroke="currentColor" stroke-width="1.4" /><line x1="5.7" y1="7" x2="10.3" y2="4.4" stroke="currentColor" stroke-width="1.2" /><line x1="5.7" y1="9" x2="10.3" y2="11.6" stroke="currentColor" stroke-width="1.2" /></svg>
-            </button>
         </div>
     </div>
 
@@ -146,11 +142,11 @@
     }
 
     <!-- Body + sidebar -->
-    <div class="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-10">
+    <div class="grid grid-cols-2 lg:grid-cols-12 gap-8 items-start">
 
         <!-- LEFT: readable body -->
-        <div>
-            <div class="reader-body max-w-prose">
+        <div class="lg:col-span-7 min-w-0">
+            <div class="reader-body text-wrap">
                 @if (!string.IsNullOrWhiteSpace(s?.ScriptContent))
                 {
                     @Html.Raw(s.ScriptContent)
@@ -235,7 +231,7 @@
         </div>
 
         <!-- RIGHT: infobox -->
-        <aside>
+        <aside class="lg:col-span-5 min-w-0">
             @if (infoEnabled)
             {
                 <div class="bg-stone-100 border border-stone-300 overflow-hidden sticky top-20">
