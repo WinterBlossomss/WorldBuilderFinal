@@ -1,8 +1,26 @@
-// Category → its subcategories
-function loadSubCategories(catID, containerId, btn) {
-    let container = document.getElementById(containerId);
+// Build one draggable script row for the sidebar tree.
+// Used both for scripts inside a sub-category and scripts directly under a category.
+function makeScriptRow(script) {
+    const div = document.createElement('div');
+    div.className = "sidebar-script p-2 ms-5 border-l border-dashed border-stone-300 font-sans text-sm text-stone-700 select-none cursor-grab active:cursor-grabbing hover:bg-stone-100 transition-colors";
+    div.draggable = true;
+    div.dataset.scriptId = script.scriptIDPK;
+    div.innerHTML = `
+        <div class="flex flex-row items-center gap-2">
+            <span class="text-stone-300 text-xs">⠿</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:11px;height:11px;" class="text-stone-400 flex-shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25" />
+            </svg>
+            <span class="font-sans text-sm">${script.scriptTitle}</span>
+        </div>
+    `;
+    return div;
+}
 
-    // swap the two chevrons on this button
+// Category → its sub-categories + its loose (directly-attached) scripts
+function loadSubCategories(catID, containerId, btn) {
+    const container = document.getElementById(containerId);
+
     const toggleChevrons = () => {
         btn.querySelector('.chevron-down').classList.toggle('hidden');
         btn.querySelector('.chevron-right').classList.toggle('hidden');
@@ -18,12 +36,13 @@ function loadSubCategories(catID, containerId, btn) {
         url: window.builderConfig.urls.subCategories,
         type: "GET",
         data: { catID: catID }
-    }).done(function (res) {
+    }).done(function (subs) {
         container.innerHTML = "";
 
-        res.forEach(sub => {
-            let scriptId = `scriptContainer-${sub.subIDPK}`;
-            let div = document.createElement('div');
+        // 1) sub-category rows (each expandable into its own scripts)
+        subs.forEach(sub => {
+            const scriptId = `scriptContainer-${sub.subIDPK}`;
+            const div = document.createElement('div');
             div.className = "sidebar-sub p-3 ms-5 border-l border-dashed border-stone-300";
             div.dataset.subId = sub.subIDPK;   // drop target for re-nesting scripts
             div.innerHTML = `
@@ -44,8 +63,9 @@ function loadSubCategories(catID, containerId, btn) {
             container.appendChild(div);
         });
 
-        // "+ New sub-category" row at the bottom
-        let addDiv = document.createElement('div');
+        // 2) "+ New sub-category" row — appended now so it stays last even if
+        //    the loose-scripts request is slow or fails.
+        const addDiv = document.createElement('div');
         addDiv.className = "p-3 ms-5 border-l border-dashed border-stone-300";
         addDiv.innerHTML = `
             <div class="flex flex-row items-center gap-2">
@@ -59,6 +79,20 @@ function loadSubCategories(catID, containerId, btn) {
         container.dataset.loaded = 'true';
         container.classList.remove('hidden');
         toggleChevrons();   // flip to "down" on first open
+
+        // 3) loose scripts (ScriptSubFK == 0) — inserted between the
+        //    sub-categories and the "+ New sub-category" row.
+        $.ajax({
+            url: window.builderConfig.urls.catScripts,
+            type: "GET",
+            data: { catID: catID }
+        }).done(function (scripts) {
+            scripts.forEach(script => {
+                container.insertBefore(makeScriptRow(script), addDiv);
+            });
+        }).fail(function (xhr) {
+            console.error("Could not load category scripts:", xhr.statusText);
+        });
     }).fail(function (xhr) {
         alert("Could not load subcategories: " + xhr.statusText);
     });

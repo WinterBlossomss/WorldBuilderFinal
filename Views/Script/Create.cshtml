@@ -1,50 +1,52 @@
 @model WorldBuilder.Models.BuilderView
 
 @{
-    var subName = ViewData["SubName"] as string;
-    var catName = ViewData["CatName"] as string;
+    var subName  = ViewData["SubName"] as string;
+    var catName  = ViewData["CatName"] as string;
     var scriptId = Model.NewScript?.ScriptIDPK ?? 0;
-    var isEdit = scriptId > 0;
+    var isEdit   = scriptId > 0;
+
+    const string panel      = "bg-stone-100 border border-stone-300 p-5";
+    const string panelDash  = "border border-dashed border-stone-300 p-5";
+    const string eyebrow    = "font-sans text-[11px] tracking-[.22em] uppercase text-teal-900";
+    const string label      = "font-sans text-xs tracking-[.1em] uppercase text-stone-600";
+    const string btnDark    = "font-sans text-sm border border-stone-900 bg-stone-900 text-[#f0ebdf] hover:bg-[#1c4551] hover:border-[#1c4551] px-5 py-2.5 cursor-pointer transition-colors";
+    const string btnGhost   = "font-sans text-sm border border-stone-300 text-stone-700 hover:bg-stone-200 px-5 py-2.5 cursor-pointer transition-colors";
+    const string btnSmall   = "inline-flex items-center gap-2 font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-stone-300 bg-stone-100 text-stone-700 cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors";
+    const string field      = "border border-stone-300 bg-white w-full px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-2";
 }
 
-@* @if (!string.IsNullOrEmpty(subName))
-{
-    <p>Living under sub-category: @subName</p>
-}
-else
-{
-    <p>Living directly under category: @catName</p>
-}
- *@
+<!-- World header -->
 <div class="flex flex-row">
-    <div class="grid grid-cols-3 items-center border-y gap-2 w-full">
+    <div class="grid grid-cols-3 items-center border-y border-stone-300 gap-2 w-full">
         <div class="ms-3">
             <a class="flex flex-col" asp-action="Index" asp-controller="BuilderView" asp-route-id="@Model.SelectedWorld.WorldIDPK">
-                <h1 class="text-2xl py-5 text-left truncate justify-center">
+                <h1 class="font-serif font-semibold text-2xl tracking-tight py-5 text-left truncate">
                     @Model.SelectedWorld.WorldName
                 </h1>
             </a>
         </div>
-    </div>  
-    
-    
+    </div>
 </div>
+
 <div class="m-5">
+    <!-- Breadcrumb -->
     <div class="flex flex-row justify-between">
         <nav class="flex my-3" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                 <li class="inline-flex items-center truncate">
-                    <a asp-action="Index" asp-controller="BuilderView" asp-route-id="@Model.SelectedWorld.WorldIDPK" class="inline-flex items-center text-sm font-medium text-body hover:text-fg-brand">
+                    <a asp-action="Index" asp-controller="BuilderView" asp-route-id="@Model.SelectedWorld.WorldIDPK"
+                       class="inline-flex items-center font-sans text-xs tracking-[.1em] uppercase text-stone-600 hover:text-teal-900 transition-colors">
                         <svg class="w-4 h-4 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5" /></svg>
-                        <span class="inline-flex items-center text-sm font-medium text-body-subtle">@Model.SelectedWorld.WorldName</span>
+                        <span class="truncate">@Model.SelectedWorld.WorldName</span>
                     </a>
                 </li>
                 @if (catName != null)
                 {
                     <li>
                         <div class="flex items-center space-x-1.5">
-                            <svg class="w-3.5 h-3.5 rtl:rotate-180 text-body" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" /></svg>
-                            <a class="inline-flex items-center text-sm font-medium text-body hover:text-fg-brand">@catName</a>
+                            <svg class="w-3.5 h-3.5 rtl:rotate-180 text-stone-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" /></svg>
+                            <a class="inline-flex items-center font-sans text-xs tracking-[.1em] uppercase text-stone-600 hover:text-teal-900 transition-colors">@catName</a>
                         </div>
                     </li>
                 }
@@ -52,23 +54,24 @@ else
                 {
                     <li>
                         <div class="flex items-center space-x-1.5">
-                            <svg class="w-3.5 h-3.5 rtl:rotate-180 text-body" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" /></svg>
-                            <a class="inline-flex items-center text-sm font-medium text-body hover:text-fg-brand">@subName</a>
+                            <svg class="w-3.5 h-3.5 rtl:rotate-180 text-stone-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" /></svg>
+                            <a class="inline-flex items-center font-sans text-xs tracking-[.1em] uppercase text-stone-600 hover:text-teal-900 transition-colors">@subName</a>
                         </div>
                     </li>
                 }
                 <li aria-current="page">
                     <div class="flex items-center space-x-1.5">
-                        <svg class="w-3.5 h-3.5 rtl:rotate-180 text-body" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" /></svg>
-                        <span class="inline-flex items-center text-sm font-medium text-body-subtle">Script name...</span>
+                        <svg class="w-3.5 h-3.5 rtl:rotate-180 text-stone-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" /></svg>
+                        <span class="inline-flex items-center font-sans text-xs tracking-[.1em] uppercase text-stone-400">Script name...</span>
                     </div>
                 </li>
             </ol>
         </nav>
-        <div>
-            <div>
-            </div>
-        </div>
+    </div>
+
+    <!-- Title -->
+    <div class="mb-1">
+        <span class="@eyebrow">@(isEdit ? "Edit Entry" : "New Entry")</span>
     </div>
     <form id="scriptForm" method="post"
           asp-controller="Script"
@@ -76,29 +79,35 @@ else
           asp-route-id="@scriptId">
         @Html.AntiForgeryToken()
         <input name="ScriptTitle" value="@Model.NewScript?.ScriptTitle"
-               class="text-5xl border-b border-dashed w-full" placeholder="Name this script...">
+               class="font-serif font-semibold text-5xl tracking-tight bg-transparent border-b border-dashed border-stone-300 w-full pb-2 placeholder:text-stone-400 focus:outline-none focus:border-[#a3712a]"
+               placeholder="Name this script...">
         <input type="hidden" id="ScriptContentField" name="ScriptContent" />
         <input type="hidden" name="ScriptCatFK" value="@Model.NewScript?.ScriptCatFK" />
         <input type="hidden" name="ScriptSubFK" value="@Model.NewScript?.ScriptSubFK" />
     </form>
-    <div class="flex flex-row my-2 items-center">
-        <div class="me-5">
-            tags:
-        </div>
+
+    <!-- Tags bar -->
+    <div class="flex flex-row my-3 items-center">
+        <div class="me-5 @label">tags</div>
         <div id="tagContainer" class="flex flex-row gap-3 items-center"
              data-applied='@Html.Raw(Json.Serialize(Model.NewScript?.ScriptTagTagFKs?.Select(t => new { id = t.TagIDPK, name = t.TagName, color = t.TagColor })))'>
-            <div id="noTagsLabel" class="indent-2 text-base italic">none yet -</div>
-            <button onclick="showTagModal()" class="py-1 px-2 border border-dashed rounded-full text-black cursor-pointer text-base">+ tag</button>
+            <div id="noTagsLabel" class="text-stone-500 italic">none yet</div>
+            <button onclick="showTagModal()"
+                    class="inline-flex items-center gap-1 font-sans text-xs tracking-[.06em] uppercase px-3 py-1.5 border border-dashed border-stone-300 text-stone-700 cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors">
+                + tag
+            </button>
         </div>
     </div>
 </div>
 
-
 <div class="grid grid-cols-3 gap-3">
-    <div class="flex flex-col col-span-2  m-5">
+    <!-- ===== Main column ===== -->
+    <div class="flex flex-col col-span-2 m-5">
+        <!-- Body editor -->
         <div class="w-full">
             <div id="mainContainer" class="flex flex-col w-full">
-                <div id="editorContainer" class="w-full">
+                <div class="mb-2 @eyebrow">Body</div>
+                <div id="editorContainer" class="w-full border border-stone-300 bg-white">
                     <div id="toolbar" class="editor-toolbar">
                         <span class="ql-formats">
                             <button class="ql-header" value="1">H1</button>
@@ -116,10 +125,8 @@ else
                         <span class="ql-formats">
                             <button class="ql-list" value="bullet"></button>
                             <button class="ql-list" value="ordered"></button>
-
                             <button class="ql-blockquote"></button>
                         </span>
-
 
                         <span class="ql-formats">
                             <button class="ql-script" value="sub"></button>
@@ -128,33 +135,26 @@ else
 
                         <span class="ql-formats">
                             <button class="ql-link"></button>
-                            <button id="characterLinkButton" type="button">
-                                🧙
-                            </button>
+                            <button id="characterLinkButton" type="button">🧙</button>
                         </span>
-
                     </div>
 
                     <div id="editor" class="w-full h-[300px] overflow-auto" style="height:300px;">
                         <div id="savedContent" class="hidden">@Html.Raw(Model.NewScript?.ScriptContent)</div>
                     </div>
                 </div>
-                @* <div>
-             Quick starts
-        </div> *@
-            
             </div>
+        </div>
 
-        </div>
-        <div class="p-5 m-5">
-        </div>
-        <div id="picturePanel" class="border border-dashed rounded-xl p-5 mt-5">
+        <!-- Pictures -->
+        <div id="picturePanel" class="@panelDash mt-5">
             <div class="flex flex-row justify-between items-start">
                 <div>
-                    <div class="text-2xl font-semibold">Pictures</div>
-                    <div id="pictureSubtitle" class="text-sm text-gray-500"></div>
+                    <span class="@eyebrow">Gallery</span>
+                    <div class="font-serif font-semibold text-2xl tracking-tight">Pictures</div>
+                    <div id="pictureSubtitle" class="text-sm text-stone-500 mt-0.5"></div>
                 </div>
-                <label class="border font-bold rounded-full px-4 py-2 cursor-pointer whitespace-nowrap">
+                <label class="@btnSmall whitespace-nowrap">
                     + Add picture
                     <input id="pictureBrowse" type="file" accept="image/*" multiple class="hidden">
                 </label>
@@ -164,27 +164,29 @@ else
                  data-existing='@Html.Raw(Json.Serialize(Model.NewScript?.PicScriptPicFKs?.Select(p => new { id = p.PicIDPK, path = p.PicPath, caption = p.PicCaption })))'>
                 <!-- cards + dropzone injected by JS -->
                 <div id="pictureDrop"
-                     class="border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-gray-400 cursor-pointer text-center gap-1"
+                     class="border-2 border-dashed border-stone-300 bg-stone-50 flex flex-col items-center justify-center text-stone-400 cursor-pointer text-center gap-1 transition-colors"
                      style="aspect-ratio:3/2;">
-                    <div class="text-2xl text-black">+</div>
-                    <div>drop a picture</div>
-                    <div>or <span class="underline">browse</span></div>
+                    <div class="text-2xl text-stone-500">+</div>
+                    <div class="font-sans text-xs tracking-[.1em] uppercase text-stone-500">drop a picture</div>
+                    <div class="font-sans text-xs text-stone-400">or <span class="underline">browse</span></div>
                 </div>
             </div>
         </div>
 
-        <div id="relatedScripts" class="border border-dashed rounded-xl p-5 mt-5">
+        <!-- Related scripts -->
+        <div id="relatedScripts" class="@panelDash mt-5">
             <div class="flex flex-row justify-between items-start">
                 <div>
-                    <div class="text-2xl font-semibold">Related scripts</div>
-                    <div class="text-sm text-gray-500" id="relSubtitle"></div>
+                    <span class="@eyebrow">Connections</span>
+                    <div class="font-serif font-semibold text-2xl tracking-tight">Related scripts</div>
+                    <div class="text-sm text-stone-500 mt-0.5" id="relSubtitle"></div>
                 </div>
-                <div class="text-sm text-gray-400 italic">relations are bidirectional — adding here updates the other script too</div>
+                <div class="text-xs text-stone-400 italic max-w-[16rem] text-right">relations are bidirectional — adding here updates the other script too</div>
             </div>
 
             @if (!isEdit)
             {
-                <div class="text-gray-400 italic text-center py-10">
+                <div class="text-stone-400 italic text-center py-10">
                     Save this script first to link it to other scripts.
                 </div>
             }
@@ -192,171 +194,149 @@ else
             {
                 <div id="relList" class="flex flex-col gap-2 mt-4"></div>
 
-                <div class="border border-dashed rounded-lg p-4 mt-4">
-                    <div class="font-bold uppercase text-xs text-gray-500 mb-3">+ Link a new script</div>
+                <div class="border border-dashed border-stone-300 p-4 mt-4">
+                    <div class="@label mb-3">+ Link a new script</div>
                     <div class="flex flex-row items-center gap-3">
-                        <span class="text-sm text-gray-500 whitespace-nowrap">Connected to →</span>
+                        <span class="text-sm text-stone-500 whitespace-nowrap">Connected to →</span>
                         <div class="relative flex-grow">
                             <input id="relSearchInput" autocomplete="off" placeholder="search a script to connect..."
-                                   class="border rounded-lg px-3 py-2 w-full">
+                                   class="@field" />
                             <div id="relSearchResults"
-                                 class="absolute left-0 right-0 bg-white border rounded-lg mt-1 hidden z-10 max-h-48 overflow-y-auto"></div>
+                                 class="absolute left-0 right-0 bg-white border border-stone-300 mt-1 hidden z-10 max-h-48 overflow-y-auto"></div>
                         </div>
                     </div>
                     <div class="flex flex-row items-center gap-2 flex-wrap mt-3">
-                        <span class="text-sm text-gray-500">HOW:</span>
+                        <span class="text-sm text-stone-500">HOW:</span>
                         <div id="relTypePills" class="flex flex-row flex-wrap gap-2"></div>
                     </div>
                     <div class="flex justify-end mt-3">
-                        <button type="button" id="relAddBtn" class="bg-black text-white px-5 py-2 rounded-lg cursor-pointer">+ Add link</button>
+                        <button type="button" id="relAddBtn" class="@btnDark">+ Add link</button>
                     </div>
                 </div>
             }
         </div>
     </div>
-    <div id="detailContainer" class="border rounded-xl m-5 flex flex-col">
-        <div class="border-b flex flex-row items-center justify-between p-3">
-            <div class="font-bold flex items-center gap-2">📋 Detail Note</div>
+
+    <!-- ===== Side column: detail note ===== -->
+    <div id="detailContainer" class="border border-stone-300 bg-stone-100 m-5 flex flex-col">
+        <div class="border-b border-stone-300 flex flex-row items-center justify-between p-3">
+            <div class="font-sans text-xs tracking-[.1em] uppercase text-stone-600 flex items-center gap-2">📋 Detail Note</div>
             <input type="checkbox" id="detailEnabled" checked />
         </div>
 
         @if (!isEdit)
         {
-            <div class="text-gray-400 italic text-center py-10">Save this script first to add a detail note.</div>
+            <div class="text-stone-400 italic text-center py-10">Save this script first to add a detail note.</div>
         }
         else
         {
             <div id="detailBody">
                 <input id="detailTitle" type="text" placeholder="Untitled"
-                       class="p-3 italic border-b text-center w-full text-2xl bg-transparent outline-none" />
+                       class="p-3 italic font-serif border-b border-stone-300 text-center w-full text-2xl bg-transparent outline-none placeholder:text-stone-400" />
 
                 <div id="detailPortrait"
-                     class="m-3 border-2 border-dashed rounded flex flex-col items-center justify-center text-gray-400 cursor-pointer"
+                     class="m-3 border-2 border-dashed border-stone-300 bg-stone-50 flex flex-col items-center justify-center text-stone-400 cursor-pointer"
                      style="aspect-ratio:1/1;">
                     <input id="detailPortraitInput" type="file" accept="image/*" class="hidden">
-                    <div class="text-2xl">+</div>
-                    <div>add portrait</div>
-                    
+                    <div class="text-2xl text-stone-500">+</div>
+                    <div class="font-sans text-xs tracking-[.1em] uppercase text-stone-500">add portrait</div>
                 </div>
 
                 <div id="detailRows" class="flex flex-col"></div>
 
                 <button type="button" id="detailAddRow"
-                        class="text-sm text-gray-500 py-2 border-t border-dashed hover:bg-gray-50 w-full">
+                        class="font-sans text-xs tracking-[.06em] uppercase text-stone-500 py-2 border-t border-dashed border-stone-300 hover:bg-stone-200 transition-colors w-full">
                     + Add row
                 </button>
                 <button type="button" id="detailAddSection"
-                        class="text-sm text-gray-500 py-2 border-t border-dashed hover:bg-gray-50 w-full">
+                        class="font-sans text-xs tracking-[.06em] uppercase text-stone-500 py-2 border-t border-dashed border-stone-300 hover:bg-stone-200 transition-colors w-full">
                     + Add section
                 </button>
             </div>
-            <div id="detailHiddenNote" class="text-gray-400 italic text-center py-6 hidden">
+            <div id="detailHiddenNote" class="text-stone-400 italic text-center py-6 hidden">
                 Hidden on the script — toggle on to show.
             </div>
         }
     </div>
 </div>
 
-
-<div class="flex justify-end mt-6">
+<!-- Save -->
+<div class="flex justify-end m-5">
     <button id="saveScriptBtn" type="button"
-            class="bg-black text-white px-6 py-3 rounded-xl cursor-pointer">
+            class="font-sans text-sm tracking-[.06em] uppercase border border-stone-900 bg-stone-900 text-[#f0ebdf] hover:bg-[#1c4551] hover:border-[#1c4551] px-6 py-3 cursor-pointer transition-colors">
         Save script
     </button>
 </div>
 
-<!-- Tag Modal -->
-<div id="tagModal" class="hidden fixed left-0 top-0 bg-black/25 w-screen h-screen justify-center items-center z-100">
-    <!--Modal-->
-    <div class="bg-white rounded-md shadow-md p-8 w-[40%] opacity-100 ">
-        <div class="flex flex-row justify-between border-dashed border-b-1 items-center p-2">
-            <h2 class="text-2xl">Add tags</h2>
-            <button onclick="hideTagModal()" class="text-gray-500 hover:text-gray-700 border rounded-full py-3 px-5">
-                x
+<!-- ===== Tag Modal ===== -->
+<div id="tagModal" class="hidden fixed left-0 top-0 bg-black/30 w-screen h-screen justify-center items-center z-[100]">
+    <div class="bg-stone-100 border border-stone-300 shadow-[0_20px_60px_rgba(33,28,20,0.25)] p-8 w-[40%] z-[100]">
+        <!-- header -->
+        <div class="flex flex-row justify-between items-center border-b border-dashed border-stone-300 pb-3">
+            <div>
+                <span class="@eyebrow">Cross-reference</span>
+                <h2 class="font-serif font-semibold text-2xl tracking-tight">Add tags</h2>
+            </div>
+            <button onclick="hideTagModal()" class="text-stone-500 hover:text-stone-900 border border-stone-300 hover:bg-stone-200 w-10 h-10 grid place-items-center transition-colors">
+                ✕
             </button>
         </div>
-        <div class="my-2 flex flex-row">
-            <div>
-                Tags cross-reference scripts across <a class="italics bold">@Model.SelectedWorld.WorldName. </a>Pick any number.
-            </div>
+
+        <div class="my-3 text-stone-600">
+            Tags cross-reference scripts across <span class="font-serif font-semibold text-stone-800">@Model.SelectedWorld.WorldName</span>. Pick any number.
         </div>
-        <div class="flex flex-row border justify-between">
-            <div class="flex flex-row p-2 items-center w-full" ">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:20px;height:20px;">
+
+        <!-- search -->
+        <div class="flex flex-row border border-stone-300 bg-white justify-between items-center">
+            <div class="flex flex-row p-2 items-center w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="text-stone-400" style="width:20px;height:20px;">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                 </svg>
-                <input id="tagSearchInput" class="py-2 ms-2 w-full">
+                <input id="tagSearchInput" placeholder="search tags..." class="py-1 ms-2 w-full bg-transparent outline-none">
             </div>
-            <div id="tagMatchCount">
+            <div id="tagMatchCount" class="pe-3 text-xs text-stone-500 whitespace-nowrap"></div>
+        </div>
 
-            </div>
+        <!-- selected -->
+        <div class="flex flex-row border border-dashed border-stone-300 p-3 mt-3 items-center gap-3">
+            <div class="@label">selected</div>
+            <div id="tagSelectedContainer" class="flex flex-row gap-3 flex-wrap"></div>
         </div>
-        <div class="flex flex-row border border-dashed p-3 mt-3 items-center gap-3">
-            <div>
-                selected:
-            </div>
-            <div id="tagSelectedContainer" class="flex flex-row gap-3 flex-wrap">
 
+        <div class="@label mt-4">Matching tags</div>
+        <div id="tagMatchContainer" class="flex flex-row flex-wrap gap-3 border-b border-dashed border-stone-300 py-3"></div>
+
+        <div class="@label mt-4">Don't see one? Create a new tag</div>
+        <div class="flex flex-row mt-1">
+            <div class="border border-stone-300 bg-white flex flex-row items-center w-full">
+                <div id="tagColorPreview" class="w-8 h-8 mt-2 ms-2 me-2 mb-2 inline-block border border-dashed border-stone-300"></div>
+                <input id="tagNameInput" placeholder="e.g. retainer" class="p-3 w-full bg-transparent outline-none" />
             </div>
+            <button class="@btnDark px-5" onclick="createTag()">+ Create</button>
         </div>
-        <div class="font-bold mt-2">
-            MATCHING TAGS
-        </div>
-        <div id="tagMatchContainer" class="flex flex-row gap-3 border-b border-dashed py-3">
-        </div>
-        <div class="uppercase mt-3 font-bold">
-            Don't see one? Create a new tag
-        </div>
-        <div class="flex flex-row">
-            <div class="border rounded-2 flex flex-row items-center w-full">
-                <div>
-                    <div id="tagColorPreview" class="w-8 h-8 mt-2 ms-2 me-2 inline-block border border-dashed rounded-full">
-                    </div>
-                </div>
-                <input id="tagNameInput" placeholder="e.g. retainer" class="border p-3 w-full" />
-            </div>
-            <button class="p-3 bg-black text-white cursor-pointer" onclick="createTag()">
-                + Create
-            </button>
-        </div>
+
         <div class="flex flex-row items-center my-5">
-            <div class="pe-5">
-                color
-            </div>
-            <div id="tagColorContainer">
-
-            </div>
+            <div class="pe-5 @label">color</div>
+            <div id="tagColorContainer"></div>
         </div>
-        <div class="flex flex-row items-center p-3 border border-dashed rounded-md gap-3">
+
+        <div class="flex flex-row items-center p-3 border border-dashed border-stone-300 gap-3">
             <div class="flex flex-col">
-                <div class="font-bold">
-                    Available in all my worlds
-                </div>
-                <div>
-                    off - this tag lives only in <a class="font-semibold">@Model.SelectedWorld.WorldName</a>
-                </div>
-                <div>
-                    on - reuse it across every world you own
-                </div>
+                <div class="font-sans text-sm tracking-[.06em] uppercase text-stone-700">Available in all my worlds</div>
+                <div class="text-sm text-stone-500">off — this tag lives only in <span class="font-serif font-semibold text-stone-700">@Model.SelectedWorld.WorldName</span></div>
+                <div class="text-sm text-stone-500">on — reuse it across every world you own</div>
             </div>
-            <div id="tagSwitch">
+            <div id="tagSwitch" class="ms-auto">
                 <input type="checkbox" id="tagAllWorlds" />
             </div>
         </div>
-        
 
-        <div class="mt-5 border-t border-dashed">
-            <div class="flex flex-row justify-between mt-4">
-                <div>
-                    click a tag to add - click again to remove
-                </div>
-                <div class="flex flex-row">
-                    <button onclick="hideTagModal()" class="border cursor-pointer text-black p-4 rounded-xl">
-                        Cancel
-                    </button>
-                    <button onclick="saveTag()" class="border cursor-pointer bg-black text-white p-4 rounded-xl">
-                        Done 
-                    </button>
+        <div class="mt-5 border-t border-dashed border-stone-300">
+            <div class="flex flex-row justify-between items-center mt-4">
+                <div class="text-sm text-stone-500 italic">click a tag to add — click again to remove</div>
+                <div class="flex flex-row gap-3">
+                    <button onclick="hideTagModal()" class="@btnGhost">Cancel</button>
+                    <button onclick="saveTag()" class="@btnDark">Done</button>
                 </div>
             </div>
         </div>
@@ -366,67 +346,62 @@ else
 @section Scripts {
     @Html.AntiForgeryToken()
     <script>
-    window.builderConfig = {
-        worldId: @Model.SelectedWorld.WorldIDPK,
-        scriptId: @scriptId,
-        urls: {
-            list:       "@Url.Action("List", "Tag")",
-            create:     "@Url.Action("CreateAjax", "Tag")",
-            picUpload:  "@Url.Action("UploadAjax", "Picture")",
-            picCaption: "@Url.Action("UpdateCaptionAjax", "Picture")",
-            picDelete:  "@Url.Action("DeleteAjax", "Picture")",
-            relForScript:  "@Url.Action("ForScript", "Relation")",
-            relSearch:     "@Url.Action("SearchScripts", "Relation")",
-            relLink:       "@Url.Action("LinkAjax", "Relation")",
-            relUnlink:     "@Url.Action("UnlinkAjax", "Relation")",
-            relTypes:      "@Url.Action("TypesAjax", "Connection")",
-            relCreateType: "@Url.Action("CreateTypeAjax", "Connection")",
-            detailForScript: "@Url.Action("ForScript", "Detail")",
-            detailSave:      "@Url.Action("SaveAjax", "Detail")",
-            scriptsInWorld: "@Url.Action("InWorldAjax", "Script")",
-            detailPage:     "@Url.Action("Details", "Script")"
-        }
-    };
-</script>
-<script src="~/js/script-create.js" asp-append-version="true"></script>
-<script src="~/js/picture-create.js" asp-append-version="true"></script>
-<script src="~/js/relation-create.js" asp-append-version="true"></script>
-<script src="~/js/detail-create.js" asp-append-version="true"></script>
-<script>
-    //Click handler for Save - gathers content from everywhere
+        window.builderConfig = {
+            worldId: @Model.SelectedWorld.WorldIDPK,
+            scriptId: @scriptId,
+            urls: {
+                list:            "@Url.Action("List", "Tag")",
+                create:          "@Url.Action("CreateAjax", "Tag")",
+                picUpload:       "@Url.Action("UploadAjax", "Picture")",
+                picCaption:      "@Url.Action("UpdateCaptionAjax", "Picture")",
+                picDelete:       "@Url.Action("DeleteAjax", "Picture")",
+                relForScript:    "@Url.Action("ForScript", "Relation")",
+                relSearch:       "@Url.Action("SearchScripts", "Relation")",
+                relLink:         "@Url.Action("LinkAjax", "Relation")",
+                relUnlink:       "@Url.Action("UnlinkAjax", "Relation")",
+                relTypes:        "@Url.Action("TypesAjax", "Connection")",
+                relCreateType:   "@Url.Action("CreateTypeAjax", "Connection")",
+                detailForScript: "@Url.Action("ForScript", "Detail")",
+                detailSave:      "@Url.Action("SaveAjax", "Detail")"
+            }
+        };
+    </script>
+    <script src="~/js/script-create.js" asp-append-version="true"></script>
+    <script src="~/js/picture-create.js" asp-append-version="true"></script>
+    <script src="~/js/relation-create.js" asp-append-version="true"></script>
+    <script src="~/js/detail-create.js" asp-append-version="true"></script>
+    <script>
+        // Click handler for Save - gathers content from everywhere
         document.getElementById('saveScriptBtn').addEventListener('click', async () => {
-        const btn  = document.getElementById('saveScriptBtn');
-        const form = document.getElementById('scriptForm');
-        btn.disabled = true;
+            const btn  = document.getElementById('saveScriptBtn');
+            const form = document.getElementById('scriptForm');
+            btn.disabled = true;
 
-        const cf = document.getElementById('ScriptContentField');
-        if (!window.quill) { alert("Editor not ready — Quill failed to load."); btn.disabled = false; return; }
-        cf.value = window.quill.getSemanticHTML(0);
-        //console.log("saving content length:", cf.value.length); 
+            const cf = document.getElementById('ScriptContentField');
+            if (!window.quill) { alert("Editor not ready — Quill failed to load."); btn.disabled = false; return; }
+            cf.value = window.quill.getSemanticHTML(0);
 
-        // tags
-        if (window.syncTagInputs) window.syncTagInputs();
+            // tags
+            if (window.syncTagInputs) window.syncTagInputs();
 
-        // pictures
-        if (window.uploadPictures) {
-        const ids = await window.uploadPictures();
-        if (ids === null) { btn.disabled = false; return; }
-        form.querySelectorAll('input[name="pictureIds"]').forEach(n => n.remove());
-        ids.forEach(id => {
-        const h = document.createElement('input');
-        h.type = 'hidden'; h.name = 'pictureIds'; h.value = id; form.appendChild(h);
+            // pictures
+            if (window.uploadPictures) {
+                const ids = await window.uploadPictures();
+                if (ids === null) { btn.disabled = false; return; }
+                form.querySelectorAll('input[name="pictureIds"]').forEach(n => n.remove());
+                ids.forEach(id => {
+                    const h = document.createElement('input');
+                    h.type = 'hidden'; h.name = 'pictureIds'; h.value = id; form.appendChild(h);
+                });
+            }
+
+            // detail note (saves via its own AJAX endpoint)
+            if (window.saveDetailNote) {
+                const ok = await window.saveDetailNote();
+                if (!ok) { btn.disabled = false; return; }
+            }
+
+            form.submit();
         });
-        }
-        // detail note (saves via its own AJAX endpoint)
-        if (window.saveDetailNote) {
-        const ok = await window.saveDetailNote();
-        if (!ok) { btn.disabled = false; return; }
-        }
-
-        form.submit();
-        });
-
-        document.getElementById('ScriptContentField').closest('form')?.id
-</script>
+    </script>
 }
-

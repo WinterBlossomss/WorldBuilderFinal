@@ -33,6 +33,15 @@ public class SubCategorieController : Controller
 
         return Json(scripts);
     }
+    // A Category's scripts
+    public async Task<IActionResult> CatScripts(int catID)
+    {
+        var scripts = await _context.Scripts
+            .Where(s => s.ScriptCatFK == catID && s.ScriptSubFK == 0)
+            .Select(s => new { s.ScriptIDPK, s.ScriptTitle })
+            .ToListAsync();
+        return Json(scripts);
+    }
 
     // GET: SUBCATEGORYS/Details/5
     public async Task<IActionResult> Details(int? subidpk)
@@ -72,11 +81,11 @@ public class SubCategorieController : Controller
         };
 
         var cat = await _context.Categories.FirstOrDefaultAsync(c => c.CatIDPK == catID);
-        cat.SubCategoryCount += cat.SubCategoryCount;
+        cat.SubCategoryCount++;
 
         _context.SubCategories.Add(subCat);
         await _context.SaveChangesAsync();
-        return Json(new { subCat.SubName, subCat.SubCatFK });
+        return Json(new { subCat.SubIDPK, subCat.SubName, subCat.SubCatFK });
     }
 
     // POST: SubCategorie/DeleteAjax/5
