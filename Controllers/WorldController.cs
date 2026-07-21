@@ -65,6 +65,25 @@ public class WorldController : Controller
         return "Images/" + newName;
     }
 
+    // GET: /Script/InWorldAjax?worldId=#&excludeId=#
+    [HttpGet]
+    public async Task<IActionResult> InWorldAjax(int worldId, int? excludeId)
+    {
+        var catIds = await _context.Categories
+            .Where(c => c.CatWorldFK == worldId)
+            .Select(c => c.CatIDPK)
+            .ToListAsync();
+
+        var scripts = await _context.Scripts
+            .Where(s => catIds.Contains(s.ScriptCatFK)
+                     && (excludeId == null || s.ScriptIDPK != excludeId))
+            .OrderBy(s => s.ScriptTitle)
+            .Select(s => new { id = s.ScriptIDPK, title = s.ScriptTitle })
+            .ToListAsync();
+
+        return Json(scripts);
+    }
+
     // GET: WORLDS
     public async Task<IActionResult> Index(string q, string genre, string sort)
     {

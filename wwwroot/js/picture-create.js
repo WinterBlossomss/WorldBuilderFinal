@@ -8,9 +8,10 @@
     const $drop = document.getElementById("pictureDrop");
     const $browse = document.getElementById("pictureBrowse");
     const $subtitle = document.getElementById("pictureSubtitle");
-    // const $saveBtn = document.getElementById("saveScriptBtn");
 
-    //get token
+    // highlight classes toggled while dragging over the zone
+    const HL = ["border-teal-900", "bg-stone-200", "text-teal-900"];
+
     function tok() {
         const el = document.querySelector('input[name="__RequestVerificationToken"]');
         return el ? el.value : "";
@@ -71,19 +72,21 @@
         el.draggable = true;
         el.dataset.id = p.uid;
         el.innerHTML = `
-            <div class="relative border border-dashed rounded-lg overflow-hidden bg-gray-50" style="aspect-ratio:3 /2;">
+            <div class="relative border border-stone-300 bg-stone-50 overflow-hidden" style="aspect-ratio:3/2;">
                 <img src="${p.url}" class="absolute inset-0 w-full h-full object-cover">
                 <div class="absolute top-2 right-2 flex flex-row items-center gap-1.5">
-                    <label class="bg-white border rounded-full px-3 py-1 text-xs cursor-pointer shadow-sm">
+                    <label class="bg-stone-100 border border-stone-300 px-3 py-1 text-[11px] font-sans uppercase tracking-[.06em] text-stone-700 cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors">
                         Replace
                         <input type="file" accept="image/*" class="hidden replace-input">
                     </label>
-                    <button type="button" class="bg-white border rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-sm remove-btn">×</button>
+                    <button type="button" class="bg-stone-100 border border-stone-300 w-6 h-6 flex items-center justify-center text-xs text-stone-700 cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors remove-btn">×</button>
                 </div>
-                ${index === 0 ? `<div class="absolute bottom-2 left-2 bg-black text-white text-xs font-semibold px-3 py-1 rounded-md">main</div>` : ""}
+                ${index === 0
+                ? `<div class="absolute bottom-2 left-2 bg-stone-900 text-[#f0ebdf] text-[11px] font-sans uppercase tracking-[.1em] px-3 py-1">main</div>`
+                : ""}
             </div>
-            <div class="border border-dashed rounded-lg p-2">
-                <textarea class="caption w-full text-sm italic bg-transparent outline-none resize-none" rows="2" placeholder="Add a caption..."></textarea>
+            <div class="border border-stone-300 bg-white p-2">
+                <textarea class="caption w-full text-sm italic font-serif text-stone-700 bg-transparent outline-none resize-none" rows="2" placeholder="Add a caption..."></textarea>
             </div>
         `;
         el.querySelector(".caption").value = p.caption || "";
@@ -129,50 +132,55 @@
         return ids;
     }
 
-    // expose for the save orchestrator (was: handleSave + $saveBtn listener)
+    // expose for the save orchestrator
     window.uploadPictures = uploadAll;
 
     // ---- wiring ----
     $browse.addEventListener("change", e => addFiles(e.target.files));
     $drop.addEventListener("click", () => $browse.click());
-    ["dragenter", "dragover"].forEach(ev =>
-        $drop.addEventListener(ev, e => { e.preventDefault(); $drop.classList.add("bg-gray-50"); }));
-    ["dragleave", "drop"].forEach(ev =>
-        $drop.addEventListener(ev, e => { e.preventDefault(); $drop.classList.remove("bg-gray-50"); }));
-    dz.addEventListener('drop', async e => {
-        e.preventDefault(); e.stopPropagation();
-        dz.className = DZ_IDLE;
 
-        // 1. Real file dropped from the OS
+    ["dragenter", "dragover"].forEach(ev =>
+        $drop.addEventListener(ev, e => {
+            e.preventDefault(); e.stopPropagation();
+            $drop.classList.add(...HL);
+        }));
+
+    $drop.addEventListener("dragleave", e => {
+        e.preventDefault(); e.stopPropagation();
+        // ignore leave events fired when moving onto a child element
+        if (!$drop.contains(e.relatedTarget)) $drop.classList.remove(...HL);
+    });
+
+    // The one and only drop handler — adds the files.
+    $drop.addEventListener("drop", async e => {
+        e.preventDefault(); e.stopPropagation();
+        $drop.classList.remove(...HL);
+
+        // 1. Real file(s) dropped from the OS
         if (e.dataTransfer.files && e.dataTransfer.files.length) {
             addFiles(e.dataTransfer.files);
             return;
         }
 
-        // 2. Image dragged from a web page — only a URL is available
-        const url = e.dataTransfer.getData('text/uri-list')
-            || e.dataTransfer.getData('text/plain');
-        if (!url) { buildDropZone(); return; }
+        // 2. Image dragged from another web page — only a URL is available
+        const url = e.dataTransfer.getData("text/uri-list")
+            || e.dataTransfer.getData("text/plain");
+        if (!url) return;
 
         try {
             const res = await fetch(url);
             const blob = await res.blob();
-            if (!blob.type.startsWith('image/')) { buildDropZone(); return; }
+            if (!blob.type.startsWith("image/")) return;
 
-            const name = (url.split('/').pop() || 'image').split('?')[0];
-            const file = new File([blob], name, { type: blob.type });
-
-            // processFile expects a FileList-like object
+            const name = (url.split("/").pop() || "image").split("?")[0];
             const dt = new DataTransfer();
-            dt.items.add(file);
+            dt.items.add(new File([blob], name, { type: blob.type }));
             addFiles(dt.files);
         } catch (err) {
             console.error(err);
-            alert('Could not load that image from the web. Save it and drop the file, or use browse.');
-            buildDropZone();
+            alert("Could not load that image from the web (likely CORS). Save it and drop the file, or use browse.");
         }
     });
-    // $saveBtn?.addEventListener("click", handleSave);
 
     // seed existing pictures from the server-rendered data
     (function seedPictures() {
@@ -185,6 +193,5 @@
         } catch (e) { console.error("seed failed", e); }
     })();
 
-    //!!!! RENDER
     render();
 })();

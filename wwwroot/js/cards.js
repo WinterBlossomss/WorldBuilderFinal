@@ -95,7 +95,22 @@
             </button>
         </div>`;
     }
-
+    window.addCardCategory = function (cat) {
+        if (!loaded) return;
+        const section = categorySection({ id: cat.id, name: cat.name, color: cat.color, scripts: [] });
+        const addBtn = tree.querySelector(":scope > button");   // the "+ New category" button
+        if (addBtn) {
+            addBtn.insertAdjacentHTML("beforebegin", section);
+        } else {
+            // Cards was showing the empty state → replace it with the first category + button
+            meta.classList.add("hidden");
+            tree.innerHTML = section + `
+            <button type="button" onclick="showCategoryModal()"
+                    class="w-full border border-dashed border-stone-400 py-3 font-sans text-sm text-stone-400 hover:border-[#a3712a] hover:text-[#a3712a] transition-colors">
+                + New category
+            </button>`;
+        }
+    };
     function render(data) {
         meta.classList.add("hidden");
         tree.innerHTML = data.totalCats === 0

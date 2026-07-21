@@ -436,6 +436,7 @@
                         document.querySelector(`#categoryList [data-cat-id="${id}"]`)?.remove();      // sidebar list
                         document.querySelector(`#scriptModalCatList [data-cat-id="${id}"]`)?.remove(); // "New Script" modal list
                         document.querySelector(`#cardTree [data-id="${id}"]`)?.remove();              // Cards view section (if rendered)
+                        document.querySelector(`#boardFilters [data-cat="${id}"]`)?.remove();         // Board view filter chip
                     }
                     else
                         alert(await res.text() || "Couldn't delete this category.");

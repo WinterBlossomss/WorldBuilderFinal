@@ -176,14 +176,17 @@ function saveCategory() {
         const boardFilters = document.getElementById('boardFilters');
         if (boardFilters) {
             const chipHtml = `
-                <button class="filter-chip rounded-full border px-3 py-1 text-sm transition-colors"
+                <button class="filter-chip border px-3 py-1 text-sm transition-colors"
                         data-cat="${res.catIDPK}"
                         style="border-color:${res.catColor}; color:${res.catColor}">
                     ${res.catName} <span class="opacity-60">0</span>
                 </button>`;
             boardFilters.insertAdjacentHTML('beforeend', chipHtml);
         }
-
+        // --- add the category to the Cards view ---
+        if (window.addCardCategory) {
+            window.addCardCategory({ id: res.catIDPK, name: res.catName, color: res.catColor });
+        }
         nameInput.value = "";
         namePreview.textContent = "Name...";
         hideCategoryModal();

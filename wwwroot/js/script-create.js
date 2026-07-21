@@ -293,4 +293,110 @@ window.quill = quill;
 const saved = document.getElementById("savedContent");
 if (saved && saved.innerHTML.trim()) {
     quill.clipboard.dangerouslyPasteHTML(saved.innerHTML);
+
+
 }
+
+// ----- Link selected text to a Script's Detail page -----
+(function scriptLinkButton() {
+    const btn = document.getElementById("characterLinkButton");
+    if (!btn || !window.quill) return;
+
+    const quill = window.quill;
+    let savedRange = null;   // the selection captured when the button was clicked
+    let panel = null;
+
+    function ensurePanel() {
+        if (panel) return panel;
+        panel = document.createElement("div");
+        panel.style.cssText =
+            "position:absolute;z-index:1000;display:none;min-width:220px;max-height:280px;" +
+            "overflow:auto;background:#fff;border:1px solid #d6d3cd;border-radius:8px;" +
+            "box-shadow:0 12px 30px rgba(33,28,20,.18);padding:6px;";
+        panel.innerHTML =
+            `<input type="text" class="slp-search" placeholder="Search scripts…" ` +
+            `style="width:100%;box-sizing:border-box;padding:6px 8px;margin-bottom:6px;` +
+            `border:1px solid #d6d3cd;border-radius:6px;font-size:14px;">` +
+            `<div class="slp-list"></div>`;
+        document.body.appendChild(panel);
+
+        panel.querySelector(".slp-search").addEventListener("input", e => {
+            const q = e.target.value.toLowerCase();
+            panel.querySelectorAll(".slp-item").forEach(el => {
+                el.style.display = el.textContent.toLowerCase().includes(q) ? "" : "none";
+            });
+        });
+        return panel;
+    }
+
+    function positionPanel() {
+        const r = btn.getBoundingClientRect();
+        panel.style.top = (window.scrollY + r.bottom + 4) + "px";
+        panel.style.left = (window.scrollX + r.left) + "px";
+    }
+
+    function closePanel() { if (panel) panel.style.display = "none"; }
+
+    async function loadScripts() {
+        const list = panel.querySelector(".slp-list");
+        list.innerHTML = `<div style="padding:6px 8px;color:#8a857c;font-size:13px;">Loading…</div>`;
+
+        const url = `${cfg.urls.scriptsInWorld}?worldId=${cfg.worldId}&excludeId=${cfg.scriptId || 0}`;
+        let scripts = [];
+        try {
+            scripts = await (await fetch(url)).json();
+        } catch {
+            list.innerHTML = `<div style="padding:6px 8px;color:#8a2f2a;font-size:13px;">Couldn't load scripts.</div>`;
+            return;
+        }
+
+        if (!scripts.length) {
+            list.innerHTML = `<div style="padding:6px 8px;color:#8a857c;font-size:13px;">No other scripts in this world yet.</div>`;
+            return;
+        }
+
+        list.innerHTML = "";
+        scripts.forEach(s => {
+            const item = document.createElement("div");
+            item.className = "slp-item";
+            item.textContent = s.title || "(untitled)";
+            item.style.cssText = "padding:6px 8px;border-radius:6px;cursor:pointer;font-size:14px;";
+            item.addEventListener("mouseenter", () => item.style.background = "#f0ebdf");
+            item.addEventListener("mouseleave", () => item.style.background = "");
+            item.addEventListener("click", () => applyLink(s.id));
+            list.appendChild(item);
+        });
+    }
+
+    function applyLink(scriptId) {
+        if (!savedRange || savedRange.length === 0) { closePanel(); return; }
+        const href = `${cfg.urls.detailPage}?scriptidpk=${scriptId}`;
+        quill.formatText(savedRange.index, savedRange.length, "link", href, "user");
+        quill.setSelection(savedRange.index + savedRange.length, 0);
+        closePanel();
+    }
+
+    // preventDefault stops the button from stealing the editor's selection
+    btn.addEventListener("mousedown", e => e.preventDefault());
+
+    btn.addEventListener("click", () => {
+        const range = quill.getSelection();
+        if (!range || range.length === 0) {
+            alert("Select some text first, then click this button to link it to a script.");
+            return;
+        }
+        savedRange = range;
+        ensurePanel();
+        positionPanel();
+        panel.style.display = "block";
+        panel.querySelector(".slp-search").value = "";
+        loadScripts();
+        panel.querySelector(".slp-search").focus();
+    });
+
+    document.addEventListener("mousedown", e => {
+        if (!panel || panel.style.display === "none") return;
+        if (e.target === btn || panel.contains(e.target)) return;
+        closePanel();
+    });
+})();

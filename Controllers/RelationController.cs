@@ -29,14 +29,22 @@ public class RelationController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> SearchScripts(string q, int excludeId)
+    public async Task<IActionResult> SearchScripts(string q, int excludeId, int worldId)
     {
-        var query = _context.Scripts.Where(s => s.ScriptIDPK != excludeId);
+        // Only scripts that live in this world (Script -> Category -> World)
+        var worldCatIds = _context.Categories
+            .Where(c => c.CatWorldFK == worldId)
+            .Select(c => c.CatIDPK);
+
+        var query = _context.Scripts
+            .Where(s => s.ScriptIDPK != excludeId && worldCatIds.Contains(s.ScriptCatFK));
+
         if (!string.IsNullOrWhiteSpace(q))
         {
             var term = q.Trim();
             query = query.Where(s => EF.Functions.Like(s.ScriptTitle, "%" + term + "%"));
         }
+
         var results = await query
             .OrderBy(s => s.ScriptTitle).Take(10)
             .Select(s => new { id = s.ScriptIDPK, title = s.ScriptTitle })

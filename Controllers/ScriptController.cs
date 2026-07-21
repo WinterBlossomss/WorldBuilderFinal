@@ -129,57 +129,43 @@ public class ScriptController : Controller
     // GET: SCRIPTS/Create
     public async Task<IActionResult> Create(int? catID, int? subID, int? worldID)
     {
-        var script = new WorldBuilder.Models.Script
-        {
-            ScriptCreateAt = DateTime.UtcNow
-        };
+        var script = new WorldBuilder.Models.Script { ScriptCreateAt = DateTime.UtcNow };
+        int? resolvedWorldId = worldID;
 
         if (subID is > 0)
         {
             var sub = await _context.SubCategories
                 .Include(s => s.SubCatFKNavigation)
                 .FirstOrDefaultAsync(s => s.SubIDPK == subID);
-
             if (sub == null) return NotFound();
 
             script.ScriptSubFK = sub.SubIDPK;
             script.ScriptCatFK = sub.SubCatFK;
-
             ViewData["SubName"] = sub.SubName;
-            ViewData["CatName"] = sub.SubCatFKNavigation;
+            ViewData["CatName"] = sub.SubCatFKNavigation?.CatName;   // was assigning the whole nav object
+
+            resolvedWorldId ??= sub.SubCatFKNavigation?.CatWorldFK;
         }
+
         if (catID is > 0)
         {
             var cat = await _context.Categories
                 .FirstOrDefaultAsync(c => c.CatIDPK == catID);
-
             if (cat == null) return NotFound();
 
             script.ScriptCatFK = cat.CatIDPK;
             ViewData["CatName"] = cat.CatName;
+            resolvedWorldId ??= cat.CatWorldFK;
         }
 
         var world = await _context.Worlds
-            .FirstOrDefaultAsync(w => w.WorldIDPK == worldID);
+            .FirstOrDefaultAsync(w => w.WorldIDPK == resolvedWorldId);
 
-        //var tags = await _context.Tags
-        //    .Where(t => t.TagWorldFK == worldID)
-        //    .ToListAsync();
+        if (world == null) return NotFound();   // fail safely instead of handing null to the view
 
-        //var tagsCount = tags.Count();
-
-        var builderView = new BuilderView
-        {
-            NewScript = script,
-            SelectedWorld = world,
-            //Tags = tags,
-            //TotalTags = tagsCount
-        };
-
-        return View(builderView);
+        return View(new BuilderView { NewScript = script, SelectedWorld = world });
     }
 
-    // POST: SCRIPTS/Create
     // POST: SCRIPTS/Create  — persist, then go to Edit where relations live
     [HttpPost]
     [ValidateAntiForgeryToken]
