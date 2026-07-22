@@ -1,6 +1,7 @@
 @model WorldBuilder.Models.World
 @using WorldBuilder.Models
-
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
 @{
     ViewData["Title"] = Model?.WorldName ?? "World";
 
@@ -12,7 +13,8 @@
     var allPictures = (ViewData["Pictures"] as List<Picture>)?.ToList();
 
     var cover = allPictures?.Where(p => p.PicWorldFK == Model.WorldIDPK).FirstOrDefault();
-    var author = Model?.WorldUserFKNavigation?.UserInfoProN;
+    var authorId = Model?.WorldUserFKNavigation?.UserInfoUserIDFK;
+    var author = authorId == null ? null : (await UserManager.FindByIdAsync(authorId))?.UserName;
     var categories = Model?.Categories?.OrderBy(c => c.CatName).ToList() ?? new List<Category>();
     var subTotal = categories.Sum(c => c.SubCategories?.Count ?? 0);
     var lastTouch = Model?.WorldUpdatedAt ?? Model?.WorldCreatedAt ?? DateTime.Today;

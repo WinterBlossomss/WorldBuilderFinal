@@ -177,6 +177,11 @@ public class WorldController : Controller
             return NotFound();
         }
 
+        var authorId = world.WorldUserFKNavigation?.UserInfoUserIDFK;
+        ViewData["AuthorHandle"] = authorId == null
+            ? null
+            : (await _userManager.FindByIdAsync(authorId))?.UserName;
+
         // Is the current viewer the owner of this world?
         bool isOwner = false;
         if (User?.Identity?.IsAuthenticated == true)
