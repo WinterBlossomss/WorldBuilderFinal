@@ -14,12 +14,6 @@ public class ScriptController : Controller
         _context = context;
     }
 
-    // GET: SCRIPTS
-    public async Task<IActionResult> Index()
-    {
-        return View();
-    }
-
     private async Task<int?> CurrentAuthorIdAsync()
     {
         var uid = User.FindFirstValue(ClaimTypes.NameIdentifier); // Identity user id (string)

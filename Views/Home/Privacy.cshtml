@@ -1,0 +1,246 @@
+@{
+    ViewData["Title"] = "Privacy";
+
+    // Registry-aesthetic tokens (mirrors Home/Index.cshtml and World/Read.cshtml)
+    const string hatch = "bg-[repeating-linear-gradient(135deg,transparent_0_10px,rgba(26,26,26,0.08)_10px_11px)]";
+    const string label = "font-sans text-xs tracking-[.14em] uppercase text-stone-500";
+    const string clause = "font-sans text-xs tracking-[.08em] text-teal-600";
+
+    var effective = new DateTime(2026, 7, 23);
+
+    // Clause list drives both the index and the section headings, so the two
+    // can never drift apart.
+    var clauses = new (string No, string Title)[]
+    {
+        ("01", "Scope"),
+        ("02", "Account records"),
+        ("03", "What you publish"),
+        ("04", "Technical records"),
+        ("05", "Cookies"),
+        ("06", "How records are used"),
+        ("07", "Disclosure"),
+        ("08", "Retention and erasure"),
+        ("09", "Your rights"),
+        ("10", "Age"),
+        ("11", "Amendments"),
+        ("12", "Contact")
+    };
+}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-stone-900">
+
+    <!-- masthead -->
+    <header class="border-b border-stone-300 pb-8 mb-10">
+        <div class="flex items-start gap-4">
+            <div class="w-10 h-10 shrink-0 border border-stone-300 @hatch" aria-hidden="true"></div>
+            <div class="min-w-0">
+                <span class="@label">Registry document · PRV-01</span>
+                <h1 class="font-serif font-semibold text-3xl sm:text-4xl tracking-[-.01em] leading-[1.1] mt-2">Privacy</h1>
+                <p class="text-sm text-stone-600 leading-[1.6] mt-3 max-w-2xl">
+                    What WorldBuilder records about you, why it is kept, and how to have it removed.
+                    Written to be read, not to be survived.
+                </p>
+                <div class="font-sans text-xs text-stone-500 mt-4 flex flex-wrap gap-x-4 gap-y-2">
+                    <span>In force from @effective.ToString("d MMMM yyyy")</span>
+                    <span class="hidden sm:inline">·</span>
+                    <span>Controller: WorldBuilder</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-8 lg:gap-12">
+
+        <!-- index -->
+        <nav aria-label="Contents" class="hidden lg:block">
+            <div class="@label mb-4">Contents</div>
+            <ol class="list-none m-0 p-0 space-y-2">
+                @foreach (var c in clauses)
+                {
+                    <li>
+                        <a href="#c-@c.No" class="no-underline text-sm text-stone-600 hover:text-teal-900 transition-colors flex gap-3">
+                            <span class="@clause">@c.No</span>
+                            <span>@c.Title</span>
+                        </a>
+                    </li>
+                }
+            </ol>
+        </nav>
+
+        <!-- clauses -->
+        <article class="max-w-3xl space-y-10">
+
+            <section id="c-01">
+                <div class="@clause mb-1">01</div>
+                <h2 class="font-serif font-semibold text-xl tracking-[-.01em] mb-3">Scope</h2>
+                <p class="text-sm text-stone-700 leading-[1.7]">
+                    This applies to WorldBuilder, the world registry — the site you are reading now.
+                    It covers the account you sign in with, the worlds you file, and the records the
+                    server keeps while it serves pages to you. It does not cover sites you reach by
+                    following a link out of here.
+                </p>
+            </section>
+
+            <section id="c-02">
+                <div class="@clause mb-1">02</div>
+                <h2 class="font-serif font-semibold text-xl tracking-[-.01em] mb-3">Account records</h2>
+                <p class="text-sm text-stone-700 leading-[1.7] mb-4">
+                    Registering creates one row in the account table. It holds:
+                </p>
+                <ul class="text-sm text-stone-700 leading-[1.7] list-none m-0 p-0 border border-stone-300 bg-stone-100">
+                    <li class="px-4 py-3 border-b border-stone-300">
+                        <span class="@label block mb-1">Username</span>
+                        Shown next to everything you publish.
+                    </li>
+                    <li class="px-4 py-3 border-b border-stone-300">
+                        <span class="@label block mb-1">Email address</span>
+                        Used to confirm the account and to reset a password. Never shown publicly.
+                    </li>
+                    <li class="px-4 py-3">
+                        <span class="@label block mb-1">Password</span>
+                        Stored only as a salted hash. It cannot be read back, by us or by anyone else.
+                    </li>
+                </ul>
+            </section>
+
+            <section id="c-03">
+                <div class="@clause mb-1">03</div>
+                <h2 class="font-serif font-semibold text-xl tracking-[-.01em] mb-3">What you publish</h2>
+                <p class="text-sm text-stone-700 leading-[1.7] mb-4">
+                    Worlds, descriptions, entries, images, captions, tags and likes are stored so the
+                    registry can display them. A world marked public is visible to anyone who visits,
+                    signed in or not, and may be listed on the front page or under its genre. A world
+                    kept private stays with your account.
+                </p>
+                <p class="text-sm text-stone-700 leading-[1.7]">
+                    Anything you write into a world is your material. Put nothing in a public world
+                    that you would not want a stranger to read — search engines index public pages,
+                    and copies made by readers are beyond our reach.
+                </p>
+            </section>
+
+            <section id="c-04">
+                <div class="@clause mb-1">04</div>
+                <h2 class="font-serif font-semibold text-xl tracking-[-.01em] mb-3">Technical records</h2>
+                <p class="text-sm text-stone-700 leading-[1.7]">
+                    The server writes ordinary web logs: IP address, the page requested, the time,
+                    the browser's user-agent string, and any error raised. These exist to keep the
+                    site running and to trace abuse. They are not used to build a profile of you and
+                    are not linked to your account beyond what the request itself reveals.
+                </p>
+            </section>
+
+            <section id="c-05">
+                <div class="@clause mb-1">05</div>
+                <h2 class="font-serif font-semibold text-xl tracking-[-.01em] mb-3">Cookies</h2>
+                <p class="text-sm text-stone-700 leading-[1.7] mb-4">
+                    Two, both necessary, neither used for advertising:
+                </p>
+                <ul class="text-sm text-stone-700 leading-[1.7] list-none m-0 p-0 border border-stone-300 bg-stone-100">
+                    <li class="px-4 py-3 border-b border-stone-300">
+                        <span class="@label block mb-1">Session</span>
+                        Keeps you signed in as you move between pages. Cleared when you sign out,
+                        or held longer if you tick “remember me”.
+                    </li>
+                    <li class="px-4 py-3">
+                        <span class="@label block mb-1">Anti-forgery</span>
+                        Proves a form was submitted from this site and not from somewhere else.
+                    </li>
+                </ul>
+                <p class="text-sm text-stone-700 leading-[1.7] mt-4">
+                    There are no analytics or tracking cookies. Blocking cookies in your browser will
+                    prevent signing in.
+                </p>
+            </section>
+
+            <section id="c-06">
+                <div class="@clause mb-1">06</div>
+                <h2 class="font-serif font-semibold text-xl tracking-[-.01em] mb-3">How records are used</h2>
+                <p class="text-sm text-stone-700 leading-[1.7]">
+                    To sign you in, to show your worlds to you and — where you have made them public —
+                    to other readers, to send account mail such as confirmations and password resets,
+                    and to keep the service secure. Nothing here is sold, rented, or handed to
+                    advertisers. No automated decision-making is applied to you.
+                </p>
+            </section>
+
+            <section id="c-07">
+                <div class="@clause mb-1">07</div>
+                <h2 class="font-serif font-semibold text-xl tracking-[-.01em] mb-3">Disclosure</h2>
+                <p class="text-sm text-stone-700 leading-[1.7]">
+                    Records are held by the hosting and mail providers that run the service on our
+                    behalf, under contract and only for that purpose. Beyond that, records are
+                    disclosed only where the law requires it, or where it is necessary to defend
+                    the service against attack.
+                </p>
+            </section>
+
+            <section id="c-08">
+                <div class="@clause mb-1">08</div>
+                <h2 class="font-serif font-semibold text-xl tracking-[-.01em] mb-3">Retention and erasure</h2>
+                <p class="text-sm text-stone-700 leading-[1.7]">
+                    Account and world records are kept while the account exists. Delete a world and it
+                    goes, along with its entries and uploaded images. Ask for the account itself to be
+                    closed and the account row and everything filed under it is removed. Server logs
+                    age out on their own. Backups are overwritten in the ordinary course, so a deleted
+                    record may persist in a backup for a short period before it is gone for good.
+                </p>
+            </section>
+
+            <section id="c-09">
+                <div class="@clause mb-1">09</div>
+                <h2 class="font-serif font-semibold text-xl tracking-[-.01em] mb-3">Your rights</h2>
+                <p class="text-sm text-stone-700 leading-[1.7] mb-4">
+                    If you are in the EU or EEA, the GDPR gives you the right to ask for a copy of
+                    what is held about you, to have it corrected, to have it erased, to have it sent
+                    to you in a portable form, and to object to or restrict certain uses. Write to the
+                    address in clause 12 and we will answer within one month.
+                </p>
+                <p class="text-sm text-stone-700 leading-[1.7]">
+                    You may also complain to a supervisory authority. In Austria that is the
+                    Datenschutzbehörde, Barichgasse 40–42, 1030 Vienna.
+                </p>
+            </section>
+
+            <section id="c-10">
+                <div class="@clause mb-1">10</div>
+                <h2 class="font-serif font-semibold text-xl tracking-[-.01em] mb-3">Age</h2>
+                <p class="text-sm text-stone-700 leading-[1.7]">
+                    WorldBuilder is not intended for children under 16. If an account is found to
+                    belong to a child under that age, it will be closed and its records removed.
+                </p>
+            </section>
+
+            <section id="c-11">
+                <div class="@clause mb-1">11</div>
+                <h2 class="font-serif font-semibold text-xl tracking-[-.01em] mb-3">Amendments</h2>
+                <p class="text-sm text-stone-700 leading-[1.7]">
+                    This document may be revised. The date at the top marks the version in force. A
+                    change that materially affects how your records are handled will be announced on
+                    the site before it takes effect.
+                </p>
+            </section>
+
+            <section id="c-12">
+                <div class="@clause mb-1">12</div>
+                <h2 class="font-serif font-semibold text-xl tracking-[-.01em] mb-3">Contact</h2>
+                <div class="border border-stone-300 bg-stone-100 p-5">
+                    <span class="@label block mb-2">Written enquiries</span>
+                    <p class="text-sm text-stone-700 leading-[1.7]">
+                        <a href="mailto:privacy@example.com" class="text-teal-900 hover:text-teal-600 transition-colors">privacy@example.com</a>
+                        <br />
+                        <span class="text-stone-500">[postal address of the controller]</span>
+                    </p>
+                </div>
+            </section>
+
+            <div class="border-t border-stone-300 pt-6">
+                <a asp-controller="Home" asp-action="Index"
+                   class="no-underline font-sans text-xs tracking-[.14em] uppercase text-stone-600 hover:text-teal-900 transition-colors">
+                    ← Back to the registry
+                </a>
+            </div>
+
+        </article>
+    </div>
+</div>
