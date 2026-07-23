@@ -5,12 +5,7 @@
     ViewData["Title"] = Model?.WorldName ?? "World";
 
     var w      = Model;
-    var authorUid = world.WorldUserFKNavigation?.UserInfoUserIDFK;
-    ViewData["AuthorHandle"] = authorUid == null ? null
-        : await _userManager.Users
-            .Where(u => u.Id == authorUid)
-            .Select(u => u.UserName)
-            .FirstOrDefaultAsync();
+    var author = ViewData["AuthorHandle"] as string;
     var hasLiked = ViewData["HasLiked"] as bool? ?? false;
     var catCounts = ViewData["CatCounts"] as Dictionary<int, int> ?? new Dictionary<int, int>();
     var totalScripts = ViewData["TotalScripts"] as int? ?? 0;

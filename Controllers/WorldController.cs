@@ -429,10 +429,15 @@ public class WorldController : Controller
 
         var me = await CurrentUserInfoAsync();
 
-        ViewData["AuthorHandle"] = world.WorldUserFKNavigation?.UserInfoProN; // string
-        ViewData["CatCounts"] = catCounts;                                 // Dictionary<int,int>
-        ViewData["TotalScripts"] = catCounts.Values.Sum();                    // int
-        ViewData["TotalCategories"] = world.Categories.Count;                    // int
+        var authorUid = world.WorldUserFKNavigation?.UserInfoUserIDFK;
+        ViewData["AuthorHandle"] = authorUid == null ? null
+            : await _userManager.Users
+                .Where(u => u.Id == authorUid)
+                .Select(u => u.UserName)
+                .FirstOrDefaultAsync();
+        ViewData["CatCounts"] = catCounts;                               
+        ViewData["TotalScripts"] = catCounts.Values.Sum();
+        ViewData["TotalCategories"] = world.Categories.Count;
         ViewData["TotalCharacters"] = await _context.Scripts
             .Where(s => catIds.Contains(s.ScriptCatFK) && s.ScriptIsChar).CountAsync();
         ViewData["IsOwner"] = me != null && me.UserInfoIDPK == world.WorldUserFK;
