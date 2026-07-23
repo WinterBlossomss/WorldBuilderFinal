@@ -192,6 +192,5 @@ public partial class WorldBuilderDBContext : DbContext
 
         OnModelCreatingPartial(modelBuilder);
     }
-
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

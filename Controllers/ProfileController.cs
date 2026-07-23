@@ -110,15 +110,15 @@ namespace WorldBuilder.Controllers
     {
         [Required]
         [Display(Name = "Username")]
-        [StringLength(256, ErrorMessage = "Username can be at most {1} characters.")]
-        public string Username { get; set; }
+        [StringLength(15, ErrorMessage = "Username can be at most {1} characters.")]
+        public string Username { get; set; } = string.Empty;
 
         [Display(Name = "Pronouns")]
         [StringLength(10, ErrorMessage = "Pronouns can be at most {1} characters.")]
-        public string Pronouns { get; set; }
+        public string? Pronouns { get; set; }
 
         [Display(Name = "Bio")]
         [StringLength(500, ErrorMessage = "Bio can be at most {1} characters.")]
-        public string Bio { get; set; }
+        public string? Bio { get; set; }
     }
 }

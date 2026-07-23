@@ -80,6 +80,7 @@ namespace WorldBuilder.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
+            [StringLength(15, MinimumLength = 3, ErrorMessage = "Username must be between {2} and {1} characters.")]
             [Display(Name = "Username")]
             public string UserName { get; set; }
 
