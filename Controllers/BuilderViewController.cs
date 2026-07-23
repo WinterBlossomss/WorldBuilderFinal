@@ -19,6 +19,15 @@ namespace WorldBuilder.Controllers
         }
 
         // GET: BuilderViewController
+
+        private static string Plain(string html, int max = 100)
+        {
+            if (string.IsNullOrWhiteSpace(html)) return "";
+            var text = System.Text.RegularExpressions.Regex.Replace(html, "<.*?>", " ");
+            text = System.Net.WebUtility.HtmlDecode(text);
+            text = System.Text.RegularExpressions.Regex.Replace(text, "\\s+", " ").Trim();
+            return text.Length > max ? text.Substring(0, max).TrimEnd() + "…" : text;
+        }
         public async Task<ActionResult> Index(int id)
         {
 
@@ -172,8 +181,7 @@ namespace WorldBuilder.Controllers
                     {
                         s.id,
                         s.title,
-                        snippet = string.IsNullOrEmpty(s.content) ? "" :
-                            (s.content.Length > 100 ? s.content.Substring(0, 100) + "…" : s.content),
+                        snippet = Plain(s.content),
                         subName = s.subFk > 0 && subNameById.ContainsKey(s.subFk) ? subNameById[s.subFk] : null,
                         s.edited,
                         s.links

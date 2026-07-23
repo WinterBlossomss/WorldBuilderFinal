@@ -230,7 +230,7 @@
                     @foreach (var w in moreByAuthor)
                     {
                         <a asp-action="Details" asp-route-id="@w.WorldIDPK"
-                           class="lex items-center justify-between gap-3 text-sm no-underline text-stone-900 hover:text-teal-900 transition-colors">
+                           class="flex items-center justify-between gap-3 text-sm no-underline text-stone-900 hover:text-teal-900 transition-colors">
                             <span class="flex-1 truncate flex gap-1.5"><span class="text-stone-400">└</span>@w.WorldName</span>
                             <span class="inline-flex items-center gap-1 font-sans text-xs text-stone-500">
                                 <svg width="11" height="10" viewBox="0 0 24 22" fill="none"><path d="M12 20 C 4 14, 2 9, 5 5 C 8 1, 12 5, 12 8 C 12 5, 16 1, 19 5 C 22 9, 20 14, 12 20 Z" stroke="#a8a29e" stroke-width="1.8" fill="none" /></svg>

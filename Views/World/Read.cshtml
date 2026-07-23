@@ -88,12 +88,6 @@
             <span id="worldLikeCount">@Kfmt(likeCount)</span>
         </button>
 
-        <button type="button" title="Save" class="@iconBtn">
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2 h8 v12 l-4 -3 -4 3 z" stroke="currentColor" stroke-width="1.4" fill="none" /></svg>
-        </button>
-        <button type="button" title="Share" class="@iconBtn">
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="4" cy="8" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="3.5" r="2" stroke="currentColor" stroke-width="1.4" /><circle cx="12" cy="12.5" r="2" stroke="currentColor" stroke-width="1.4" /><line x1="5.7" y1="7" x2="10.3" y2="4.4" stroke="currentColor" stroke-width="1.2" /><line x1="5.7" y1="9" x2="10.3" y2="11.6" stroke="currentColor" stroke-width="1.2" /></svg>
-        </button>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-[230px_1fr] gap-10">
@@ -188,9 +182,6 @@
                         </div>
                         <div class="flex justify-between gap-3 py-1.5 border-b border-stone-200">
                             <dt class="text-stone-500 shrink-0">Scripts</dt><dd class="m-0 text-right">@totalScripts across @totalCategories categories</dd>
-                        </div>
-                        <div class="flex justify-between gap-3 py-1.5 border-b border-stone-200">
-                            <dt class="text-stone-500 shrink-0">Characters</dt><dd class="m-0 text-right">@totalCharacters</dd>
                         </div>
                         <div class="flex justify-between gap-3 py-1.5 border-b border-stone-200">
                             <dt class="text-stone-500 shrink-0">Likes</dt><dd class="m-0 text-right">@Kfmt(likeCount)</dd>

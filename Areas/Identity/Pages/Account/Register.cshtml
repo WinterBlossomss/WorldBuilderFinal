@@ -1,99 +1,144 @@
-﻿@page
+@page
 @model RegisterModel
+
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Create an account";
+
+    // Registry-aesthetic tokens (mirrors Home/Index.cshtml)
+    const string hatch    = "bg-[repeating-linear-gradient(135deg,transparent_0_10px,rgba(26,26,26,0.08)_10px_11px)]";
+    const string panel    = "border border-stone-300 bg-stone-100 p-8";
+    const string fieldLbl = "block font-sans text-xs uppercase tracking-widest text-stone-600 mb-2";
+    const string field    = "w-full bg-white border border-stone-400 px-4 py-3 font-sans text-sm text-stone-900 placeholder:text-stone-400 outline-none focus:border-teal-900 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a3712a] focus-visible:outline-offset-2";
+    const string fieldErr = "block mt-2 font-sans text-xs text-red-700";
+    const string hint     = "font-sans text-xs text-stone-500 mb-2";
+    const string btnFill  = "w-full inline-flex items-center justify-center gap-2 font-sans text-sm tracking-[.06em] uppercase px-8 py-3 bg-stone-900 text-stone-50 cursor-pointer hover:bg-teal-900 transition-colors";
+    const string btnLine  = "inline-flex items-center gap-2 font-sans text-xs tracking-[.06em] uppercase px-4 py-2.5 border border-stone-300 bg-stone-100 text-stone-700 cursor-pointer hover:border-teal-900 hover:text-teal-900 transition-colors";
+    const string link     = "text-teal-900 underline underline-offset-4 hover:text-stone-900 transition-colors";
 }
 
-<div class="max-w-5xl mx-auto px-4 py-10">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 text-stone-900">
 
-    <h1 class="text-3xl font-bold tracking-tight mb-8">@ViewData["Title"]</h1>
+    <!-- Header: eyebrow + title + subtitle -->
+    <header class="flex items-start gap-4 pb-6 mb-8 border-b border-stone-300">
+        <div class="hidden sm:block w-12 h-12 shrink-0 border border-stone-300 @hatch" aria-hidden="true"></div>
+        <div class="min-w-0">
+            <span class="font-sans text-xs tracking-[.22em] uppercase text-teal-900">New builder</span>
+            <h1 class="font-serif font-semibold text-4xl tracking-tight leading-none mt-1.5">@ViewData["Title"]</h1>
+            <p class="font-sans text-sm text-stone-600 mt-2 max-w-xl">
+                Claim a handle and start your first world. Everything you write stays private until you publish it.
+            </p>
+        </div>
+    </header>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-8 items-start">
 
         <!-- Register form -->
-        <div>
-            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                <h2 class="text-xl font-semibold mb-1">Create a new account</h2>
-                <hr class="border-gray-200 mb-6" />
+        <section>
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="@panel">
 
-                <div asp-validation-summary="ModelOnly" class="mb-4 p-3 rounded-lg border border-red-200 bg-red-50 text-sm text-red-600" role="alert"></div>
+                <div class="pb-4 mb-6 border-b border-dashed border-stone-300">
+                    <span class="font-sans text-[11px] tracking-[.22em] uppercase text-teal-900">New entry</span>
+                    <h2 class="font-serif font-semibold text-2xl tracking-tight mt-1">Register with your email</h2>
+                </div>
+
+                <div asp-validation-summary="ModelOnly" role="alert"
+                     class="empty:hidden mb-6 border border-red-700 bg-red-50 px-5 py-4 font-sans text-sm text-red-800"></div>
 
                 <!-- Email -->
-                <div class="mb-4">
-                    <label asp-for="Input.Email" class="block text-sm font-semibold text-gray-800 mb-2">Email</label>
-                    <input asp-for="Input.Email" autocomplete="username" aria-required="true" placeholder="name@example.com"
-                           class="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-300 outline-none focus:border-gray-900 transition-colors" />
-                    <span asp-validation-for="Input.Email" class="mt-1 block text-xs text-red-600"></span>
+                <div class="mb-6">
+                    <label asp-for="Input.Email" class="@fieldLbl">Email</label>
+                    <p class="@hint">Used to sign in and to confirm your account. Never shown on your profile.</p>
+                    <input asp-for="Input.Email" autocomplete="username" aria-required="true"
+                           placeholder="name@example.com" class="@field" />
+                    <span asp-validation-for="Input.Email" class="@fieldErr"></span>
                 </div>
 
                 <!-- Username -->
-                <div class="mb-4">
-                    <label asp-for="Input.UserName" class="block text-sm font-semibold text-gray-800 mb-2">Username</label>
-                    <input asp-for="Input.UserName" aria-required="true" placeholder="Username"
-                           class="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-300 outline-none focus:border-gray-900 transition-colors" />
-                    <span asp-validation-for="Input.UserName" class="mt-1 block text-xs text-red-600"></span>
+                <div class="mb-6">
+                    <label asp-for="Input.UserName" class="@fieldLbl">Username</label>
+                    <p class="@hint">The handle other builders see next to your worlds.</p>
+                    <input asp-for="Input.UserName" aria-required="true"
+                           placeholder="runeforge" class="@field" />
+                    <span asp-validation-for="Input.UserName" class="@fieldErr"></span>
                 </div>
 
+                <hr class="border-none border-t border-dashed border-stone-300 my-7" aria-hidden="true" />
+
                 <!-- Password -->
-                <div class="mb-4">
-                    <label asp-for="Input.Password" class="block text-sm font-semibold text-gray-800 mb-2">Password</label>
-                    <input asp-for="Input.Password" autocomplete="new-password" aria-required="true" placeholder="Password"
-                           class="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-300 outline-none focus:border-gray-900 transition-colors" />
-                    <span asp-validation-for="Input.Password" class="mt-1 block text-xs text-red-600"></span>
+                <div class="mb-6">
+                    <label asp-for="Input.Password" class="@fieldLbl">Password</label>
+                    <input asp-for="Input.Password" autocomplete="new-password" aria-required="true"
+                           placeholder="••••••••" class="@field" />
+                    <span asp-validation-for="Input.Password" class="@fieldErr"></span>
                 </div>
 
                 <!-- Confirm password -->
-                <div class="mb-6">
-                    <label asp-for="Input.ConfirmPassword" class="block text-sm font-semibold text-gray-800 mb-2">Confirm Password</label>
-                    <input asp-for="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="Confirm password"
-                           class="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-300 outline-none focus:border-gray-900 transition-colors" />
-                    <span asp-validation-for="Input.ConfirmPassword" class="mt-1 block text-xs text-red-600"></span>
+                <div class="mb-8">
+                    <label asp-for="Input.ConfirmPassword" class="@fieldLbl">Confirm password</label>
+                    <input asp-for="Input.ConfirmPassword" autocomplete="new-password" aria-required="true"
+                           placeholder="Type it once more" class="@field" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="@fieldErr"></span>
                 </div>
 
-                <button id="registerSubmit" type="submit"
-                        class="w-full inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-gray-900 text-white text-sm font-semibold hover:bg-gray-700 transition-colors">
-                    Register
-                </button>
+                <button id="registerSubmit" type="submit" class="@btnFill">Create account</button>
+
+                <div class="mt-6 pt-5 border-t border-dashed border-stone-300 font-sans text-sm text-stone-600">
+                    Already registered?
+                    <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl" class="@link">Sign in instead</a>
+                </div>
             </form>
-        </div>
+        </section>
 
-        <!-- External services -->
-        <div>
-            <section>
-                <h3 class="text-lg font-semibold mb-1">Use another service to register</h3>
-                <hr class="border-gray-200 mb-6" />
+        <!-- Side column -->
+        <aside>
+            @* <section class="border border-stone-300 bg-stone-100 p-6">
+                <div class="pb-4 mb-5 border-b border-dashed border-stone-300">
+                    <span class="font-sans text-[11px] tracking-[.22em] uppercase text-teal-900">Elsewhere</span>
+                    <h2 class="font-serif font-semibold text-xl tracking-tight mt-1">Use another service</h2>
+                </div>
 
-                @{
-                    if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                    {
-                        <div class="text-sm text-gray-500 leading-relaxed">
-                            <p>
-                                There are no external authentication services configured. See this
-                                <a href="https://go.microsoft.com/fwlink/?LinkID=532715" class="text-gray-900 underline hover:text-gray-700 transition-colors">
-                                    article
-                                    about setting up this ASP.NET application to support logging in via external services
-                                </a>.
-                            </p>
-                        </div>
-                    }
-                    else
-                    {
-                        <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                            <div class="flex flex-wrap gap-2">
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" name="provider" value="@provider.Name"
-                                            title="Log in using your @provider.DisplayName account"
-                                            class="inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 bg-white hover:border-gray-900 hover:text-gray-900 transition-colors">
-                                        @provider.DisplayName
-                                    </button>
-                                }
-                            </div>
-                        </form>
-                    }
+                @if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <p class="font-sans text-sm text-stone-600 leading-relaxed">
+                        No external sign-up services are configured yet. Set them up in the
+                        <a href="https://go.microsoft.com/fwlink/?LinkID=532715" class="@link">ASP.NET external providers guide</a>.
+                    </p>
                 }
+                else
+                {
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        <div class="flex flex-wrap gap-2">
+                            @foreach (var provider in Model.ExternalLogins!)
+                            {
+                                <button type="submit" name="provider" value="@provider.Name"
+                                        title="Register with your @provider.DisplayName account" class="@btnLine">
+                                    @provider.DisplayName
+                                </button>
+                            }
+                        </div>
+                    </form>
+                }
+            </section> *@
+
+            <!-- What happens next -->
+            <section class="border border-dashed border-stone-400 p-6">
+                <span class="font-sans text-[11px] tracking-[.22em] uppercase text-teal-900">What happens next</span>
+                <ol class="mt-4 font-sans text-sm text-stone-600 leading-relaxed list-none m-0 p-0">
+                    <li class="flex gap-3 pb-3 mb-3 border-b border-dotted border-stone-300">
+                        <span class="font-serif font-semibold text-stone-900 shrink-0">1</span>
+                        <span>Login and customise your profile.</span>
+                    </li>
+                    <li class="flex gap-3 pb-3 mb-3 border-b border-dotted border-stone-300">
+                        <span class="font-serif font-semibold text-stone-900 shrink-0">2</span>
+                        <span>Name your first world and pick a genre.</span>
+                    </li>
+                    <li class="flex gap-3">
+                        <span class="font-serif font-semibold text-stone-900 shrink-0">3</span>
+                        <span>Add scripts, characters and lore — publish whenever you're ready.</span>
+                    </li>
+                </ol>
             </section>
-        </div>
+        </aside>
 
     </div>
 </div>
