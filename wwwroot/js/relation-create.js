@@ -1,5 +1,4 @@
-﻿// relation-create.js — Related scripts panel (only active once the script is saved)
-(function () {
+﻿(function () {
     const cfg = window.builderConfig;
     if (!cfg.scriptId) return;   // create mode: panel shows the "save first" notice
 

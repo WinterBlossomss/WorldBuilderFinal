@@ -38,7 +38,6 @@
     function cardById(id) { return world.querySelector(`.board-card[data-script-id="${id}"]`); }
 
     function centerOf(el) {
-        // geometry in unscaled world space (offsets are unaffected by the CSS transform)
         return { x: el.offsetLeft + el.offsetWidth / 2, y: el.offsetTop + el.offsetHeight / 2 };
     }
 
@@ -260,7 +259,7 @@
     document.getElementById('zoomIn')?.addEventListener('click', () => { scale = Math.min(2, scale + 0.1); applyZoom(); });
     document.getElementById('zoomOut')?.addEventListener('click', () => { scale = Math.max(0.4, scale - 0.1); applyZoom(); });
 
-    // ---------- reset (non-destructive view reset) ----------
+    // ---------- reset ----------
     function resetBoard() {
         // zoom back to 100% and scroll to origin
         scale = 1; applyZoom();

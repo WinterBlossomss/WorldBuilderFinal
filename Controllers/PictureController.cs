@@ -13,11 +13,7 @@ public class PictureController : Controller
         _env = env;
     }
 
-    public class CaptionDto
-    {
-        public int Id { get; set; }
-        public string Caption { get; set; }
-    }
+    
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -63,8 +59,7 @@ public class PictureController : Controller
         return Ok();
     }
 
-    public class IdDto
-    { public int Id { get; set; } }
+    
 
     // POST: /Picture/DeleteAjax
     [HttpPost]
@@ -85,4 +80,12 @@ public class PictureController : Controller
         await _context.SaveChangesAsync();
         return Ok();
     }
+}
+public class IdDto
+{ public int Id { get; set; } }
+
+public class CaptionDto
+{
+    public int Id { get; set; }
+    public string Caption { get; set; }
 }

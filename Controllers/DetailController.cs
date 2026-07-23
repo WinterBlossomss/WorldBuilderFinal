@@ -45,21 +45,7 @@ public class DetailController : Controller
         });
     }
 
-    public class DetailRowDto
-    {
-        public string Name { get; set; }
-        public string Content { get; set; }
-        public bool IsSection { get; set; }
-    }
-
-    public class SaveDetailDto
-    {
-        public int ScriptId { get; set; }
-        public string Title { get; set; }
-        public int? PicId { get; set; }
-        public bool Enabled { get; set; } = true;   // ← add
-        public List<DetailRowDto> Rows { get; set; } = new();
-    }
+    
 
     // POST /Detail/SaveAjax  — replace-all for this script's infobox
     [HttpPost]
@@ -124,4 +110,20 @@ public class DetailController : Controller
         await _context.SaveChangesAsync();
         return Ok();
     }
+}
+
+public class DetailRowDto
+{
+    public string Name { get; set; }
+    public string Content { get; set; }
+    public bool IsSection { get; set; }
+}
+
+public class SaveDetailDto
+{
+    public int ScriptId { get; set; }
+    public string Title { get; set; }
+    public int? PicId { get; set; }
+    public bool Enabled { get; set; } = true;   // ← add
+    public List<DetailRowDto> Rows { get; set; } = new();
 }

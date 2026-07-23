@@ -52,12 +52,7 @@ public class RelationController : Controller
         return Json(results);
     }
 
-    public class LinkDto
-    {
-        public int FromId { get; set; }
-        public int ToId { get; set; }
-        public int ConnId { get; set; }
-    }
+    
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -94,12 +89,6 @@ public class RelationController : Controller
         });
     }
 
-    public class UnlinkDto
-    {
-        public int OneId { get; set; }
-        public int TwoId { get; set; }
-    }
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UnlinkAjax([FromBody] UnlinkDto dto)
@@ -112,4 +101,15 @@ public class RelationController : Controller
         await _context.SaveChangesAsync();
         return Ok();
     }
+}
+public class UnlinkDto
+{
+    public int OneId { get; set; }
+    public int TwoId { get; set; }
+}
+public class LinkDto
+{
+    public int FromId { get; set; }
+    public int ToId { get; set; }
+    public int ConnId { get; set; }
 }

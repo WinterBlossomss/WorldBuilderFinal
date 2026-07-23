@@ -59,13 +59,7 @@ public class TagController : Controller
         return Json(new { total, matched = tags.Count, tags });
     }
 
-    public class CreateTagDto
-    {
-        public string Name { get; set; }
-        public string Color { get; set; }
-        public bool AllWorlds { get; set; }
-        public int WorldId { get; set; }
-    }
+    
 
     // POST: /Tag/CreateAjax
     [HttpPost]
@@ -99,4 +93,12 @@ public class TagController : Controller
             count = 0
         });
     }
+}
+
+public class CreateTagDto
+{
+    public string Name { get; set; }
+    public string Color { get; set; }
+    public bool AllWorlds { get; set; }
+    public int WorldId { get; set; }
 }
